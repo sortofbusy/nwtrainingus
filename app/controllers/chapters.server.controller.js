@@ -124,13 +124,10 @@ exports.listUserChapters = function(req, res) {
  */
 exports.getNextChapter = function(req, res) {
 	try {
-		console.log(req.chapter);
 		var newChapterId = new Reference(req.chapter.name).toChapterId() + 1;
 		var newRef = Reference.fromChapterId(newChapterId);
-		console.log(newRef.toString());
-		
 		// code here to split up the chapter into blocks of 30 and return an array
-		res.jsonp(newRef);
+		res.jsonp({nextChapter: newRef.toString()});
 	} catch(err) {
 		return res.status(400).send({
 			message: errorHandler.getErrorMessage(err)

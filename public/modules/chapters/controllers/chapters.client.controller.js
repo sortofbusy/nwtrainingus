@@ -71,31 +71,19 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$http', 
 		};
 
 		$scope.getChapterText = function(increment) {
-			var chapter = $scope.chapters[0];
 			
-			$http.get('/chapters/' + chapter._id + '/next').success(
-				function(data, status) {
-					$scope.getRCVText(data.body);
+			console.log(Chapters.thing);
+			var chapter = $scope.chapters[0];
+			$scope.chapterText = Chapters.getRCVText(chapter.name);
+			$scope.chapterText.then(function (result) {
+			    $scope.chapterText = result;
 			});
+
+
 
 		};
 
-		$scope.getRCVText = function(inputString) {
-			var lsmAPIconfig = {
-			  params: {
-			    String: '\'John 1:1-9\'',
-			    Out: 'json'
-			  }
-			};
-			$http.get('http://api.lsm.org/recver.php', lsmAPIconfig).success(
-				function(data, status) {
-					$scope.chapterText = data;
-			}).
-		  	error( function(data, status, headers, config) {
-		    	return new Error('Failed to load chapter: | ' + data.message);
-		  	});
-
-		}; 
+		
 	}
 
 ]);

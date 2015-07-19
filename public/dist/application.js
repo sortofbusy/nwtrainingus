@@ -81,10 +81,12 @@ angular.module('chapters').config(['$stateProvider',
 'use strict';
 
 // Chapters controller
-angular.module('chapters').controller('ChaptersController', ['$scope', '$stateParams', '$location', 'Authentication', 'Chapters',
-	function($scope, $stateParams, $location, Authentication, Chapters) {
+angular.module('chapters').controller('ChaptersController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Chapters',
+	function($scope, $http, $stateParams, $location, Authentication, Chapters) {
 		$scope.authentication = Authentication;
-		$scope.lastChapter;
+		
+
+		//$scope.lastChapter = '';
 		// Create new Chapter
 		$scope.create = function() {
 			// Create new Chapter object
@@ -96,7 +98,8 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$statePa
 			chapter.$save(function(response) {
 				$location.path('' + response._id);
 				$scope.alerts.push({type: 'success', msg: 'Chapter entered.'});
-				$scope.lastChapter = response.name;
+				
+				$scope.find();
 				// Clear form fields
 				$scope.name = '';
 			}, function(errorResponse) {
@@ -136,6 +139,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$statePa
 
 		// Find a list of Chapters
 		$scope.find = function(userId) {
+			if(!userId) userId = $scope.authentication.user._id;
 			$scope.chapters = Chapters.query({user: userId});
 		};
 
@@ -146,19 +150,54 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$statePa
 			});
 		};
 
+		$scope.getChapterText = function(increment) {
+			var chapter = $scope.chapters[0];
+			
+			$http.get('/chapters/' + chapter._id + '/next').success(
+				function(data, status) {
+					if (data) {
+						console.log(Chapters.getRCVText(data.nextChapter));
+						$scope.chapterText = Chapters.getRCVText(data.nextChapter);
+					}
+			});
+
+		};
+
+		
 	}
+
 ]);
 'use strict';
-
+		
 //Chapters service used to communicate Chapters REST endpoints
-angular.module('chapters').factory('Chapters', ['$resource',
-	function($resource) {
-		return $resource('chapters/:chapterId', { chapterId: '@_id'
+angular.module('chapters').factory('Chapters', ['$resource', '$http', 'biblejs',
+	function($resource, $http, biblejs) {
+		var chapterFactory = $resource('chapters/:chapterId', { chapterId: '@_id'
 		}, {
 			update: {
 				method: 'PUT'
 			}
 		});
+
+		chapterFactory.getRCVText = function(inputString) {
+			var lsmApiConfig = {
+			  params: {
+			    String: inputString,
+			    Out: 'json'
+			  }
+			};
+			$http.get('http://api.lsm.org/recver.php', lsmApiConfig).success(
+				function(data, status) {
+					console.log(data);
+					return data;
+				}).
+			  	error( function(data, status, headers, config) {
+			    	return new Error('Failed to load chapter: | ' + data);
+		  	});
+
+		}; 
+
+		return chapterFactory;
 	}
 ]);
 'use strict';
