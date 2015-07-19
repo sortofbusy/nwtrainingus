@@ -143,23 +143,15 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$http', 
 			$scope.chapters = Chapters.query({user: userId});
 		};
 
-		// Find existing Chapter
-		$scope.findOne = function() {
-			$scope.chapter = Chapters.get({ 
-				chapterId: $stateParams.chapterId
-			});
-		};
-
 		$scope.getChapterText = function(increment) {
 			var chapter = $scope.chapters[0];
-			
-			$http.get('/chapters/' + chapter._id + '/next').success(
-				function(data, status) {
-					if (data) {
-						console.log(Chapters.getRCVText(data.nextChapter));
-						$scope.chapterText = Chapters.getRCVText(data.nextChapter);
-					}
+			var promiseText = Chapters.getRCVText(chapter);
+			promiseText.then(function (result) {
+			    $scope.chapterReading = result[0].verses[0].ref.split(':')[0];
+			    $scope.chapterTextArray = result;
 			});
+
+
 
 		};
 
@@ -170,8 +162,8 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$http', 
 'use strict';
 		
 //Chapters service used to communicate Chapters REST endpoints
-angular.module('chapters').factory('Chapters', ['$resource', '$http', 'biblejs',
-	function($resource, $http, biblejs) {
+angular.module('chapters').factory('Chapters', ['$resource', '$http', '$q',
+	function($resource, $http, $q) {
 		var chapterFactory = $resource('chapters/:chapterId', { chapterId: '@_id'
 		}, {
 			update: {
@@ -179,23 +171,36 @@ angular.module('chapters').factory('Chapters', ['$resource', '$http', 'biblejs',
 			}
 		});
 
-		chapterFactory.getRCVText = function(inputString) {
-			var lsmApiConfig = {
-			  params: {
-			    String: inputString,
-			    Out: 'json'
-			  }
-			};
-			$http.get('http://api.lsm.org/recver.php', lsmApiConfig).success(
+		chapterFactory.getRCVText = function(chapter) {
+			
+			var deferred = $q.defer(); // first call - query for next chapter
+			$http.get('/chapters/' + chapter._id + '/next').success(
 				function(data, status) {
-					console.log(data);
-					return data;
-				}).
-			  	error( function(data, status, headers, config) {
-			    	return new Error('Failed to load chapter: | ' + data);
-		  	});
+					var calls = data.length;
+					var called = 0;
+					var results = [];
+					for(var i =0; i < data.length; i++) {
+						
+						var lsmApiConfig = {
+						  params: {
+						    String: data[i],
+						    Out: 'json'
+						  }
+						};
+						$http.get('http://api.lsm.org/recver.php', lsmApiConfig).success( // second call - call LSM API
+							function(data, status) {
+								results[called] = data;
+								called++;
+								if (called === calls) {
+									deferred.resolve(results); // return completed results
+								}
+							});
+					}
+			});
+    		
+			return deferred.promise;
 
-		}; 
+		};
 
 		return chapterFactory;
 	}
