@@ -1,30 +1,38 @@
 'use strict';
 
 // Chapters controller
-angular.module('chapters').controller('ChaptersController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Chapters',
-	function($scope, $http, $stateParams, $location, Authentication, Chapters) {
+angular.module('chapters').controller('ChaptersController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users',
+	function($scope, $http, $stateParams, $location, Authentication, Chapters, Users) {
 		$scope.authentication = Authentication;
-		
+		$http.get('/users/me').then(function(response) {
+			$scope.user = response.data;
+			console.log($scope.user);
+		});
 
-		//$scope.lastChapter = '';
 		// Create new Chapter
-		$scope.create = function() {
+		$scope.create = function(name) {
+			if (!name) name = this.name;
 			// Create new Chapter object
 			var chapter = new Chapters ({
-				name: this.name
+				name: name
 			});
 			$scope.alerts = [];
 			// Redirect after save
 			chapter.$save(function(response) {
-				$location.path('' + response._id);
-				$scope.alerts.push({type: 'success', msg: 'Chapter entered.'});
+				
+				$scope.user = Users.update({
+					lastChapter: response._id
+				});
+				$location.path('');
+				$scope.alerts.push({type: 'success', msg: 'Chapter entered', icon: 'check-square-o'});
 				
 				$scope.find();
 				// Clear form fields
 				$scope.name = '';
+				$scope.chapterTextArray = null;
 			}, function(errorResponse) {
 				//$scope.error = errorResponse.data.message;
-				$scope.alerts.push({type: 'danger', msg: 'Chapter entry failed!'});
+				$scope.alerts.push({type: 'danger', msg: 'Chapter entry failed', icon: 'times'});
 				
 			});
 		};
@@ -65,10 +73,15 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$http', 
 
 		$scope.getChapterText = function(increment) {
 			var chapter = $scope.chapters[0];
+			$scope.alerts = [];
+			if ($scope.currentChapter) {
+				$scope.create($scope.currentChapter);
+				$scope.alerts.push({type: 'success', msg: 'Chapter entered', icon: 'check-square-o'});
+			}
+			
 			var promiseText = Chapters.getRCVText(chapter);
 			promiseText.then(function (result) {
-			    console.log(result);
-			    $scope.chapterReading = result[0].data.verses[0].ref.split(':')[0];
+			    $scope.currentChapter = result[0].data.verses[0].ref.split(':')[0];
 			    $scope.chapterTextArray = result;
 			});
 

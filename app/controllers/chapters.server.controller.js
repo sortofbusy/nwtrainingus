@@ -120,7 +120,7 @@ exports.listUserChapters = function(req, res) {
 };
 
 /**
- * receives a chapterId of current chapter, return an array of reference strings for the next chapter
+ * receives a chapter._id of current chapter, return an array of reference strings for the next chapter
  */
 exports.getNextChapter = function(req, res) {
 	try {
