@@ -120,14 +120,27 @@ exports.listUserChapters = function(req, res) {
 };
 
 /**
- * receives a chapterId of current chapter, return a string of the next chapter
+ * receives a chapterId of current chapter, return an array of reference strings for the next chapter
  */
 exports.getNextChapter = function(req, res) {
 	try {
 		var newChapterId = new Reference(req.chapter.name).toChapterId() + 1;
-		var newRef = Reference.fromChapterId(newChapterId);
+		var newRefString = Reference.fromChapterId(newChapterId).toString();
+		var verses = Reference.versesInChapterId(newChapterId);
+		var result = [];
+
+		// push chunks of 30 verses onto the array
+		for (var i=1; i <= Math.floor(verses/30); i++){
+			result.push(newRefString + ':' + ((i-1)*30+1) + '-' + (i * 30));
+		}	
+
+		// take care of the chunk less than 30
+		if (verses % 30  > 0) {
+			var counter = Math.floor(verses/30) * 30;
+			result.push(newRefString + ':' + (counter + 1) + '-' + (counter + verses % 30));
+		}
 		// code here to split up the chapter into blocks of 30 and return an array
-		res.jsonp({nextChapter: newRef.toString()});
+		res.jsonp(result);
 	} catch(err) {
 		return res.status(400).send({
 			message: errorHandler.getErrorMessage(err)

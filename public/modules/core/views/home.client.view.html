@@ -47,12 +47,14 @@
 				<h2 class="panel-title" data-ng-hide="chapters.length">Enter a chapter to get started!</h2>
 			</div>
 		</div>
-		<div class="panel panel-default" data-ng-show="chapterText">
-			<div class="panel-heading"><h2 class="panel-title">Current chapter</h2>
+		<div class="panel panel-default" data-ng-show="chapterTextArray">
+			<div class="panel-heading"><h2 class="panel-title">Current chapter: <b>{{chapterReading}}</b></h2>
 			</div>
 			<div class="panel-body"> 
-				<p data-ng-repeat="verse in chapterText.verses"><b>{{verse.ref}}</b> {{verse.text}}</p>
-				<small>{{chapterText.copyright}}</small>
+				<div data-ng-repeat="chapterText in chapterTextArray">
+					<span data-ng-repeat="verse in chapterText.verses"> <sup>{{verse.ref.split(':')[1]}}</sup> {{verse.text}}</span>
+				</div>
+				<small><small>{{chapterTextArray[0].copyright}}</small></small>
 			</div>
 		</div>
 		

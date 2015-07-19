@@ -10,27 +10,36 @@ angular.module('chapters').factory('Chapters', ['$resource', '$http', '$q',
 			}
 		});
 
-		chapterFactory.getRCVText = function(inputString) {
-			var lsmApiConfig = {
-			  params: {
-			    String: inputString,
-			    Out: 'json'
-			  }
-			};
-			var deferred = $q.defer();
-    		$http.get('http://api.lsm.org/recver.php', lsmApiConfig).success(
+		chapterFactory.getRCVText = function(chapter) {
+			
+			var deferred = $q.defer(); // first call - query for next chapter
+			$http.get('/chapters/' + chapter._id + '/next').success(
 				function(data, status) {
-					console.log(data);
-					deferred.resolve(data);
-				}).
-			  	error( function(data, status, headers, config) {
-			    	deferred.reject(new Error('Failed to load chapter: | ' + data));
-		  	});
+					var calls = data.length;
+					var called = 0;
+					var results = [];
+					for(var i =0; i < data.length; i++) {
+						
+						var lsmApiConfig = {
+						  params: {
+						    String: data[i],
+						    Out: 'json'
+						  }
+						};
+						$http.get('http://api.lsm.org/recver.php', lsmApiConfig).success( // second call - call LSM API
+							function(data, status) {
+								results[called] = data;
+								called++;
+								if (called === calls) {
+									deferred.resolve(results); // return completed results
+								}
+							});
+					}
+			});
+    		
 			return deferred.promise;
 
-		}; 
-
-		chapterFactory.thing = 5;
+		};
 
 		return chapterFactory;
 	}

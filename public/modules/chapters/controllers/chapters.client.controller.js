@@ -63,20 +63,12 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$http', 
 			$scope.chapters = Chapters.query({user: userId});
 		};
 
-		// Find existing Chapter
-		$scope.findOne = function() {
-			$scope.chapter = Chapters.get({ 
-				chapterId: $stateParams.chapterId
-			});
-		};
-
 		$scope.getChapterText = function(increment) {
-			
-			console.log(Chapters.thing);
 			var chapter = $scope.chapters[0];
-			$scope.chapterText = Chapters.getRCVText(chapter.name);
-			$scope.chapterText.then(function (result) {
-			    $scope.chapterText = result;
+			var promiseText = Chapters.getRCVText(chapter);
+			promiseText.then(function (result) {
+			    $scope.chapterReading = result[0].verses[0].ref.split(':')[0];
+			    $scope.chapterTextArray = result;
 			});
 
 
