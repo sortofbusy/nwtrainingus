@@ -67,7 +67,8 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$http', 
 			var chapter = $scope.chapters[0];
 			var promiseText = Chapters.getRCVText(chapter);
 			promiseText.then(function (result) {
-			    $scope.chapterReading = result[0].verses[0].ref.split(':')[0];
+			    console.log(result);
+			    $scope.chapterReading = result[0].data.verses[0].ref.split(':')[0];
 			    $scope.chapterTextArray = result;
 			});
 

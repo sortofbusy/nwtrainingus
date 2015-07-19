@@ -11,7 +11,7 @@ angular.module('chapters').factory('Chapters', ['$resource', '$http', '$q',
 		});
 
 		chapterFactory.getRCVText = function(chapter) {
-			
+			/*
 			var deferred = $q.defer(); // first call - query for next chapter
 			$http.get('/chapters/' + chapter._id + '/next').success(
 				function(data, status) {
@@ -38,7 +38,27 @@ angular.module('chapters').factory('Chapters', ['$resource', '$http', '$q',
 			});
     		
 			return deferred.promise;
-
+			*/
+			return $q(function(resolve) {
+			$http.get('/chapters/' + chapter._id + '/next')
+				.then(
+					function (response) {
+						var calls = [];
+						for(var i =0; i < response.data.length; i++) {
+							
+							var lsmApiConfig = {
+							  params: {
+							    String: response.data[i],
+							    Out: 'json'
+							  }
+							};
+							calls.push($http.get('http://api.lsm.org/recver.php', lsmApiConfig)); // second call - call LSM API
+						}
+						$q.all(calls).then( function(arrayOfResults) {
+							resolve(arrayOfResults);
+						});
+					});
+			});
 		};
 
 		return chapterFactory;

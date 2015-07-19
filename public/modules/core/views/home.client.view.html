@@ -56,9 +56,9 @@
 		<div class="panel panel-default" data-ng-show="chapterTextArray">
 			<div class="panel-heading"><h2 class="panel-title">Current chapter: <b>{{chapterReading}}</b></h2>
 			</div>
-			<div class="panel-body"> 
+			<div class="panel-body lead"> 
 				<div data-ng-repeat="chapterText in chapterTextArray">
-					<span data-ng-repeat="verse in chapterText.verses"> <sup>{{verse.ref.split(':')[1]}}</sup> {{verse.text}}</span>
+					<span data-ng-repeat="verse in chapterText.data.verses"> <sup>{{verse.ref.split(':')[1]}}</sup> {{verse.text}}</span>
 				</div>
 				<small><small>{{chapterTextArray[0].copyright}}</small></small>
 			</div>
