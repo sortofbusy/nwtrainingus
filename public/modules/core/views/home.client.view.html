@@ -19,17 +19,23 @@
 				<a ui-route="/signin" ng-class="{active: $uiRoute}" class="btn btn-primary btn-lg" href="/#!/signin">Sign In</a>
 			</div>
 		</div>
-			<div>
-				<div class="well" >
-					<h2>Get Started!</h2>
-					<p>
-						<ul>
-							<li>Sign up</li>
-							<li>Enter chapters you read</li>
-							<li>Join a group</li>
-						</ul>
-					</p>
+			<div class="row">
+				<div class="list-group col-md-6">
+					<h1>Get Started!</h1>
+					<div class="list-group-item text-warning">
+						<i class="fa fa-edit fa-2x fa-fw"></i> <span class="h2">Sign up</span>
+					</div>
+					<div class="list-group-item text-primary">
+						<i class="fa fa-group fa-2x fa-fw"></i> <span class="h2">Join a group</span>
+					</div>
+					<div class="list-group-item text-success" style="background : lightzorange;">
+						<i class="fa fa-bookmark fa-2x fa-fw success"></i> <span class="h2">Enter chapters you read</span>
+					</div>
 				</div>
+				<div class="col-md-6">
+					<h2>Top Groups</h2>
+				</div>
+			</div>
 		</div>
 	</div>
 	<div data-ng-controller="ChaptersController" data-ng-init="find()" data-ng-show="authentication.user">
