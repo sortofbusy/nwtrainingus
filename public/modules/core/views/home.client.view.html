@@ -41,37 +41,27 @@
 	<div data-ng-controller="ChaptersController" data-ng-init="find()" data-ng-show="authentication.user">
 		<!--<div class="jumbotron text-center">-->
 			<div class="row">
-				<div class="col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12">
-					<i class="fa fa-book fa-3x"></i> <span class="h1">LetTheWord.com</span>
+				<div class="col-md-6 pull-left">
+					<i class="fa fa-book fa-2x"></i> <span class="h4">Read the Bible!</span>
 				</div>
+				<div class="col-md-6 h4 pull-right" data-ng-show="chapters.length">
+					Last chapter read: <b>{{chapters[0].name}}</b>
+				</div>
+				<chasing-dots-spinner></chasing-dots-spinner>
 			</div>
 		<!--</div>-->	
+		
 		<div class="panel panel-default" data-ng-hide="chapterTextArray">
-			<div class="panel-heading">
-				<h2 class="panel-title" data-ng-show="chapters.length">Last chapter read: <b>{{chapters[0].name}}</b></h2>
+			<div class="panel-heading" data-ng-hide="chapters.length">
 				<h2 class="panel-title" data-ng-hide="chapters.length">Enter a chapter to get started!</h2>
 			</div>
 		</div>
-		<div class="panel panel-default" data-ng-show="chapterTextArray">
-			<div class="panel-heading"><h2 class="panel-title">Current chapter: <b>{{currentChapter}}</b></h2>
-			</div>
-			<div class="panel-body"> 
-				<div class="lead" data-ng-repeat="chapterText in chapterTextArray">
-					<span data-ng-repeat="verse in chapterText.data.verses"> <sup class="text-muted">{{verse.ref.split(':')[1]}}</sup> {{verse.text}}</span>
-				</div>
-				<small class="text-muted">{{chapterTextArray[0].data.copyright}}</small>
-			</div>
-		</div>
+		<state-loading-indicator></state-loading-indicator><!-- displays loading spinner -->
 		
-		<div class="col-md text-center">
-			<button type="button" class="btn btn-primary" data-ng-click="getChapterText(-1)"><i class="fa fa-chevron-circle-left"></i> Last Chapter</button>
-			<a class="btn btn-primary" data-ng-click="getChapterText(1)">Next Chapter <i class="fa fa-chevron-circle-right"></i></a>
-		</div>
-		<br>
-		<div class="text-center">
-			<a class="btn btn-success" data-ng-click="create(currentChapter)"><i class="fa fa-bookmark"></i> Save Progress </a>
-		</div>
-		<br>
+		<mydir-show-chapter-text></mydir-show-chapter-text>
+		<mydir-nav-chapter></mydir-nav-chapter>
+		
+		<state-loading-indicator></state-loading-indicator>
 		<form class="form-inline well" data-ng-submit="create()" novalidate>
 			<fieldset>
                 <div class="form-group">

@@ -1,39 +1,42 @@
 'use strict';
 
 // Chapters controller
-angular.module('chapters').controller('ChaptersController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users',
-	function($scope, $http, $stateParams, $location, Authentication, Chapters, Users) {
+angular.module('chapters').controller('ChaptersController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', '$q',
+	function($scope, $http, $stateParams, $location, Authentication, Chapters, Users, $q) {
 		$scope.authentication = Authentication;
 		$http.get('/users/me').then(function(response) {
-			$scope.user = response.data;
-			console.log($scope.user);
+			$scope.user = new Users(response.data);
 		});
+		$scope.readingMode = false;
 
 		// Create new Chapter
 		$scope.create = function(name) {
-			if (!name) name = this.name;
-			// Create new Chapter object
-			var chapter = new Chapters ({
-				name: name
-			});
-			$scope.alerts = [];
-			// Redirect after save
-			chapter.$save(function(response) {
-				
-				$scope.user = Users.update({
-					lastChapter: response._id
+			return $q(function(resolve) {
+				if (!name) name = $scope.name;
+				// Create new Chapter object
+				var chapter = new Chapters ({
+					name: name
 				});
-				$location.path('');
-				$scope.alerts.push({type: 'success', msg: 'Chapter entered', icon: 'check-square-o'});
-				
-				$scope.find();
-				// Clear form fields
-				$scope.name = '';
-				$scope.chapterTextArray = null;
-			}, function(errorResponse) {
-				//$scope.error = errorResponse.data.message;
-				$scope.alerts.push({type: 'danger', msg: 'Chapter entry failed', icon: 'times'});
-				
+				$scope.alerts = [];
+				// Redirect after save
+				chapter.$save(function(response) {
+					$scope.user.lastChapter = response._id;
+					$scope.user.$update(function(response) {
+					}, function(errorResponse) {
+						$scope.alerts.push({type: 'danger', msg: 'Chapter entry failed' + errorResponse, icon: 'times'});
+					});
+
+					$scope.alerts.push({type: 'success', msg: 'Chapter entered', icon: 'check-square-o'});
+					$scope.chapters.unshift(response); // adds the new chapter to the beginning of chapters
+					
+					// Clear form fields
+					$scope.name = '';
+					$scope.chapterTextArray = null;
+					resolve();
+				}, function(errorResponse) {
+					$scope.alerts.push({type: 'danger', msg: 'Chapter entry failed', icon: 'times'});
+					resolve();
+				});
 			});
 		};
 
@@ -57,7 +60,6 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$http', 
 		// Update existing Chapter
 		$scope.update = function() {
 			var chapter = $scope.chapter;
-
 			chapter.$update(function() {
 				$location.path('chapters/' + chapter._id);
 			}, function(errorResponse) {
@@ -71,23 +73,103 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$http', 
 			$scope.chapters = Chapters.query({user: userId});
 		};
 
-		$scope.getChapterText = function(increment) {
-			var chapter = $scope.chapters[0];
+		$scope.moveChapter = function(increment) {
 			$scope.alerts = [];
-			if ($scope.currentChapter) {
-				$scope.create($scope.currentChapter);
-				$scope.alerts.push({type: 'success', msg: 'Chapter entered', icon: 'check-square-o'});
-			}
+			// IF we are in readingMode, the current chapter is unsaved, so save it
+			if ($scope.readingMode) {
+				$scope.create($scope.currentChapter).then( function() {
+					$scope.getChapterText($scope.user.lastChapter, increment);
+				}, function (err) {
+
+				});
+
+			} else $scope.getChapterText($scope.user.lastChapter, increment);
 			
-			var promiseText = Chapters.getRCVText(chapter);
-			promiseText.then(function (result) {
-			    $scope.currentChapter = result[0].data.verses[0].ref.split(':')[0];
-			    $scope.chapterTextArray = result;
-			});
-
-
-
 		};
+
+		$scope.getChapterText = function(chapterId, increment) {
+			$scope.readingMode = true;
+			$scope.getRCVText(chapterId, increment).then(function (result) {
+			    $scope.currentChapter = result[0].data.verses[0].ref.split(':')[0];
+				$scope.chapterTextArray = result;
+			});
+		};
+
+		$scope.getRCVText = function(chapterId, increment) {
+			return $q(function(resolve) {
+			$http.get('/chapters/' + chapterId + '/next')
+				.then(
+					function (response) {
+						var calls = [];
+						for(var i =0; i < response.data.length; i++) {
+							
+							var lsmApiConfig = {
+							  params: {
+							    String: response.data[i],
+							    Out: 'json'
+							  }
+							};
+							calls.push($http.get('http://api.lsm.org/recver.php', lsmApiConfig)); // second call - call LSM API
+						}
+						$q.all(calls).then( function(arrayOfResults) {
+							resolve(arrayOfResults);
+						});
+					});
+			});
+		};
+
+		/*
+		$scope.moveChapter = function(increment) {
+			var chapterId = $scope.user.lastChapter;
+			console.log('user.lastChapter: ' + chapterId);
+			$scope.alerts = [];
+			// IF we are in readingMode, the current chapter is unsaved, so save it
+			if ($scope.readingMode) {
+				$scope.create($scope.currentChapter).then( function() {
+					$scope.getChapterText(chapterId, increment);
+				}, function (err) {
+
+				});
+
+			} else $scope.getChapterText(chapterId, increment);
+			
+		};
+
+		$scope.getChapterText = function(chapterId, increment) {
+			$scope.readingMode = true;
+			console.log('old id: ' + chapterId);
+			$scope.getRCVText(chapterId, increment).then(function (result) {
+			    $scope.currentChapter = result[0].data.verses[0].ref.split(':')[0];
+			    console.log('New current chapter: ' + $scope.currentChapter);
+			    $scope.chapterTextArray = result;
+			    //console.log('new id: ' + $scope.chapters[0]._id);
+			});
+		};
+
+		$scope.getRCVText = function(chapterId, increment) {
+			return $q(function(resolve) {
+			console.log('sending' + chapterId);
+			$http.get('/chapters/' + chapterId + '/next')
+				.then(
+					function (response) {
+						var calls = [];
+						for(var i =0; i < response.data.length; i++) {
+							
+							var lsmApiConfig = {
+							  params: {
+							    String: response.data[i],
+							    Out: 'json'
+							  }
+							};
+							calls.push($http.get('http://api.lsm.org/recver.php', lsmApiConfig)); // second call - call LSM API
+						}
+						$q.all(calls).then( function(arrayOfResults) {
+							resolve(arrayOfResults);
+						});
+					});
+			});
+		};
+		*/
 
 		
 	}

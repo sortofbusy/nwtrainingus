@@ -4,7 +4,7 @@
 var ApplicationConfiguration = (function() {
 	// Init module configuration options
 	var applicationModuleName = 'lettheword';
-	var applicationModuleVendorDependencies = ['ngResource', 'ngCookies',  'ngTouch',  'ui.router', 'ui.bootstrap', 'ui.utils'];
+	var applicationModuleVendorDependencies = ['ngResource', 'ngCookies',  'ngTouch',  'ui.router', 'ui.bootstrap', 'ui.utils', 'spinkit'];
 
 	// Add a new vertical module
 	var registerModule = function(moduleName, dependencies) {
@@ -81,30 +81,38 @@ angular.module('chapters').config(['$stateProvider',
 'use strict';
 
 // Chapters controller
-angular.module('chapters').controller('ChaptersController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Chapters',
-	function($scope, $http, $stateParams, $location, Authentication, Chapters) {
+angular.module('chapters').controller('ChaptersController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users',
+	function($scope, $http, $stateParams, $location, Authentication, Chapters, Users) {
 		$scope.authentication = Authentication;
-		
+		$http.get('/users/me').then(function(response) {
+			$scope.user = response.data;
+			console.log($scope.user);
+		});
 
-		//$scope.lastChapter = '';
 		// Create new Chapter
-		$scope.create = function() {
+		$scope.create = function(name) {
+			if (!name) name = this.name;
 			// Create new Chapter object
 			var chapter = new Chapters ({
-				name: this.name
+				name: name
 			});
 			$scope.alerts = [];
 			// Redirect after save
 			chapter.$save(function(response) {
-				$location.path('' + response._id);
-				$scope.alerts.push({type: 'success', msg: 'Chapter entered.'});
+				
+				$scope.user = Users.update({
+					lastChapter: response._id
+				});
+				$location.path('');
+				$scope.alerts.push({type: 'success', msg: 'Chapter entered', icon: 'check-square-o'});
 				
 				$scope.find();
 				// Clear form fields
 				$scope.name = '';
+				$scope.chapterTextArray = null;
 			}, function(errorResponse) {
 				//$scope.error = errorResponse.data.message;
-				$scope.alerts.push({type: 'danger', msg: 'Chapter entry failed!'});
+				$scope.alerts.push({type: 'danger', msg: 'Chapter entry failed', icon: 'times'});
 				
 			});
 		};
@@ -145,9 +153,15 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$http', 
 
 		$scope.getChapterText = function(increment) {
 			var chapter = $scope.chapters[0];
+			$scope.alerts = [];
+			if ($scope.currentChapter) {
+				$scope.create($scope.currentChapter);
+				$scope.alerts.push({type: 'success', msg: 'Chapter entered', icon: 'check-square-o'});
+			}
+			
 			var promiseText = Chapters.getRCVText(chapter);
 			promiseText.then(function (result) {
-			    $scope.chapterReading = result[0].verses[0].ref.split(':')[0];
+			    $scope.currentChapter = result[0].data.verses[0].ref.split(':')[0];
 			    $scope.chapterTextArray = result;
 			});
 
@@ -158,6 +172,32 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$http', 
 		
 	}
 
+]);
+'use strict';
+
+angular.module('chapters').directive('stateLoadingIndicator', ['$rootScope', 'angular-spinkit',
+	function($rootScope) {
+		return {
+		    restrict: 'E',
+		    template: '<div data-ng-show="isStateLoading" class="loading-indicator">' +
+		    '<div class="loading-indicator-body">' +
+		    '<h3 class="loading-title">Loading...</h3>' +
+		    '<div class="spinner"><chasing-dots-spinner></chasing-dots-spinner></div>' +
+		    '</div>' +
+		    '</div>',
+		    replace: true,
+		    link: function(scope, elem, attrs) {
+		      scope.isStateLoading = false;
+		 
+		      $rootScope.$on('$stateChangeStart', function() {
+		        scope.isStateLoading = true;
+		      });
+		      $rootScope.$on('$stateChangeSuccess', function() {
+		        scope.isStateLoading = false;
+		      });
+		    }
+		};
+	}
 ]);
 'use strict';
 		
@@ -172,34 +212,26 @@ angular.module('chapters').factory('Chapters', ['$resource', '$http', '$q',
 		});
 
 		chapterFactory.getRCVText = function(chapter) {
-			
-			var deferred = $q.defer(); // first call - query for next chapter
-			$http.get('/chapters/' + chapter._id + '/next').success(
-				function(data, status) {
-					var calls = data.length;
-					var called = 0;
-					var results = [];
-					for(var i =0; i < data.length; i++) {
-						
-						var lsmApiConfig = {
-						  params: {
-						    String: data[i],
-						    Out: 'json'
-						  }
-						};
-						$http.get('http://api.lsm.org/recver.php', lsmApiConfig).success( // second call - call LSM API
-							function(data, status) {
-								results[called] = data;
-								called++;
-								if (called === calls) {
-									deferred.resolve(results); // return completed results
-								}
-							});
-					}
+			return $q(function(resolve) {
+			$http.get('/chapters/' + chapter._id + '/next')
+				.then(
+					function (response) {
+						var calls = [];
+						for(var i =0; i < response.data.length; i++) {
+							
+							var lsmApiConfig = {
+							  params: {
+							    String: response.data[i],
+							    Out: 'json'
+							  }
+							};
+							calls.push($http.get('http://api.lsm.org/recver.php', lsmApiConfig)); // second call - call LSM API
+						}
+						$q.all(calls).then( function(arrayOfResults) {
+							resolve(arrayOfResults);
+						});
+					});
 			});
-    		
-			return deferred.promise;
-
 		};
 
 		return chapterFactory;
