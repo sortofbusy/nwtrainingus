@@ -22,6 +22,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$http', 
 				chapter.$save(function(response) {
 					$scope.user.lastChapter = response._id;
 					$scope.user.$update(function(response) {
+						$scope.currentChapter = response.name;
 					}, function(errorResponse) {
 						$scope.alerts.push({type: 'danger', msg: 'Chapter entry failed' + errorResponse, icon: 'times'});
 					});
