@@ -124,7 +124,9 @@ exports.listUserChapters = function(req, res) {
  */
 exports.getNextChapter = function(req, res) {
 	try {
-		var newChapterId = new Reference(req.chapter.name).toChapterId() + 1;
+		var increment = +req.query.increment;
+		console.log(increment);
+		var newChapterId = new Reference(req.chapter.name).toChapterId() + increment;
 		var newRefString = Reference.fromChapterId(newChapterId).toString();
 		var verses = Reference.versesInChapterId(newChapterId);
 		var result = [];

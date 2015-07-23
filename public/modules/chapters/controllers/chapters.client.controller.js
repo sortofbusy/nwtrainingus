@@ -76,7 +76,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$http', 
 		$scope.moveChapter = function(increment) {
 			$scope.alerts = [];
 			// IF we are in readingMode, the current chapter is unsaved, so save it
-			if ($scope.readingMode) {
+			if ($scope.readingMode && increment === 1) {
 				$scope.create($scope.currentChapter).then( function() {
 					$scope.getChapterText($scope.user.lastChapter, increment);
 				}, function (err) {
@@ -97,7 +97,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$http', 
 
 		$scope.getRCVText = function(chapterId, increment) {
 			return $q(function(resolve) {
-			$http.get('/chapters/' + chapterId + '/next')
+			$http.get('/chapters/' + chapterId + '/next', {params: {increment: increment}})
 				.then(
 					function (response) {
 						var calls = [];
@@ -117,59 +117,6 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$http', 
 					});
 			});
 		};
-
-		/*
-		$scope.moveChapter = function(increment) {
-			var chapterId = $scope.user.lastChapter;
-			console.log('user.lastChapter: ' + chapterId);
-			$scope.alerts = [];
-			// IF we are in readingMode, the current chapter is unsaved, so save it
-			if ($scope.readingMode) {
-				$scope.create($scope.currentChapter).then( function() {
-					$scope.getChapterText(chapterId, increment);
-				}, function (err) {
-
-				});
-
-			} else $scope.getChapterText(chapterId, increment);
-			
-		};
-
-		$scope.getChapterText = function(chapterId, increment) {
-			$scope.readingMode = true;
-			console.log('old id: ' + chapterId);
-			$scope.getRCVText(chapterId, increment).then(function (result) {
-			    $scope.currentChapter = result[0].data.verses[0].ref.split(':')[0];
-			    console.log('New current chapter: ' + $scope.currentChapter);
-			    $scope.chapterTextArray = result;
-			    //console.log('new id: ' + $scope.chapters[0]._id);
-			});
-		};
-
-		$scope.getRCVText = function(chapterId, increment) {
-			return $q(function(resolve) {
-			console.log('sending' + chapterId);
-			$http.get('/chapters/' + chapterId + '/next')
-				.then(
-					function (response) {
-						var calls = [];
-						for(var i =0; i < response.data.length; i++) {
-							
-							var lsmApiConfig = {
-							  params: {
-							    String: response.data[i],
-							    Out: 'json'
-							  }
-							};
-							calls.push($http.get('http://api.lsm.org/recver.php', lsmApiConfig)); // second call - call LSM API
-						}
-						$q.all(calls).then( function(arrayOfResults) {
-							resolve(arrayOfResults);
-						});
-					});
-			});
-		};
-		*/
 
 		
 	}
