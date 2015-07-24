@@ -44,7 +44,7 @@
 				<div class="col-md-6 pull-left">
 					<i class="fa fa-book fa-2x"></i> <span class="h4">Read the Bible!</span>
 				</div>
-				<div data-ng-controller="PlansController" class="col-md-2 h4 pull-right">
+				<div class="col-md-2 h4 pull-right">
 					<button class="btn btn-default" ng-click="open()">Reading Plan</button>
 				</div>
 				<div class="col-md-2 h4 pull-right" data-ng-show="chapters.length">
@@ -60,7 +60,7 @@
 			</div>
 		</div>
 		<state-loading-indicator></state-loading-indicator><!-- displays loading spinner -->
-		
+		{{plans}}
 		<mydir-show-chapter-text></mydir-show-chapter-text>
 		<mydir-nav-chapter></mydir-nav-chapter>
 		

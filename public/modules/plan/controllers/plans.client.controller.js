@@ -1,10 +1,12 @@
 'use strict';
 
-angular.module('plan').controller('PlansController', ['$scope', '$modal', 'Authentication',
-	function($scope, $modal, Authentication) {
+angular.module('plan').controller('PlansController', ['$scope', '$modal', 'Authentication', 'Plans',
+	function($scope, $modal, Authentication, Plans) {
 		$scope.items = ['Whole Bible (Genesis 1 - Revelation 22)', 'Old Testament (Genesis 1 - Malachi 4)'];
 		$scope.authentication = Authentication;
-		
+		$scope.plan = new Plans({name: 'myPlan'});
+		console.log($scope.plan);
+
 		$scope.open = function (size) {
 
 			var modalInstance = $modal.open({

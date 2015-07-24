@@ -4,7 +4,7 @@
 var ApplicationConfiguration = (function() {
 	// Init module configuration options
 	var applicationModuleName = 'lettheword';
-	var applicationModuleVendorDependencies = ['ngResource', 'ngCookies',  'ngTouch',  'ui.router', 'ui.bootstrap', 'ui.utils', 'spinkit'];
+	var applicationModuleVendorDependencies = ['ngResource', 'ngCookies',  'ngTouch',  'ui.router', 'ui.bootstrap', 'ui.utils'];
 
 	// Add a new vertical module
 	var registerModule = function(moduleName, dependencies) {
@@ -51,6 +51,15 @@ ApplicationConfiguration.registerModule('chapters');
 ApplicationConfiguration.registerModule('core');
 'use strict';
 
+// Use application configuration module to register a new module
+ApplicationConfiguration.registerModule('plan');
+
+'use strict';
+
+// Use applicaion configuration module to register a new module
+ApplicationConfiguration.registerModule('plans');
+'use strict';
+
 // Use Applicaion configuration module to register a new module
 ApplicationConfiguration.registerModule('users');
 'use strict';
@@ -81,39 +90,46 @@ angular.module('chapters').config(['$stateProvider',
 'use strict';
 
 // Chapters controller
-angular.module('chapters').controller('ChaptersController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users',
-	function($scope, $http, $stateParams, $location, Authentication, Chapters, Users) {
+angular.module('chapters').controller('ChaptersController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', '$q', 'Plans',
+	function($scope, $http, $stateParams, $location, Authentication, Chapters, Users, $q, Plans) {
 		$scope.authentication = Authentication;
 		$http.get('/users/me').then(function(response) {
-			$scope.user = response.data;
-			console.log($scope.user);
+			$scope.user = new Users(response.data);
+		});
+		$scope.readingMode = false;
+		$scope.plans = Plans.query({ 
+			user: $scope.authentication.user._id
 		});
 
 		// Create new Chapter
 		$scope.create = function(name) {
-			if (!name) name = this.name;
-			// Create new Chapter object
-			var chapter = new Chapters ({
-				name: name
-			});
-			$scope.alerts = [];
-			// Redirect after save
-			chapter.$save(function(response) {
-				
-				$scope.user = Users.update({
-					lastChapter: response._id
+			return $q(function(resolve) {
+				if (!name) name = $scope.name;
+				// Create new Chapter object
+				var chapter = new Chapters ({
+					name: name
 				});
-				$location.path('');
-				$scope.alerts.push({type: 'success', msg: 'Chapter entered', icon: 'check-square-o'});
-				
-				$scope.find();
-				// Clear form fields
-				$scope.name = '';
-				$scope.chapterTextArray = null;
-			}, function(errorResponse) {
-				//$scope.error = errorResponse.data.message;
-				$scope.alerts.push({type: 'danger', msg: 'Chapter entry failed', icon: 'times'});
-				
+				$scope.alerts = [];
+				// Redirect after save
+				chapter.$save(function(response) {
+					$scope.user.lastChapter = response._id;
+					$scope.user.$update(function(response) {
+						$scope.currentChapter = response.name;
+					}, function(errorResponse) {
+						$scope.alerts.push({type: 'danger', msg: 'Chapter entry failed' + errorResponse, icon: 'times'});
+					});
+
+					$scope.alerts.push({type: 'success', msg: 'Chapter entered', icon: 'check-square-o'});
+					$scope.chapters.unshift(response); // adds the new chapter to the beginning of chapters
+					
+					// Clear form fields
+					$scope.name = '';
+					$scope.chapterTextArray = null;
+					resolve();
+				}, function(errorResponse) {
+					$scope.alerts.push({type: 'danger', msg: 'Chapter entry failed', icon: 'times'});
+					resolve();
+				});
 			});
 		};
 
@@ -137,7 +153,6 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$http', 
 		// Update existing Chapter
 		$scope.update = function() {
 			var chapter = $scope.chapter;
-
 			chapter.$update(function() {
 				$location.path('chapters/' + chapter._id);
 			}, function(errorResponse) {
@@ -151,22 +166,49 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$http', 
 			$scope.chapters = Chapters.query({user: userId});
 		};
 
-		$scope.getChapterText = function(increment) {
-			var chapter = $scope.chapters[0];
+		$scope.moveChapter = function(increment) {
 			$scope.alerts = [];
-			if ($scope.currentChapter) {
-				$scope.create($scope.currentChapter);
-				$scope.alerts.push({type: 'success', msg: 'Chapter entered', icon: 'check-square-o'});
-			}
+			// IF we are in readingMode, the current chapter is unsaved, so save it
+			if ($scope.readingMode && increment === 1) {
+				$scope.create($scope.currentChapter).then( function() {
+					$scope.getChapterText($scope.user.lastChapter, increment);
+				}, function (err) {
+
+				});
+
+			} else $scope.getChapterText($scope.user.lastChapter, increment);
 			
-			var promiseText = Chapters.getRCVText(chapter);
-			promiseText.then(function (result) {
+		};
+
+		$scope.getChapterText = function(chapterId, increment) {
+			$scope.readingMode = true;
+			$scope.getRCVText(chapterId, increment).then(function (result) {
 			    $scope.currentChapter = result[0].data.verses[0].ref.split(':')[0];
-			    $scope.chapterTextArray = result;
+				$scope.chapterTextArray = result;
 			});
+		};
 
-
-
+		$scope.getRCVText = function(chapterId, increment) {
+			return $q(function(resolve) {
+			$http.get('/chapters/' + chapterId + '/next', {params: {increment: increment}})
+				.then(
+					function (response) {
+						var calls = [];
+						for(var i =0; i < response.data.length; i++) {
+							
+							var lsmApiConfig = {
+							  params: {
+							    String: response.data[i],
+							    Out: 'json'
+							  }
+							};
+							calls.push($http.get('http://api.lsm.org/recver.php', lsmApiConfig)); // second call - call LSM API
+						}
+						$q.all(calls).then( function(arrayOfResults) {
+							resolve(arrayOfResults);
+						});
+					});
+			});
 		};
 
 		
@@ -175,14 +217,35 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$http', 
 ]);
 'use strict';
 
-angular.module('chapters').directive('stateLoadingIndicator', ['$rootScope', 'angular-spinkit',
+angular.module('chapters').directive('mydirNavChapter', [
+	function() {
+		return {
+			restrict: 'E',
+			templateUrl: 'modules/chapters/views/nav-chapter.html'
+		};
+	}
+]);
+'use strict';
+
+angular.module('chapters').directive('mydirShowChapterText', [
+	function() {
+		return {
+			restrict: 'E',
+			templateUrl: 'modules/chapters/views/show-chapter-text.html',
+			
+		};
+	}
+]);
+'use strict';
+
+angular.module('chapters').directive('stateLoadingIndicator', ['$rootScope',
 	function($rootScope) {
 		return {
 		    restrict: 'E',
 		    template: '<div data-ng-show="isStateLoading" class="loading-indicator">' +
 		    '<div class="loading-indicator-body">' +
 		    '<h3 class="loading-title">Loading...</h3>' +
-		    '<div class="spinner"><chasing-dots-spinner></chasing-dots-spinner></div>' +
+		    '<div class="spinner"><i class="fa fa-spin fa-spinner"></i></div>' +
 		    '</div>' +
 		    '</div>',
 		    replace: true,
@@ -211,28 +274,7 @@ angular.module('chapters').factory('Chapters', ['$resource', '$http', '$q',
 			}
 		});
 
-		chapterFactory.getRCVText = function(chapter) {
-			return $q(function(resolve) {
-			$http.get('/chapters/' + chapter._id + '/next')
-				.then(
-					function (response) {
-						var calls = [];
-						for(var i =0; i < response.data.length; i++) {
-							
-							var lsmApiConfig = {
-							  params: {
-							    String: response.data[i],
-							    Out: 'json'
-							  }
-							};
-							calls.push($http.get('http://api.lsm.org/recver.php', lsmApiConfig)); // second call - call LSM API
-						}
-						$q.all(calls).then( function(arrayOfResults) {
-							resolve(arrayOfResults);
-						});
-					});
-			});
-		};
+		
 
 		return chapterFactory;
 	}
@@ -444,6 +486,289 @@ angular.module('core').service('Menus', [
 
 		//Adding the topbar menu
 		this.addMenu('topbar');
+	}
+]);
+'use strict';
+
+angular.module('plan').controller('PlansController', ['$scope', '$modal', 'Authentication', 'Plans',
+	function($scope, $modal, Authentication, Plans) {
+		$scope.items = ['Whole Bible (Genesis 1 - Revelation 22)', 'Old Testament (Genesis 1 - Malachi 4)'];
+		$scope.authentication = Authentication;
+		$scope.plan = new Plans({name: 'myPlan'});
+		console.log($scope.plan);
+
+		$scope.open = function (size) {
+
+			var modalInstance = $modal.open({
+			  animation: true,
+			  templateUrl: 'modules/plan/views/plan-modal.html',
+			  controller: 'ModalInstanceCtrl',
+			  size: size,
+			  resolve: {
+			    items: function () {
+			      return $scope.items;
+			    }
+			  }
+			});
+
+			modalInstance.result.then(function (selectedItem) {
+			  $scope.selected = selectedItem;
+			  console.log($scope.authentication.user.displayName + ' selected ' + selectedItem);
+			}, function () {
+
+			});
+		};
+
+	}
+
+]);
+
+angular.module('plan').controller('ModalInstanceCtrl', ["$scope", "$modalInstance", "items", function ($scope, $modalInstance, items) {
+
+  $scope.items = items;
+  $scope.selected = {
+    item: null
+  };
+
+  $scope.ok = function () {
+    $modalInstance.close($scope.selected.item);
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+}]);
+'use strict';
+
+angular.module('plan').directive('mydirPlanModal', [
+	function() {
+		return {
+			templateUrl: 'modules/plan/views/mydir-plan-modal.html',
+			restrict: 'E'
+		};
+	}
+]);
+'use strict';
+
+// Configuring the Articles module
+angular.module('plans').run(['Menus',
+	function(Menus) {
+		// Set top bar menu items
+		Menus.addMenuItem('topbar', 'Plans', 'plans', 'dropdown', '/plans(/create)?');
+		Menus.addSubMenuItem('topbar', 'plans', 'List Plans', 'plans');
+		Menus.addSubMenuItem('topbar', 'plans', 'New Plan', 'plans/create');
+	}
+]);
+'use strict';
+
+//Setting up route
+angular.module('plans').config(['$stateProvider',
+	function($stateProvider) {
+		// Plans state routing
+		$stateProvider.
+		state('listPlans', {
+			url: '/plans',
+			templateUrl: 'modules/plans/views/list-plans.client.view.html'
+		}).
+		state('createPlan', {
+			url: '/plans/create',
+			templateUrl: 'modules/plans/views/create-plan.client.view.html'
+		}).
+		state('viewPlan', {
+			url: '/plans/:planId',
+			templateUrl: 'modules/plans/views/view-plan.client.view.html'
+		}).
+		state('editPlan', {
+			url: '/plans/:planId/edit',
+			templateUrl: 'modules/plans/views/edit-plan.client.view.html'
+		});
+	}
+]);
+'use strict';
+
+// Plans controller
+angular.module('plans').controller('PlansController', ['$scope', '$modal', '$stateParams', '$location', 'Authentication', 'Plans',
+	function($scope, $modal, $stateParams, $location, Authentication, Plans) {
+		$scope.authentication = Authentication;
+		Plans.query({ 
+				user: $scope.authentication.user._id
+		}).$promise.then( function(response) {
+			$scope.plans = response;
+		});
+		$scope.items = [
+			{	name: 'Whole Bible (1 year)',
+				plans: [{
+					name: 'Old Testament (1 year)',
+					startChapter: 1,
+					endChapter: 929,
+					cursor: 1,
+					pace: 3
+				},
+				{
+					name: 'New Testament (1 year)',
+					startChapter: 930,
+					endChapter: 1189,
+					cursor: 930,
+					pace: 1
+				}]
+			},
+			{	name: 'New Testament (6 months)',
+				plans: [{
+					name: 'New Testament (6 months)',
+					startChapter: 930,
+					endChapter: 1189,
+					cursor: 930,
+					pace: 2
+				}]
+			} 
+		];
+		
+		// Create new Plan
+		$scope.create = function() {
+			// Create new Plan object
+			var plan = new Plans ({
+				name: this.name
+			});
+
+			plan.$save(function(response) {
+				// Clear form fields
+				$scope.name = '';
+			}, function(errorResponse) {
+				$scope.error = errorResponse.data.message;
+			});
+		};
+
+		// Update existing Plan
+		$scope.update = function() {
+			var plan = $scope.plan;
+
+			plan.$update(function() {
+				$location.path('plans/' + plan._id);
+			}, function(errorResponse) {
+				$scope.error = errorResponse.data.message;
+			});
+		};
+
+		// Find a list of Plans
+		$scope.find = function() {
+			$scope.plans = Plans.query({ 
+				user: $scope.authentication.user._id
+			});
+		};
+
+		// Find existing Plan
+		$scope.findOne = function() {
+			$scope.plan = Plans.get({ 
+				planId: $stateParams.planId
+			});
+		};
+
+		$scope.open = function (size) {
+			var modalInstance = $modal.open({
+			  animation: true,
+			  templateUrl: 'modules/plans/views/plan-modal.html',
+			  controller: 'ModalInstanceCtrl',
+			  size: size,
+			  resolve: {
+			    items: function () {
+			      return $scope.items;
+			    },
+			    plans: function () {
+			    	return $scope.plans;
+			    },
+			    authentication: function () {
+			    	return $scope.authentication;
+			    }
+			  }
+			});
+
+			modalInstance.result.then(function (plans) {
+				$scope.plans = plans;  
+			}, function () {
+
+			});
+		};
+	}
+]);
+
+angular.module('plans').controller('ModalInstanceCtrl', ["$scope", "$modalInstance", "items", "plans", "authentication", "Plans", function ($scope, $modalInstance, items, plans, authentication, Plans) {
+	$scope.plans = plans;
+	$scope.items = items;
+	$scope.authentication = authentication;
+	$scope.selected = {
+		item: null
+	};
+
+	$scope.ok = function () {
+		$modalInstance.close($scope.plans);
+	};
+
+	$scope.cancel = function () {
+		$modalInstance.dismiss('cancel');
+	};
+
+	$scope.myCreate = function(passedPlan) {
+		var plan = new Plans(passedPlan);
+		plan.$save(function(response) {
+			$scope.success = ('Plan saved!');
+		}, function(errorResponse) {
+			$scope.error = errorResponse.data.message;
+		});
+	};
+
+	$scope.createMultiple = function(item) {
+		for(var i = 0; i < item.plans.length; i++) {
+			var exists = false;
+			for(var j = 0; j < $scope.plans.length; j++) {
+				if ($scope.plans[j].name === item.plans[i].name) {
+					exists = true;
+				}
+			}
+			if (exists) {
+				$scope.error = 'You\'re already using this plan.';
+			} else {
+				$scope.myCreate(item.plans[i]);
+			}
+		}
+		$scope.selected = null;
+		$scope.find();
+	};
+
+	// Remove existing Plan
+	$scope.remove = function(plan) {
+		if ( plan ) { 
+			plan.$remove();
+
+			for (var i in $scope.plans) {
+				if ($scope.plans [i] === plan) {
+					$scope.plans.splice(i, 1);
+				}
+			}
+		}
+	};
+
+	// Find a list of Plans
+	$scope.find = function() {
+		$scope.plans = Plans.query({ 
+			user: $scope.authentication.user._id
+		});
+	};
+}]);
+'use strict';
+
+//Plans service used to communicate Plans REST endpoints
+angular.module('plans').factory('Plans', ['$resource',
+	function($resource) {
+		return $resource('plans/:planId', { planId: '@_id'
+		}, {
+			update: {
+				method: 'PUT'
+			},
+			saveAll: {
+				method: 'POST',
+				isArray: true
+			}
+		});
 	}
 ]);
 'use strict';

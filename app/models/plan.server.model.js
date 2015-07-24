@@ -24,38 +24,25 @@ var PlanSchema = new Schema({
 		type: Schema.ObjectId,
 		ref: 'User'
 	},
-	startChapterNumber: Number,
-	startChapterName: String,
-	endChapterNumber: Number,
-	endChapterName: String,
-	pace: Number
-});
-
-mongoose.model('Plan', PlanSchema);
-
-/**
- * Plan Template Schema
- */
-var PlanTemplateSchema = new Schema({
-	name: {
-		type: String,
-		default: '',
-		required: 'Please fill Plan Template name',
-		trim: true
+	startChapter: {
+		type: Number,
+		min: 1,
+		max: 1189
 	},
-	description: {
-		type: String,
-		default: '',
-		trim: true
+	endChapter: {
+		type: Number,
+		min: 1,
+		max: 1189
 	},
-	startChapterNumber: Number,
-	startChapterName: String,
-	endChapterNumber: Number,
-	endChapterName: String,
-	planTemplates: [{ 
-		type: Schema.ObjectId,
-		ref: 'PlanTemplate'
-	}]
+	cursor: {
+		type: Number,
+		min: 1,
+		max: 1189
+	},
+	pace: {
+		type: Number,
+		min: 1
+	}
 });
 
 mongoose.model('Plan', PlanSchema);

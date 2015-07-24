@@ -4,10 +4,10 @@
 <div class="modal-body">
     <ul>
         <li ng-repeat="item in items">
-            <a ng-click="selected.item = item">{{ item }}</a>
+            <a ng-click="selected.item = item">{{ item.name }}</a>
         </li>
     </ul>
-    Selected: <b>{{ selected.item  || 'Pick a plan!'}}</b>
+    Selected: <b>{{ selected.item.name  || 'Pick a plan!'}}</b>
 </div>
 <div class="modal-footer">
     <button class="btn btn-warning" ng-click="cancel()">Cancel</button>

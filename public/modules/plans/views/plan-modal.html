@@ -1,0 +1,30 @@
+<div class="modal-header" data-ng-show="plans"><h3>Current Plan:</h3>
+	<div data-ng-repeat="plan in plans" class="row"> 
+		<div class="col-sm-4">
+			{{plan.name}}
+		</div> 
+		<div class="col-sm-4">
+			<progressbar value="36">36</progressbar>
+		</div>
+		<a class="btn btn-small pull-right" data-ng-click="remove(plan);">
+			<i class="glyphicon glyphicon-trash"></i>
+		</a>
+	</div>
+</div>
+    
+<div class="modal-header">
+    <h3 class="modal-title">Select a Reading Plan</h3>
+</div>
+<div class="modal-body">
+    <ul>
+        <li data-ng-repeat="item in items">
+            <a data-ng-click="createMultiple(item)">{{ item.name }}</a>
+        </li>
+    </ul>
+    <alert data-ng-show="error" type="danger" dismiss-on-timeout="500">{{error}}</alert>
+    <alert data-ng-show="success" type="success" dismiss-on-timeout="500">{{success}}</alert>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" data-ng-click="cancel()">Cancel</button>
+    <button class="btn btn-primary" data-ng-click="ok()">OK</button>
+</div>

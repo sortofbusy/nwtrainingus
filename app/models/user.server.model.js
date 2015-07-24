@@ -92,7 +92,11 @@ var UserSchema = new Schema({
 	lastChapter: {
 		type: Schema.ObjectId,
 		ref: 'Chapter'
-	}
+	},
+	plans: [{
+		type: Schema.ObjectId,
+		ref: 'Plan'
+	}]
 });
 
 /**

@@ -1,13 +1,16 @@
 'use strict';
 
 // Chapters controller
-angular.module('chapters').controller('ChaptersController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', '$q',
-	function($scope, $http, $stateParams, $location, Authentication, Chapters, Users, $q) {
+angular.module('chapters').controller('ChaptersController', ['$scope', '$modal', '$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', '$q', 'Plans',
+	function($scope, $modal, $http, $stateParams, $location, Authentication, Chapters, Users, $q, Plans) {
 		$scope.authentication = Authentication;
 		$http.get('/users/me').then(function(response) {
 			$scope.user = new Users(response.data);
 		});
 		$scope.readingMode = false;
+		$scope.plans = Plans.query({ 
+			user: $scope.authentication.user._id
+		});
 
 		// Create new Chapter
 		$scope.create = function(name) {
@@ -119,7 +122,31 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$http', 
 			});
 		};
 
-		
+		$scope.open = function (size) {
+			var modalInstance = $modal.open({
+			  animation: true,
+			  templateUrl: 'modules/plans/views/plan-modal.html',
+			  controller: 'PlansController',
+			  size: size,
+			  resolve: {
+			    items: function () {
+			      return $scope.items;
+			    },
+			    plans: function () {
+			    	return $scope.plans;
+			    },
+			    authentication: function () {
+			    	return $scope.authentication;
+			    }
+			  }
+			});
+
+			modalInstance.result.then(function (plans) {
+				$scope.plans = plans;  
+			}, function () {
+
+			});
+		};
 	}
 
 ]);
