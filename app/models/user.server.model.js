@@ -90,8 +90,7 @@ var UserSchema = new Schema({
 		type: Date
 	},
 	lastChapter: {
-		type: Schema.ObjectId,
-		ref: 'Chapter'
+		type: String
 	},
 	plans: [{
 		type: Schema.ObjectId,

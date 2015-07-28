@@ -31,7 +31,6 @@ angular.module('plans').controller('PlansControllerCrud', ['$scope', '$modal', '
 			var plan = $scope.plan;
 
 			plan.$update(function() {
-				$location.path('plans/' + plan._id);
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});

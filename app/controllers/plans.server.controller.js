@@ -6,6 +6,7 @@
 var mongoose = require('mongoose'),
 	errorHandler = require('./errors.server.controller'),
 	Plan = mongoose.model('Plan'),
+	Chapter = mongoose.model('Chapter'),
 	_ = require('lodash');
 
 /**
@@ -79,6 +80,22 @@ exports.list = function(req, res) {
 			});
 		} else {
 			res.jsonp(plans);
+		}
+	});
+};
+
+/**
+ * List of Chapters read today in this Plan
+ */
+exports.readToday = function(req, res) { 
+	
+	var chapters = Chapter.find({plan: req.plan._id}).sort('-created').exec(function(err, plans) {
+		if (err) {
+			return res.status(400).send({
+				message: errorHandler.getErrorMessage(err)
+			});
+		} else {
+			res.jsonp(chapters);
 		}
 	});
 };

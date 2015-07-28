@@ -7,6 +7,10 @@ var mongoose = require('mongoose'),
 	Reference = require('biblejs').Reference,
 	errorHandler = require('./errors.server.controller'),
 	Chapter = mongoose.model('Chapter'),
+	request = require('request'),
+	http = require('http'),
+	https = require('https'),
+	q = require('q'),
 	_ = require('lodash');
 
 /**
@@ -144,6 +148,66 @@ exports.getNextChapter = function(req, res) {
 		// code here to split up the chapter into blocks of 30 and return an array
 		res.jsonp(result);
 	} catch(err) {
+		return res.status(400).send({
+			message: errorHandler.getErrorMessage(err)
+		});
+	}
+};
+
+function callRCV (params) {
+	var deferred = q.defer();
+	http.get('https://api.lsm.org/recver.php', {params: params}, function(res) {
+	  res.on('data', function(d) {
+	    console.log(d);
+	    deferred.resolve(d);
+	  });
+
+	}).on('error', function(e) {
+	  console.log(e);
+	  deferred.resolve(e);
+	});
+	/*
+	request({uri: 'https://api.lsm.org/recver.php', qs: params}, function(error, response, body) {
+		console.log('Header: ' + response);
+		if (!error) {
+			deferred.resolve(body);
+		} else {
+			deferred.resolve(error);
+		}
+	});*/
+	return deferred.promise;	
+	
+}
+
+exports.reference = function(req, res) {
+	try {
+		if (req.query.chapterNumber) {
+			var chapterNumber = +req.query.chapterNumber;
+			var refString = Reference.fromChapterId(chapterNumber).toString();
+			res.jsonp(refString);
+		} else if (req.query.chapterName) {
+			var increment = +req.query.increment;
+			var newChapterId = new Reference(req.query.chapterName).toChapterId() + increment;
+			var newRefString = Reference.fromChapterId(newChapterId).toString();
+			var verses = Reference.versesInChapterId(newChapterId);
+			var result = [];
+
+			// push chunks of 30 verses onto the array
+			for (var i=1; i <= Math.floor(verses/30); i++){
+				result.push(newRefString + ':' + ((i-1)*30+1) + '-' + (i * 30));
+			}	
+
+			// take care of the chunk less than 30
+			if (verses % 30  > 0) {
+				var counter = Math.floor(verses/30) * 30;
+				result.push(newRefString + ':' + (counter + 1) + '-' + (counter + verses % 30));
+			}
+			
+			// code here to split up the chapter into blocks of 30 and return an array
+			res.jsonp(result);
+		}
+	} catch(err) {
+		console.error(errorHandler.getErrorMessage(err));
 		return res.status(400).send({
 			message: errorHandler.getErrorMessage(err)
 		});

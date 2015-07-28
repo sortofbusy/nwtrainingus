@@ -9,6 +9,9 @@ module.exports = function(app) {
 		.get(plans.list)
 		.post(users.requiresLogin, plans.create);
 
+	app.route('/plans/:planId/today')
+		.get(plans.readToday);
+
 	app.route('/plans/:planId')
 		.get(plans.read)
 		.put(users.requiresLogin, plans.hasAuthorization, plans.update)

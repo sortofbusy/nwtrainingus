@@ -8,9 +8,31 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			$scope.user = new Users(response.data);
 		});
 		$scope.readingMode = false;
+		$scope.planSegment = 0;
 		$scope.plans = Plans.query({ 
 			user: $scope.authentication.user._id
 		});
+
+		$scope.beginPlanPortion = function() {
+			//check for day
+			//$scope.plans[i].$update({startedPortion: new Date(Date.now()), portionEnd})
+			$scope.chaptersToday = $scope.plans[0].$readToday();
+			
+			$scope.readingPace = 0;
+			var i = $scope.planSegment;
+			var chaptersInPortion = [];
+			$scope.readingPace += $scope.plans[i].pace;
+			for (var p = 0; p < $scope.plans[i].pace; p++) {
+				if (p + $scope.plans[i].cursor < $scope.plans[i].endChapter) 
+					chaptersInPortion.push(p + $scope.plans[i].cursor);
+			}
+			$scope.chaptersInPortion = chaptersInPortion;
+			$http.get('/reference', {params: { chapterNumber: chaptersInPortion[0]}}).then(function(response) {
+				$scope.currentChapter = response.data;
+				$scope.moveChapter(0);
+			});
+			$scope.find();
+		};
 
 		// Create new Chapter
 		$scope.create = function(name) {
@@ -23,7 +45,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 				$scope.alerts = [];
 				// Redirect after save
 				chapter.$save(function(response) {
-					$scope.user.lastChapter = response._id;
+					$scope.user.lastChapter = response.name;
 					$scope.user.$update(function(response) {
 						$scope.currentChapter = response.name;
 					}, function(errorResponse) {
@@ -75,6 +97,15 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		$scope.find = function(userId) {
 			if(!userId) userId = $scope.authentication.user._id;
 			$scope.chapters = Chapters.query({user: userId});
+			
+			/*
+			var d = new Date(Date.now());
+			var year = d.getFullYear();
+			var month = d.getMonth();
+			var day = d.getDate();
+			console.log(new Date(year, month, day));
+			$scope.chaptersToday = Chapters.query({created: {'lte': new Date(year, month, 25)}});
+			*/
 		};
 
 		$scope.moveChapter = function(increment) {
@@ -82,43 +113,45 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			// IF we are in readingMode, the current chapter is unsaved, so save it
 			if ($scope.readingMode && increment === 1) {
 				$scope.create($scope.currentChapter).then( function() {
-					$scope.getChapterText($scope.user.lastChapter, increment);
+					$scope.getChapterText($scope.currentChapter, increment);
 				}, function (err) {
 
 				});
 
-			} else $scope.getChapterText($scope.user.lastChapter, increment);
+			} else $scope.getChapterText($scope.currentChapter, increment);
 			
 		};
 
-		$scope.getChapterText = function(chapterId, increment) {
+		$scope.getChapterText = function(chapterName, increment) {
 			$scope.readingMode = true;
-			$scope.getRCVText(chapterId, increment).then(function (result) {
+			$scope.getRCVText(chapterName, increment).then(function (result) {
+			    console.log(result);
 			    $scope.currentChapter = result[0].data.verses[0].ref.split(':')[0];
 				$scope.chapterTextArray = result;
 			});
 		};
 
-		$scope.getRCVText = function(chapterId, increment) {
+		$scope.getRCVText = function(chapterName, increment) {
 			return $q(function(resolve) {
-			$http.get('/chapters/' + chapterId + '/next', {params: {increment: increment}})
-				.then(
-					function (response) {
-						var calls = [];
-						for(var i =0; i < response.data.length; i++) {
-							
-							var lsmApiConfig = {
-							  params: {
-							    String: response.data[i],
-							    Out: 'json'
-							  }
-							};
-							calls.push($http.get('http://api.lsm.org/recver.php', lsmApiConfig)); // second call - call LSM API
-						}
-						$q.all(calls).then( function(arrayOfResults) {
-							resolve(arrayOfResults);
+				$http.get('/reference', {params: { chapterName: chapterName, increment: increment}})
+					.then(					
+						function (response) {
+							var calls = [];
+							for(var i =0; i < response.data.length; i++) {
+								
+								var lsmApiConfig = {
+								  params: {
+								    String: response.data[i],
+								    Out: 'json'
+								  }
+								};
+								calls.push($http.get('https://api.lsm.org/recver.php', lsmApiConfig)); // second call - call LSM API
+							}
+							$q.all(calls).then( function(arrayOfResults) {
+								resolve(arrayOfResults);
+							});
 						});
-					});
+				
 			});
 		};
 
@@ -129,9 +162,6 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			  controller: 'PlansController',
 			  size: size,
 			  resolve: {
-			    items: function () {
-			      return $scope.items;
-			    },
 			    plans: function () {
 			    	return $scope.plans;
 			    },
@@ -142,7 +172,11 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			});
 
 			modalInstance.result.then(function (plans) {
-				$scope.plans = plans;  
+				$scope.plans = plans;
+				if(plans) {
+					$scope.beginPlanPortion();
+				}
+
 			}, function () {
 
 			});

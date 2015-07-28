@@ -8,9 +8,9 @@ angular.module('plans').factory('Plans', ['$resource',
 			update: {
 				method: 'PUT'
 			},
-			saveAll: {
-				method: 'POST',
-				isArray: true
+			readToday: {
+				method: 'GET',
+				url: 'plans/:planId/today'
 			}
 		});
 	}

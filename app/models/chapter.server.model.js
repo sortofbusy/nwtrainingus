@@ -26,7 +26,11 @@ var ChapterSchema = new Schema({
 	},
 	book: Number,
 	chapter: Number,
-	verse: Number
+	verse: Number,
+	plan: {
+		type: Schema.ObjectId,
+		ref: 'Plan'
+	}
 });
 
 mongoose.model('Chapter', ChapterSchema);

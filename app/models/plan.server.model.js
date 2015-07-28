@@ -42,6 +42,12 @@ var PlanSchema = new Schema({
 	pace: {
 		type: Number,
 		min: 1
+	},
+	startedPortion: {
+		type: Date
+	},
+	portionEnd: {
+		type: Number
 	}
 });
 

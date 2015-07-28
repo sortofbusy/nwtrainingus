@@ -49,6 +49,7 @@
 				</div>
 				<div class="col-md-2 h4 pull-right" data-ng-show="chapters.length">
 					Last chapter read: <b>{{chapters[0].name}}</b>
+					{{chaptersToday}}
 				</div>
 				<chasing-dots-spinner></chasing-dots-spinner>
 			</div>
@@ -60,10 +61,12 @@
 			</div>
 		</div>
 		<state-loading-indicator></state-loading-indicator><!-- displays loading spinner -->
-		{{plans}}
+		<div class="row text-center">
+			<button class="btn btn-warning col-md-4" data-ng-show="plans" data-ng-click="beginPlanPortion()">Read today's portion</button>
+		</div>
+		<br>
 		<mydir-show-chapter-text></mydir-show-chapter-text>
 		<mydir-nav-chapter></mydir-nav-chapter>
-		
 		<state-loading-indicator></state-loading-indicator>
 		<form class="form-inline well" data-ng-submit="create()" novalidate>
 			<fieldset>

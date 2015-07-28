@@ -9,6 +9,9 @@ module.exports = function(app) {
 		.get(chapters.list)
 		.post(users.requiresLogin, chapters.create);
 
+	app.route('/reference')
+		.get(chapters.reference);
+
 	app.route('/chapters/user')
 		.get(chapters.listUserChapters);
 
