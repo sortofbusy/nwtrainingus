@@ -89,7 +89,12 @@ exports.list = function(req, res) {
  */
 exports.readToday = function(req, res) { 
 	
-	var chapters = Chapter.find({plan: req.plan._id}).sort('-created').exec(function(err, plans) {
+	var d = new Date(Date.now());
+	var year = d.getFullYear(); 
+	var month = d.getMonth(); // for reference, month is 0-11
+	var date = d.getDate(); // date is the day of month 1-31
+	
+	var chapters = Chapter.find({plan: req.plan._id, created: {'$gte': new Date(year, month, date)}}).sort('-created').exec(function(err, chapters) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

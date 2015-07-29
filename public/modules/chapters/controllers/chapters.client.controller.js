@@ -9,15 +9,19 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		});
 		$scope.readingMode = false;
 		$scope.planSegment = 0;
-		$scope.plans = Plans.query({ 
-			user: $scope.authentication.user._id
-		});
+		$scope.chaptersToday = [];
+		
 
 		$scope.beginPlanPortion = function() {
 			//check for day
 			//$scope.plans[i].$update({startedPortion: new Date(Date.now()), portionEnd})
-			$scope.chaptersToday = $scope.plans[0].$readToday();
-			
+			//if (!$scope.planSegment) $scope.planSegment = 0;
+
+			$http.get('/plans/' + $scope.plans[$scope.planSegment]._id + '/today').then(function(result) {
+				$scope.chaptersToday = result.data;
+				console.log($scope.chaptersToday);
+			});
+
 			$scope.readingPace = 0;
 			var i = $scope.planSegment;
 			var chaptersInPortion = [];
@@ -34,18 +38,60 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			$scope.find();
 		};
 
+		$scope.incrementPlan = function() {
+			var plan = $scope.plans[$scope.planSegment];
+				// increment plan cursor
+			plan.cursor += 1;
+			plan.$update().then(function(response) {
+				console.log('Updated plan: ');
+				console.log(response);
+			}); 
+				// remove the current chapter from list to read
+			$scope.chaptersInPortion.shift(); 
+			//$scope.chaptersToday = $scope.plans[$scope.planSegment].$readToday();
+			
+				//check if portion is complete
+			if($scope.chaptersInPortion.length === 0) {
+				$scope.planSegment += 1;
+				console.log('done reading ' + plan.name + ' today');
+				if ($scope.planSegment === $scope.plans.length) {
+					console.log('all reading plans finished for today!');
+					$scope.planSegment = 0;
+				} else {
+					$scope.beginPlanPortion();
+				}
+				
+			} else {
+				$http.get('/reference', {params: { chapterNumber: $scope.chaptersInPortion[0]}}).then(function(response) {
+					$scope.currentChapter = response.data;
+					$scope.getChapterText($scope.currentChapter, 0);
+				});
+			}
+
+			//if (plan.cursor === ;
+		};
+
 		// Create new Chapter
 		$scope.create = function(name) {
 			return $q(function(resolve) {
 				if (!name) name = $scope.name;
+				
 				// Create new Chapter object
 				var chapter = new Chapters ({
 					name: name
 				});
+					// Add the current reading plan id if present
+				if ($scope.plans) {
+					chapter.plan = $scope.plans[$scope.planSegment]._id;
+				}
+
 				$scope.alerts = [];
 				// Redirect after save
 				chapter.$save(function(response) {
+					console.log('New chapter: ');
+					console.log(response);
 					$scope.user.lastChapter = response.name;
+					
 					$scope.user.$update(function(response) {
 						$scope.currentChapter = response.name;
 					}, function(errorResponse) {
@@ -97,15 +143,9 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		$scope.find = function(userId) {
 			if(!userId) userId = $scope.authentication.user._id;
 			$scope.chapters = Chapters.query({user: userId});
-			
-			/*
-			var d = new Date(Date.now());
-			var year = d.getFullYear();
-			var month = d.getMonth();
-			var day = d.getDate();
-			console.log(new Date(year, month, day));
-			$scope.chaptersToday = Chapters.query({created: {'lte': new Date(year, month, 25)}});
-			*/
+			$scope.plans = Plans.query({ 
+				user: $scope.authentication.user._id
+			});
 		};
 
 		$scope.moveChapter = function(increment) {
@@ -113,7 +153,11 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			// IF we are in readingMode, the current chapter is unsaved, so save it
 			if ($scope.readingMode && increment === 1) {
 				$scope.create($scope.currentChapter).then( function() {
-					$scope.getChapterText($scope.currentChapter, increment);
+					if($scope.plans) {
+						$scope.incrementPlan();
+					} else {
+						$scope.getChapterText($scope.currentChapter, increment);
+					}
 				}, function (err) {
 
 				});
@@ -125,7 +169,6 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		$scope.getChapterText = function(chapterName, increment) {
 			$scope.readingMode = true;
 			$scope.getRCVText(chapterName, increment).then(function (result) {
-			    console.log(result);
 			    $scope.currentChapter = result[0].data.verses[0].ref.split(':')[0];
 				$scope.chapterTextArray = result;
 			});
@@ -174,7 +217,8 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			modalInstance.result.then(function (plans) {
 				$scope.plans = plans;
 				if(plans) {
-					$scope.beginPlanPortion();
+					$scope.planSegment = 0;
+					//$scope.beginPlanPortion();
 				}
 
 			}, function () {

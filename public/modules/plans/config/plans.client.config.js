@@ -1,5 +1,5 @@
 'use strict';
-
+/*
 // Configuring the Articles module
 angular.module('plans').run(['Menus',
 	function(Menus) {
@@ -8,4 +8,4 @@ angular.module('plans').run(['Menus',
 		Menus.addSubMenuItem('topbar', 'plans', 'List Plans', 'plans');
 		Menus.addSubMenuItem('topbar', 'plans', 'New Plan', 'plans/create');
 	}
-]);
+]);*/

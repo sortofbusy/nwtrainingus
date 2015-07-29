@@ -10,7 +10,8 @@ angular.module('plans').factory('Plans', ['$resource',
 			},
 			readToday: {
 				method: 'GET',
-				url: 'plans/:planId/today'
+				url: 'plans/:planId/today',
+				isArray: true
 			}
 		});
 	}

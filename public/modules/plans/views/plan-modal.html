@@ -4,7 +4,7 @@
 			{{plan.name}}
 		</div> 
 		<div class="col-sm-4">
-			<progressbar value="36">36</progressbar>
+			<progressbar value="plan.cursor - plan.startChapter" max="plan.endChapter - plan.startChapter">{{plan.cursor - plan.startChapter}} chapters read</progressbar>
 		</div>
 		<a class="btn btn-small pull-right" data-ng-click="remove(plan);">
 			<i class="glyphicon glyphicon-trash"></i>
