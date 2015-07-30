@@ -13,28 +13,40 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		
 
 		$scope.beginPlanPortion = function() {
-			//check for day
-			//$scope.plans[i].$update({startedPortion: new Date(Date.now()), portionEnd})
-			//if (!$scope.planSegment) $scope.planSegment = 0;
-
+			$scope.readingPace = 0;
+			var chaptersInPortion = [];
+			
+			//check for chapters read in this plan segment today
+			
 			$http.get('/plans/' + $scope.plans[$scope.planSegment]._id + '/today').then(function(result) {
 				$scope.chaptersToday = result.data;
 				console.log($scope.chaptersToday);
+				var i = $scope.planSegment;
+					//if less than {pace} chapters have been read today
+				if (result.data.length < $scope.plans[i].pace) {
+					$scope.readingPace += $scope.plans[i].pace;
+						//fill in the amount of chapters in {pace} minus what's already read
+					for (var p = 0; p < $scope.plans[i].pace - result.data.length; p++) {
+							//if we're not at the end of the plan, add a chapter
+						if (p + $scope.plans[i].cursor < $scope.plans[i].endChapter) 
+							chaptersInPortion.push(p + $scope.plans[i].cursor);
+					}
+					$scope.chaptersInPortion = chaptersInPortion;
+					
+					// if the plan segment has already been read today.
+				} else {
+					for (var k = $scope.plans[i].cursor; k <= $scope.plans[i].endChapter; k++) {
+						chaptersInPortion.push(k);
+					}
+					$scope.chaptersInPortion = chaptersInPortion;
+				}
+					//load the text of the first chapter
+				$http.get('/reference', {params: { chapterNumber: chaptersInPortion[0]}}).then(function(response) {
+					$scope.currentChapter = response.data;
+					$scope.moveChapter(0);
+				});
 			});
 
-			$scope.readingPace = 0;
-			var i = $scope.planSegment;
-			var chaptersInPortion = [];
-			$scope.readingPace += $scope.plans[i].pace;
-			for (var p = 0; p < $scope.plans[i].pace; p++) {
-				if (p + $scope.plans[i].cursor < $scope.plans[i].endChapter) 
-					chaptersInPortion.push(p + $scope.plans[i].cursor);
-			}
-			$scope.chaptersInPortion = chaptersInPortion;
-			$http.get('/reference', {params: { chapterNumber: chaptersInPortion[0]}}).then(function(response) {
-				$scope.currentChapter = response.data;
-				$scope.moveChapter(0);
-			});
 			$scope.find();
 		};
 
@@ -144,7 +156,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			if(!userId) userId = $scope.authentication.user._id;
 			$scope.chapters = Chapters.query({user: userId});
 			$scope.plans = Plans.query({ 
-				user: $scope.authentication.user._id
+				user: userId
 			});
 		};
 
