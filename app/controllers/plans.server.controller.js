@@ -38,11 +38,20 @@ exports.read = function(req, res) {
  */
 exports.update = function(req, res) {
 	var plan = req.plan ;
+	
+		//replace populated chapters with only _ids
+	if (plan.chapters) {
+		for (var i = 0; i < req.body.chapters.length - 1; i++) {
+			req.body.chapters[i] = req.body.chapters[i]._id;
+		}
+		plan.chapters = [];
+	}
 
 	plan = _.extend(plan , req.body);
-
+	
 	plan.save(function(err) {
 		if (err) {
+			console.log(err);
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
@@ -73,7 +82,15 @@ exports.delete = function(req, res) {
  * List of Plans
  */
 exports.list = function(req, res) { 
-	Plan.find().sort('-created').populate('user', 'displayName').exec(function(err, plans) {
+	var d = new Date(Date.now());
+	var year = d.getFullYear(); 
+	var month = d.getMonth(); // for reference, month is 0-11
+	var date = d.getDate(); // date is the day of month 1-31
+	
+	Plan.find().sort('-created').populate({
+			path: 'chapters',
+			match:  {created: {'$gte': new Date(year, month, date)}}
+		}).exec(function(err, plans) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

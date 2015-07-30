@@ -43,12 +43,10 @@ var PlanSchema = new Schema({
 		type: Number,
 		min: 1
 	},
-	startedPortion: {
-		type: Date
-	},
-	portionEnd: {
-		type: Number
-	}
+	chapters: [{
+		type: Schema.ObjectId,
+		ref: 'Chapter'
+	}]
 });
 
 mongoose.model('Plan', PlanSchema);

@@ -41,19 +41,20 @@
 	<div data-ng-controller="ChaptersController" data-ng-init="find()" data-ng-show="authentication.user">
 		<!--<div class="jumbotron text-center">-->
 			<div class="row">
-				<div class="col-md-6 pull-left">
-					<i class="fa fa-book fa-2x"></i> <span class="h4">Read the Bible!</span>
+				<div class="col-md-12 pull-left" data-ng-show="plans">
+					<tabset vertical="true" type ="pills">
+						<tab data-ng-repeat="plan in plans" heading="{{plan.name}}" active="plansTabs[$index]" data-ng-click="changePlan($index)">
+							<b>Progress:</b> {{plan.chapters.length}} / {{plan.pace}} chapters read today 
+							<progressbar value="plan.chapters.length" max="plan.pace"></progressbar>
+						</tab>
 				</div>
 				<div class="col-md-2 h4 pull-right">
 					<button class="btn btn-default" ng-click="open()">Reading Plan</button>
 				</div>
 				<div class="col-md-2 h4 pull-right" data-ng-show="chapters.length">
 					Last chapter read: <b>{{chapters[0].name}}</b>
-					
 					<br>
-					Chapters in Portion: {{chaptersInPortion}}
 				</div>
-				<chasing-dots-spinner></chasing-dots-spinner>
 			</div>
 		<!--</div>-->	
 		

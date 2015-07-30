@@ -10,6 +10,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		$scope.readingMode = false;
 		$scope.planSegment = 0;
 		$scope.chaptersToday = [];
+		$scope.plansTabs = [];
 		
 
 		$scope.beginPlanPortion = function() {
@@ -20,13 +21,15 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			
 			$http.get('/plans/' + $scope.plans[$scope.planSegment]._id + '/today').then(function(result) {
 				$scope.chaptersToday = result.data;
-				console.log($scope.chaptersToday);
 				var i = $scope.planSegment;
+				var planChaptersReadToday = $scope.plans[i].chapters ? $scope.plans[i].chapters.length : 0;
+				console.log($scope.chaptersToday);
+				
 					//if less than {pace} chapters have been read today
-				if (result.data.length < $scope.plans[i].pace) {
+				if (planChaptersReadToday < $scope.plans[i].pace) {
 					$scope.readingPace += $scope.plans[i].pace;
 						//fill in the amount of chapters in {pace} minus what's already read
-					for (var p = 0; p < $scope.plans[i].pace - result.data.length; p++) {
+					for (var p = 0; p < $scope.plans[i].pace - planChaptersReadToday; p++) {
 							//if we're not at the end of the plan, add a chapter
 						if (p + $scope.plans[i].cursor < $scope.plans[i].endChapter) 
 							chaptersInPortion.push(p + $scope.plans[i].cursor);
@@ -52,12 +55,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 
 		$scope.incrementPlan = function() {
 			var plan = $scope.plans[$scope.planSegment];
-				// increment plan cursor
-			plan.cursor += 1;
-			plan.$update().then(function(response) {
-				console.log('Updated plan: ');
-				console.log(response);
-			}); 
+			
 				// remove the current chapter from list to read
 			$scope.chaptersInPortion.shift(); 
 			//$scope.chaptersToday = $scope.plans[$scope.planSegment].$readToday();
@@ -83,6 +81,11 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			//if (plan.cursor === ;
 		};
 
+		$scope.changePlan = function(index) {
+			$scope.planSegment = index;
+			$scope.beginPlanPortion();
+		};
+
 		// Create new Chapter
 		$scope.create = function(name) {
 			return $q(function(resolve) {
@@ -100,8 +103,14 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 				$scope.alerts = [];
 				// Redirect after save
 				chapter.$save(function(response) {
-					console.log('New chapter: ');
-					console.log(response);
+					if($scope.plans) {
+						var plan = $scope.plans[$scope.planSegment];
+							// increment plan cursor, add chapter to plan.chapters
+						plan.cursor += 1;
+						plan.chapters.push(response._id);
+						plan.$update();
+					}
+
 					$scope.user.lastChapter = response.name;
 					
 					$scope.user.$update(function(response) {
@@ -155,8 +164,17 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		$scope.find = function(userId) {
 			if(!userId) userId = $scope.authentication.user._id;
 			$scope.chapters = Chapters.query({user: userId});
-			$scope.plans = Plans.query({ 
+			Plans.query({ 
 				user: userId
+			}, function(plans) {
+				console.log(plans);
+				$scope.plans = plans;
+				if (plans) {
+					$scope.plansTabs[$scope.planSegment] = true;
+					$http.get('/plans/' + plans[$scope.planSegment]._id + '/today').then(function(result) {
+						$scope.chaptersToday = result.data;
+					});
+				}
 			});
 		};
 
