@@ -17,37 +17,31 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			$scope.readingPace = 0;
 			var chaptersInPortion = [];
 			
-			//check for chapters read in this plan segment today
+			var i = $scope.planSegment;
+			var planChaptersReadToday = $scope.plans[i].chapters ? $scope.plans[i].chapters.length : 0;
 			
-			$http.get('/plans/' + $scope.plans[$scope.planSegment]._id + '/today').then(function(result) {
-				$scope.chaptersToday = result.data;
-				var i = $scope.planSegment;
-				var planChaptersReadToday = $scope.plans[i].chapters ? $scope.plans[i].chapters.length : 0;
-				console.log($scope.chaptersToday);
-				
-					//if less than {pace} chapters have been read today
-				if (planChaptersReadToday < $scope.plans[i].pace) {
-					$scope.readingPace += $scope.plans[i].pace;
-						//fill in the amount of chapters in {pace} minus what's already read
-					for (var p = 0; p < $scope.plans[i].pace - planChaptersReadToday; p++) {
-							//if we're not at the end of the plan, add a chapter
-						if (p + $scope.plans[i].cursor < $scope.plans[i].endChapter) 
-							chaptersInPortion.push(p + $scope.plans[i].cursor);
-					}
-					$scope.chaptersInPortion = chaptersInPortion;
-					
-					// if the plan segment has already been read today.
-				} else {
-					for (var k = $scope.plans[i].cursor; k <= $scope.plans[i].endChapter; k++) {
-						chaptersInPortion.push(k);
-					}
-					$scope.chaptersInPortion = chaptersInPortion;
+				//if less than {pace} chapters have been read today
+			if (planChaptersReadToday < $scope.plans[i].pace) {
+				$scope.readingPace += $scope.plans[i].pace;
+					//fill in the amount of chapters in {pace} minus what's already read
+				for (var p = 0; p < $scope.plans[i].pace - planChaptersReadToday; p++) {
+						//if we're not at the end of the plan, add a chapter
+					if (p + $scope.plans[i].cursor < $scope.plans[i].endChapter) 
+						chaptersInPortion.push(p + $scope.plans[i].cursor);
 				}
-					//load the text of the first chapter
-				$http.get('/reference', {params: { chapterNumber: chaptersInPortion[0]}}).then(function(response) {
-					$scope.currentChapter = response.data;
-					$scope.moveChapter(0);
-				});
+				$scope.chaptersInPortion = chaptersInPortion;
+				
+				// if the plan segment has already been read today.
+			} else {
+				for (var k = $scope.plans[i].cursor; k <= $scope.plans[i].endChapter; k++) {
+					chaptersInPortion.push(k);
+				}
+				$scope.chaptersInPortion = chaptersInPortion;
+			}
+				//load the text of the first chapter
+			$http.get('/reference', {params: { chapterNumber: chaptersInPortion[0]}}).then(function(response) {
+				$scope.currentChapter = response.data;
+				$scope.moveChapter(0);
 			});
 
 			$scope.find();
@@ -58,7 +52,6 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			
 				// remove the current chapter from list to read
 			$scope.chaptersInPortion.shift(); 
-			//$scope.chaptersToday = $scope.plans[$scope.planSegment].$readToday();
 			
 				//check if portion is complete
 			if($scope.chaptersInPortion.length === 0) {
@@ -167,14 +160,9 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			Plans.query({ 
 				user: userId
 			}, function(plans) {
-				console.log(plans);
+				console.log(plans[$scope.planSegment].chapters);
 				$scope.plans = plans;
-				if (plans) {
-					$scope.plansTabs[$scope.planSegment] = true;
-					$http.get('/plans/' + plans[$scope.planSegment]._id + '/today').then(function(result) {
-						$scope.chaptersToday = result.data;
-					});
-				}
+				
 			});
 		};
 
