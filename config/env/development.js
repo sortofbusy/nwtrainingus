@@ -3,7 +3,7 @@
 module.exports = {
 	db: 'mongodb://localhost/lettheword-dev',
 	app: {
-		title: 'lettheword - Development Environment'
+		title: 'Eat The Bible - Development Environment'
 	},
 	facebook: {
 		clientID: process.env.FACEBOOK_ID || 'APP_ID',
