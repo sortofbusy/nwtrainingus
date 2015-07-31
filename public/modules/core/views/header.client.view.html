@@ -6,7 +6,7 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		<a href="/#!/" class="navbar-brand">lettheword</a>
+		<a href="/#!/" class="navbar-brand">Eat The Bible</a>
 	</div>
 	<nav class="collapse navbar-collapse" collapse="!isCollapsed" role="navigation">
 		<ul class="nav navbar-nav" data-ng-if="menu.shouldRender(authentication.user);">
@@ -33,6 +33,9 @@
 			</li>
 		</ul>
 		<ul class="nav navbar-nav navbar-right" data-ng-show="authentication.user">
+			<li>
+				<a><i class="fa fa-cog"></i></a>
+			</li>
 			<li dropdown>
 				<a href="#" dropdown-toggle>
 					<span data-ng-bind="authentication.user.displayName"></span> <b class="caret"></b>

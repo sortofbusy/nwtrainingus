@@ -41,19 +41,16 @@
 	<div data-ng-controller="ChaptersController" data-ng-init="find()" data-ng-show="authentication.user">
 		<!--<div class="jumbotron text-center">-->
 			<div class="row">
-				<div class="col-md-12 pull-left" data-ng-show="plans">
+				<div class="col-md-3 pull-left" data-ng-show="plans">
 					<tabset vertical="true" type ="pills">
 						<tab data-ng-repeat="plan in plans" heading="{{plan.name}}" active="plansTabs[$index]" data-ng-click="changePlan($index)">
 							<b>Progress:</b> {{plan.chapters.length}} / {{plan.pace}} chapters read today 
-							<progressbar value="plan.chapters.length" max="plan.pace"></progressbar>
+							<progressbar value="plan.chapters.length" type="success" max="plan.pace"></progressbar>
 						</tab>
+					</tabset>
 				</div>
 				<div class="col-md-2 h4 pull-right">
-					<button class="btn btn-default" ng-click="open()">Reading Plan</button>
-				</div>
-				<div class="col-md-2 h4 pull-right" data-ng-show="chapters.length">
-					Last chapter read: <b>{{chapters[0].name}}</b>
-					<br>
+					<button class="btn btn-default" data-ng-click="open()">Reading Plan</button>
 				</div>
 			</div>
 		<!--</div>-->	
@@ -87,9 +84,5 @@
 				</div>
             </fieldset>
         </form>
-	
-		<div class="well">
-			<h3>You've read <b>{{chapters.length || 0}}</b> chapters so far!</h3>
-		</div>
 	</div>
 </section>
