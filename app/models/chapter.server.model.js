@@ -30,7 +30,8 @@ var ChapterSchema = new Schema({
 	plan: {
 		type: Schema.ObjectId,
 		ref: 'Plan'
-	}
+	},
+	absoluteChapter: Number
 });
 
 mongoose.model('Chapter', ChapterSchema);

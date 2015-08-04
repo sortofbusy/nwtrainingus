@@ -12,6 +12,9 @@ module.exports = function(app) {
 	app.route('/reference')
 		.get(chapters.reference);
 
+	app.route('/range')
+		.get(chapters.range);
+
 	app.route('/chapters/user')
 		.get(chapters.listUserChapters);
 

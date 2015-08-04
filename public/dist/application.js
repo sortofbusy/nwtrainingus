@@ -85,61 +85,80 @@ angular.module('chapters').config(['$stateProvider',
 'use strict';
 
 // Chapters controller
-angular.module('chapters').controller('ChaptersController', ['$scope', '$modal', '$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', '$q', 'Plans',
-	function($scope, $modal, $http, $stateParams, $location, Authentication, Chapters, Users, $q, Plans) {
+angular.module('chapters').controller('ChaptersController', ['$scope', '$modal', '$http', 'cgBusy', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', '$q', 'Plans',
+	function($scope, $modal, $http, cgBusy, $stateParams, $location, Authentication, Chapters, Users, $q, Plans) {
 		$scope.authentication = Authentication;
 		$http.get('/users/me').then(function(response) {
 			$scope.user = new Users(response.data);
 		});
-		$scope.readingMode = false;
 		$scope.planSegment = 0;
 		$scope.chaptersToday = [];
-		
+		$scope.plansTabs = [];
+		$scope.readingMode = false;
+
+				// Initialize controller
+		$scope.init = function() {
+			var userId = $scope.authentication.user._id;
+			$scope.chapters = Chapters.query( {user: userId} );
+			Plans.query({ 
+				user: userId
+			}, function(plans) {
+				$scope.plans = plans;
+				if(plans.length)
+					$scope.beginPlanPortion();
+			});
+		};
 
 		$scope.beginPlanPortion = function() {
-			//check for day
-			//$scope.plans[i].$update({startedPortion: new Date(Date.now()), portionEnd})
-			//if (!$scope.planSegment) $scope.planSegment = 0;
-
-			$http.get('/plans/' + $scope.plans[$scope.planSegment]._id + '/today').then(function(result) {
-				$scope.chaptersToday = result.data;
-				console.log($scope.chaptersToday);
-			});
-
 			$scope.readingPace = 0;
-			var i = $scope.planSegment;
 			var chaptersInPortion = [];
-			$scope.readingPace += $scope.plans[i].pace;
-			for (var p = 0; p < $scope.plans[i].pace; p++) {
-				if (p + $scope.plans[i].cursor < $scope.plans[i].endChapter) 
-					chaptersInPortion.push(p + $scope.plans[i].cursor);
+			
+			var i = $scope.planSegment;
+			var planChaptersReadToday = $scope.plans[i].chapters ? $scope.plans[i].chapters.length : 0;
+			
+				//if less than {pace} chapters have been read today
+			if (planChaptersReadToday < $scope.plans[i].pace) {
+				$scope.readingPace += $scope.plans[i].pace;
+					//fill in the amount of chapters in {pace} minus what's already read
+				for (var p = 0; p < $scope.plans[i].pace - planChaptersReadToday; p++) {
+						//if we're not at the end of the plan, add a chapter
+					if (p + $scope.plans[i].cursor < $scope.plans[i].endChapter) 
+						chaptersInPortion.push(p + $scope.plans[i].cursor);
+				}
+				$scope.chaptersInPortion = chaptersInPortion;
+				
+				// if the plan segment has already been read today.
+			} else {
+				for (var k = $scope.plans[i].cursor; k <= $scope.plans[i].endChapter; k++) {
+					chaptersInPortion.push(k);
+				}
+				$scope.chaptersInPortion = chaptersInPortion;
 			}
-			$scope.chaptersInPortion = chaptersInPortion;
+				//load the text of the first chapter
 			$http.get('/reference', {params: { chapterNumber: chaptersInPortion[0]}}).then(function(response) {
 				$scope.currentChapter = response.data;
 				$scope.moveChapter(0);
 			});
+
 			$scope.find();
 		};
 
 		$scope.incrementPlan = function() {
 			var plan = $scope.plans[$scope.planSegment];
-				// increment plan cursor
-			plan.cursor += 1;
-			plan.$update().then(function(response) {
-				console.log('Updated plan: ');
-				console.log(response);
-			}); 
+			
 				// remove the current chapter from list to read
 			$scope.chaptersInPortion.shift(); 
-			//$scope.chaptersToday = $scope.plans[$scope.planSegment].$readToday();
 			
 				//check if portion is complete
 			if($scope.chaptersInPortion.length === 0) {
 				$scope.planSegment += 1;
+				$scope.plansTabs[$scope.planSegment] = true;
 				console.log('done reading ' + plan.name + ' today');
 				if ($scope.planSegment === $scope.plans.length) {
 					console.log('all reading plans finished for today!');
+					///////
+					// Show a 'keep reading' button
+					//////
 					$scope.planSegment = 0;
 				} else {
 					$scope.beginPlanPortion();
@@ -155,9 +174,15 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			//if (plan.cursor === ;
 		};
 
+		$scope.changePlan = function(index) {
+			$scope.planSegment = index;
+			$scope.plansTabs[$scope.planSegment] = true;
+			$scope.beginPlanPortion();
+		};
+
 		// Create new Chapter
 		$scope.create = function(name) {
-			return $q(function(resolve) {
+			$scope.textPromise = $q(function(resolve) {
 				if (!name) name = $scope.name;
 				
 				// Create new Chapter object
@@ -172,8 +197,14 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 				$scope.alerts = [];
 				// Redirect after save
 				chapter.$save(function(response) {
-					console.log('New chapter: ');
-					console.log(response);
+					if($scope.plans) {
+						var plan = $scope.plans[$scope.planSegment];
+							// increment plan cursor, add chapter to plan.chapters
+						plan.cursor += 1;
+						plan.chapters.push(response._id);
+						plan.$update();
+					}
+
 					$scope.user.lastChapter = response.name;
 					
 					$scope.user.$update(function(response) {
@@ -194,6 +225,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 					resolve();
 				});
 			});
+			return $scope.textPromise;
 		};
 
 		// Remove existing Chapter
@@ -227,8 +259,12 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		$scope.find = function(userId) {
 			if(!userId) userId = $scope.authentication.user._id;
 			$scope.chapters = Chapters.query({user: userId});
-			$scope.plans = Plans.query({ 
-				user: $scope.authentication.user._id
+			Plans.query({ 
+				user: userId
+			}, function(plans) {
+				console.log(plans[$scope.planSegment].chapters);
+				$scope.plans = plans;
+				
 			});
 		};
 
@@ -282,7 +318,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			});
 		};
 
-		$scope.open = function (size) {
+		$scope.openPlansModal = function (size) {
 			var modalInstance = $modal.open({
 			  animation: true,
 			  templateUrl: 'modules/plans/views/plan-modal.html',
@@ -302,7 +338,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 				$scope.plans = plans;
 				if(plans) {
 					$scope.planSegment = 0;
-					//$scope.beginPlanPortion();
+					$scope.beginPlanPortion();
 				}
 
 			}, function () {

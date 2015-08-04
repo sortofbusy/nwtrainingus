@@ -16,9 +16,11 @@ module.exports = {
 				'public/lib/bootstrap/dist/css/bootstrap.css',
 				'public/lib/bootstrap/dist/css/bootstrap-theme.css',
 				'public/lib/fontawesome/css/font-awesome.min.css',
+				'public/lib/angular-busy/dist/angular-busy.css',
 			],
 			js: [
 				'public/lib/angular/angular.js',
+				'public/lib/angular-busy/dist/angular-busy.js',
 				'public/lib/angular-resource/angular-resource.js', 
 				'public/lib/angular-cookies/angular-cookies.js', 
 				'public/lib/angular-touch/angular-touch.js', 

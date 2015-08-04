@@ -19,16 +19,28 @@ var mongoose = require('mongoose'),
 exports.create = function(req, res) {
 	var chapter = new Chapter(req.body);
 	chapter.user = req.user;
-	try {
-		var ref = new Reference(chapter.name);
-		chapter.name = ref.toString().split(':')[0];
-		chapter = _.extend(chapter, ref);
-		console.log(chapter);
-	} catch(err) {
-		return res.status(400).send({
-			message: errorHandler.getErrorMessage(err)
-		});
+
+		// if the chapter is passed with a chapter number, find and set the chapter name
+	if (req.body.absoluteChapter) {
+		try {
+			chapter.name = Reference.fromChapterId(req.body.absoluteChapter).toString();
+		} catch(err) {
+			return res.status(400).send({
+				message: errorHandler.getErrorMessage(err)
+			});
+		}
+		// if the chapter number is not present, assume there's a name passed
+	} else {
+		try {
+			var ref = new Reference(chapter.name);
+			chapter.name = ref.toString().split(':')[0];
+		} catch(err) {
+			return res.status(400).send({
+				message: errorHandler.getErrorMessage(err)
+			});
+		}
 	}
+		// finally, save the chapter
 	chapter.save(function(err) {
 		if (err) {
 			return res.status(400).send({
@@ -112,7 +124,7 @@ exports.listUserChapters = function(req, res) {
 		params = '{ user: ObjectId("' + req.user._id + '")}'; 
 	}
 
-	Chapter.find().sort('-created').populate('user', 'displayName').exec(function(err, chapters) {
+	Chapter.find(params).sort('-created').populate('user', 'displayName').exec(function(err, chapters) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -205,6 +217,27 @@ exports.reference = function(req, res) {
 			
 			// code here to split up the chapter into blocks of 30 and return an array
 			res.jsonp(result);
+		}
+	} catch(err) {
+		console.error(errorHandler.getErrorMessage(err));
+		return res.status(400).send({
+			message: errorHandler.getErrorMessage(err)
+		});
+	}
+};
+
+exports.range = function(req, res) {
+	try {
+		if (req.query.rangeStart && req.query.rangeEnd) {
+			var result = {};
+			var rangeStart = new Reference(req.query.rangeStart).toChapterId();
+			var rangeEnd = new Reference(req.query.rangeEnd).toChapterId();
+			
+			result.rangeStart = rangeStart;
+			result.rangeEnd = rangeEnd;
+			res.jsonp(result);
+		} else {
+			throw new Error('Invalid range supplied.');
 		}
 	} catch(err) {
 		console.error(errorHandler.getErrorMessage(err));
