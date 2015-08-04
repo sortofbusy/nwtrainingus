@@ -3,8 +3,8 @@
 // Some module dependencies in \chapters\chapters.client.module.js
 
 // Chapters controller
-angular.module('chapters').controller('ChaptersController', ['$scope', '$modal', '$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', '$q', 'Plans',
-	function($scope, $modal, $http, $stateParams, $location, Authentication, Chapters, Users, $q, Plans) {
+angular.module('chapters').controller('ChaptersController', ['$scope', '$modal', '$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', '$q', 'Plans', 'BibleText',
+	function($scope, $modal, $http, $stateParams, $location, Authentication, Chapters, Users, $q, Plans, BibleText) {
 		$scope.authentication = Authentication;
 		$http.get('/users/me').then(function(response) {
 			$scope.user = new Users(response.data);
@@ -103,7 +103,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			$scope.textPromise = $q(function(resolve) {
 				
 				// Create new Chapter object
-				var chapter = new Chapters (params);
+				var chapter = new Chapters(params);
 					// Add the current reading plan id if present
 				if ($scope.plans) {
 					chapter.plan = $scope.plans[$scope.planSegment]._id;
@@ -173,33 +173,6 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			$scope.range='';
 		};
 
-		// Remove existing Chapter
-		$scope.remove = function(chapter) {
-			if ( chapter ) { 
-				chapter.$remove();
-
-				for (var i in $scope.chapters) {
-					if ($scope.chapters [i] === chapter) {
-						$scope.chapters.splice(i, 1);
-					}
-				}
-			} else {
-				$scope.chapter.$remove(function() {
-					$location.path('chapters');
-				});
-			}
-		};
-
-		// Update existing Chapter
-		$scope.update = function() {
-			var chapter = $scope.chapter;
-			chapter.$update(function() {
-				$location.path('chapters/' + chapter._id);
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
-
 		// Find a list of Chapters
 		$scope.find = function(userId) {
 			if(!userId) userId = $scope.authentication.user._id;
@@ -221,46 +194,22 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 					if($scope.plans) {
 						$scope.incrementPlan();
 					} else {
-						$scope.getChapterText($scope.currentChapter, increment);
+						BibleText.getChapterText($scope.currentChapter, increment)
+							.then( function(result) {
+								$scope.currentChapter = result[0].data.verses[0].ref.split(':')[0];
+								$scope.chapterTextArray = result;
+							});
 					}
 				}, function (err) {
 
 				});
 
-			} else $scope.getChapterText($scope.currentChapter, increment);
-			
-		};
-
-		$scope.getChapterText = function(chapterName, increment) {
-			$scope.readingMode = true;
-			$scope.getRCVText(chapterName, increment).then(function (result) {
-			    $scope.currentChapter = result[0].data.verses[0].ref.split(':')[0];
-				$scope.chapterTextArray = result;
-			});
-		};
-
-		$scope.getRCVText = function(chapterName, increment) {
-			return $q(function(resolve) {
-				$http.get('/reference', {params: { chapterName: chapterName, increment: increment}})
-					.then(					
-						function (response) {
-							var calls = [];
-							for(var i =0; i < response.data.length; i++) {
-								
-								var lsmApiConfig = {
-								  params: {
-								    String: response.data[i],
-								    Out: 'json'
-								  }
-								};
-								calls.push($http.get('https://api.lsm.org/recver.php', lsmApiConfig)); // second call - call LSM API
-							}
-							$q.all(calls).then( function(arrayOfResults) {
-								resolve(arrayOfResults);
+			} else BibleText.getChapterText($scope.currentChapter, increment)
+							.then( function(result) {
+								$scope.currentChapter = result[0].data.verses[0].ref.split(':')[0];
+								$scope.chapterTextArray = result;
 							});
-						});
-				
-			});
+			
 		};
 
 		$scope.openPlansModal = function (size) {
