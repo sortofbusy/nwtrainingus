@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('chapters').factory('BibleText', [
+angular.module('chapters').factory('BibleText', [ '$q', '$http',
 	function($q, $http) {
 		var getRCVText = function(chapterName, increment) {
 			return $q(function(resolve) {

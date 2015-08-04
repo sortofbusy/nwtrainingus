@@ -44,7 +44,7 @@ angular.element(document).ready(function() {
 'use strict';
 
 // Use applicaion configuration module to register a new module
-ApplicationConfiguration.registerModule('chapters');
+ApplicationConfiguration.registerModule('chapters', ['cgBusy']);
 'use strict';
 
 // Use Applicaion configuration module to register a new module
@@ -84,9 +84,11 @@ angular.module('chapters').config(['$stateProvider',
 ]);
 'use strict';
 
+// Some module dependencies in \chapters\chapters.client.module.js
+
 // Chapters controller
-angular.module('chapters').controller('ChaptersController', ['$scope', '$modal', '$http', 'cgBusy', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', '$q', 'Plans',
-	function($scope, $modal, $http, cgBusy, $stateParams, $location, Authentication, Chapters, Users, $q, Plans) {
+angular.module('chapters').controller('ChaptersController', ['$scope', '$modal', '$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', '$q', 'Plans', 'BibleText',
+	function($scope, $modal, $http, $stateParams, $location, Authentication, Chapters, Users, $q, Plans, BibleText) {
 		$scope.authentication = Authentication;
 		$http.get('/users/me').then(function(response) {
 			$scope.user = new Users(response.data);
@@ -181,21 +183,18 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		};
 
 		// Create new Chapter
-		$scope.create = function(name) {
+		$scope.create = function(params) {
 			$scope.textPromise = $q(function(resolve) {
-				if (!name) name = $scope.name;
 				
 				// Create new Chapter object
-				var chapter = new Chapters ({
-					name: name
-				});
+				var chapter = new Chapters(params);
 					// Add the current reading plan id if present
 				if ($scope.plans) {
 					chapter.plan = $scope.plans[$scope.planSegment]._id;
 				}
 
 				$scope.alerts = [];
-				// Redirect after save
+				
 				chapter.$save(function(response) {
 					if($scope.plans) {
 						var plan = $scope.plans[$scope.planSegment];
@@ -228,31 +227,34 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			return $scope.textPromise;
 		};
 
-		// Remove existing Chapter
-		$scope.remove = function(chapter) {
-			if ( chapter ) { 
-				chapter.$remove();
+		// Create new Chapter
+		$scope.submitChapterRange = function(name) {
+			if(!$scope.range) return;
 
-				for (var i in $scope.chapters) {
-					if ($scope.chapters [i] === chapter) {
-						$scope.chapters.splice(i, 1);
-					}
-				}
+			var range = $scope.range.split('-');
+			
+			var rangeStart = range[0].trim();
+			var rangeEnd = range[1];
+
+			$scope.alerts = [];
+				// if a range was entered
+			if (rangeEnd) {
+				rangeEnd = rangeEnd.trim();
+				$http.get('/range', {params: { rangeStart: rangeStart, rangeEnd: rangeEnd}})
+					.then(function (response) {
+						var calls = [];
+							for(var i= response.data.rangeStart; i < response.data.rangeEnd; i++) {
+								calls.push($scope.create({absoluteChapter: i}));
+							}
+							$q.all(calls);
+					}, function(err) {
+						$scope.alerts.push({type: 'danger', msg: 'Range entry failed.', icon: 'times'});
+					});
+				// if only one chapter was entered
 			} else {
-				$scope.chapter.$remove(function() {
-					$location.path('chapters');
-				});
+				$scope.create({name: rangeStart});
 			}
-		};
-
-		// Update existing Chapter
-		$scope.update = function() {
-			var chapter = $scope.chapter;
-			chapter.$update(function() {
-				$location.path('chapters/' + chapter._id);
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
+			$scope.range='';
 		};
 
 		// Find a list of Chapters
@@ -272,50 +274,26 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			$scope.alerts = [];
 			// IF we are in readingMode, the current chapter is unsaved, so save it
 			if ($scope.readingMode && increment === 1) {
-				$scope.create($scope.currentChapter).then( function() {
+				$scope.create({name: $scope.currentChapter}).then( function() {
 					if($scope.plans) {
 						$scope.incrementPlan();
 					} else {
-						$scope.getChapterText($scope.currentChapter, increment);
+						BibleText.getChapterText($scope.currentChapter, increment)
+							.then( function(result) {
+								$scope.currentChapter = result[0].data.verses[0].ref.split(':')[0];
+								$scope.chapterTextArray = result;
+							});
 					}
 				}, function (err) {
 
 				});
 
-			} else $scope.getChapterText($scope.currentChapter, increment);
-			
-		};
-
-		$scope.getChapterText = function(chapterName, increment) {
-			$scope.readingMode = true;
-			$scope.getRCVText(chapterName, increment).then(function (result) {
-			    $scope.currentChapter = result[0].data.verses[0].ref.split(':')[0];
-				$scope.chapterTextArray = result;
-			});
-		};
-
-		$scope.getRCVText = function(chapterName, increment) {
-			return $q(function(resolve) {
-				$http.get('/reference', {params: { chapterName: chapterName, increment: increment}})
-					.then(					
-						function (response) {
-							var calls = [];
-							for(var i =0; i < response.data.length; i++) {
-								
-								var lsmApiConfig = {
-								  params: {
-								    String: response.data[i],
-								    Out: 'json'
-								  }
-								};
-								calls.push($http.get('https://api.lsm.org/recver.php', lsmApiConfig)); // second call - call LSM API
-							}
-							$q.all(calls).then( function(arrayOfResults) {
-								resolve(arrayOfResults);
+			} else BibleText.getChapterText($scope.currentChapter, increment)
+							.then( function(result) {
+								$scope.currentChapter = result[0].data.verses[0].ref.split(':')[0];
+								$scope.chapterTextArray = result;
 							});
-						});
-				
-			});
+			
 		};
 
 		$scope.openPlansModal = function (size) {
@@ -392,6 +370,46 @@ angular.module('chapters').directive('stateLoadingIndicator', ['$rootScope',
 		        scope.isStateLoading = false;
 		      });
 		    }
+		};
+	}
+]);
+'use strict';
+
+angular.module('chapters', []).factory('BibleText', [
+	function($q, $http) {
+		var getRCVText = function(chapterName, increment) {
+			return $q(function(resolve) {
+				$http.get('/reference', {params: { chapterName: chapterName, increment: increment}})
+					.then(					
+						function (response) {
+							var calls = [];
+							for(var i =0; i < response.data.length; i++) {
+								
+								var lsmApiConfig = {
+								  params: {
+								    String: response.data[i],
+								    Out: 'json'
+								  }
+								};
+								calls.push($http.get('https://api.lsm.org/recver.php', lsmApiConfig)); // second call - call LSM API
+							}
+							$q.all(calls).then( function(arrayOfResults) {
+								resolve(arrayOfResults);
+							});
+						});
+				
+			});
+		};
+
+		// Public API - eventually this will call other providers
+		return {
+			getChapterText: function(chapterName, increment) {
+				return $q(function(resolve) {
+					getRCVText(chapterName, increment).then(function (result) {
+				    	resolve(result);
+					});
+				});
+			}
 		};
 	}
 ]);

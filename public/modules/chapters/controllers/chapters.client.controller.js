@@ -85,7 +85,11 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			} else {
 				$http.get('/reference', {params: { chapterNumber: $scope.chaptersInPortion[0]}}).then(function(response) {
 					$scope.currentChapter = response.data;
-					$scope.getChapterText($scope.currentChapter, 0);
+					$scope.textPromise = BibleText.getChapterText($scope.currentChapter, 0)
+						.then( function(result) {
+								$scope.currentChapter = result[0].data.verses[0].ref.split(':')[0];
+								$scope.chapterTextArray = result;
+							});
 				});
 			}
 
@@ -133,7 +137,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 					
 					// Clear form fields
 					$scope.name = '';
-					$scope.chapterTextArray = null;
+					$scope.chapterTextArray = '';
 					resolve();
 				}, function(errorResponse) {
 					$scope.alerts.push({type: 'danger', msg: 'Chapter entry failed', icon: 'times'});
@@ -194,7 +198,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 					if($scope.plans) {
 						$scope.incrementPlan();
 					} else {
-						BibleText.getChapterText($scope.currentChapter, increment)
+						$scope.textPromise = BibleText.getChapterText($scope.currentChapter, increment)
 							.then( function(result) {
 								$scope.currentChapter = result[0].data.verses[0].ref.split(':')[0];
 								$scope.chapterTextArray = result;
@@ -204,12 +208,12 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 
 				});
 
-			} else BibleText.getChapterText($scope.currentChapter, increment)
+			} else $scope.textPromise = BibleText.getChapterText($scope.currentChapter, increment)
 							.then( function(result) {
 								$scope.currentChapter = result[0].data.verses[0].ref.split(':')[0];
 								$scope.chapterTextArray = result;
 							});
-			
+			$scope.readingMode = true;
 		};
 
 		$scope.openPlansModal = function (size) {

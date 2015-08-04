@@ -65,8 +65,6 @@
 			<button class="btn btn-warning col-md-4" data-ng-show="plans" data-ng-click="beginPlanPortion()">Read today's portion</button>
 		</div>-->
 		<br>
-		<div cg-busy="textPromise"></div>
-		<div cg-busy="{promise:textPromise,message:'Loading',delay:0, minDuration: 500}"></div>
 		<mydir-show-chapter-text data-ng-show="plans.length"></mydir-show-chapter-text>
 		<mydir-nav-chapter data-ng-show="plans.length"></mydir-nav-chapter>
 		
