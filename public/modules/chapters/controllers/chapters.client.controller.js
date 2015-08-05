@@ -26,16 +26,18 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		$scope.beginPlanPortion = function() {
 			$scope.textPromise = ReadingPlan.beginPlanPortion().then( function(response) {
 				$scope.chapterText = response;
+				$scope.find();
 			});
-			$scope.find();
+			
 		};
 
 		$scope.incrementPlan = function() {
 				// advance the reading plan
 			$scope.textPromise = ReadingPlan.incrementPlan().then( function(response) {
 				$scope.chapterText = response;
+				$scope.find();
 			});
-			$scope.find();
+			
 				// set active plan tab to reflect current tab
 			$scope.plansTabs[ReadingPlan.getPlanSegment()] = true;					
 		};
