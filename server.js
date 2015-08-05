@@ -12,8 +12,11 @@ var init = require('./config/init')(),
  * Please note that the order of loading is important.
  */
 
+var options = { server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }, 
+                replset: { socketOptions: { keepAlive: 1, connectTimeoutMS : 30000 } } };       
+
 // Bootstrap db connection
-var db = mongoose.connect(config.db, function(err) {
+var db = mongoose.connect(config.db, options, function(err) {
 	if (err) {
 		console.error(chalk.red('Could not connect to MongoDB!'));
 		console.log(chalk.red(err));

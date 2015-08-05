@@ -10,3 +10,4 @@ app/tests/coverage/
 data/
 node_modules/
 test.*
+lettheword.sublime*

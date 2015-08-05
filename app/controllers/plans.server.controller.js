@@ -47,12 +47,15 @@ exports.update = function(req, res) {
 		plan.chapters = [];
 	}
 	plan = _.extend(plan , req.body);
+	console.log('before');
 	plan.save(function(err) {
 		if (err) {
+			console.log(err);
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
+			console.log('plan update success!');
 			res.jsonp(plan);
 		}
 	});

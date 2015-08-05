@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-	db: 'mongodb://localhost/lettheword-dev',
+	db: process.env.MONGOLAB_URI || 'mongodb://localhost/lettheword-dev',
 	app: {
 		title: 'Eat The Bible - Development Environment'
 	},
