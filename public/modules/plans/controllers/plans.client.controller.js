@@ -110,6 +110,7 @@ angular.module('plans').controller('PlansController', function ($scope, $modalIn
 		];
 
 	$scope.ok = function () {
+		console.log($scope.plans);
 		$modalInstance.close($scope.plans);
 	};
 

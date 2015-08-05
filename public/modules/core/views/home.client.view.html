@@ -55,15 +55,6 @@
 			</div>
 		<!--</div>-->	
 		
-		<div class="panel panel-default" data-ng-hide="chapterTextArray">
-			<div class="panel-heading" data-ng-hide="chapters.length">
-				<h2 class="panel-title" data-ng-hide="chapters.length">Enter a chapter to get started!</h2>
-			</div>
-		</div>
-		<state-loading-indicator></state-loading-indicator><!-- displays loading spinner -->
-		<!--<div class="row text-center">
-			<button class="btn btn-warning col-md-4" data-ng-show="plans" data-ng-click="beginPlanPortion()">Read today's portion</button>
-		</div>-->
 		<br>
 		<mydir-show-chapter-text data-ng-show="plans.length"></mydir-show-chapter-text>
 		<mydir-nav-chapter data-ng-show="plans.length"></mydir-nav-chapter>

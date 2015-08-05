@@ -1,13 +1,13 @@
 <div class="panel panel-default" data-ng-show="plans">
 	<div class="panel-heading" data-ng-show="plans">
-		<h2 class="panel-title">Current chapter: <b>{{currentChapter || "Loading..."}}</b></h2>
+		<h2 class="panel-title">Current chapter: <b>{{chapterText.inputstring}}</b></h2>
 	</div>
 	<div class="panel-body"> 
 		<div cg-busy="textPromise"></div>
 	
-		<div class="lead" data-ng-repeat="chapterText in chapterTextArray">
-			<span data-ng-repeat="verse in chapterText.data.verses"> <sup class="text-muted">{{verse.ref.split(':')[1]}}</sup>{{verse.text}}</span>
+		<div class="lead">
+			<span data-ng-repeat="verse in chapterText.verses"> <sup class="text-muted">{{verse.ref.split(':')[1]}}</sup>{{verse.text}}</span>
 		</div>
-		<small class="text-muted">{{chapterTextArray[0].data.copyright}}</small>
+		<small class="text-muted">{{chapterText.copyright}}</small>
 	</div>
 </div>
