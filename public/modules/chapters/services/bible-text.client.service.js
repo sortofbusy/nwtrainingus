@@ -19,9 +19,7 @@ angular.module('chapters').factory('BibleText', [ '$q', '$http',
 								};
 								calls.push($http.get('https://api.lsm.org/recver.php', lsmApiConfig)); // second call - call LSM API
 							}
-							$q.all(calls).then( function(arrayOfResults) {
-								resolve(arrayOfResults);
-							});
+							resolve($q.all(calls));
 						});
 				
 			});

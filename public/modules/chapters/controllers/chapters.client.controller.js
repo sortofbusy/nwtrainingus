@@ -125,6 +125,16 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			return $sce.trustAsHtml(input);
 		};
 
+		$scope.share = function(input) {
+			var params = {
+				message: input,
+				accessToken: $scope.user.additionalProvidersData.facebook.accessToken,
+			};
+			/*$http.post('https://graph.facebook.com/v2.4/me/feed', params).then(function(response) {
+				console.log(response);
+			});*/
+		};
+
 		$scope.openPlansModal = function (size) {
 			var modalInstance = $modal.open({
 			  animation: true,

@@ -49,38 +49,16 @@ angular.module('plans').controller('PlansControllerCrud', ['$scope', '$modal', '
 				planId: $stateParams.planId
 			});
 		};
-
-		$scope.open = function (size) {
-			var modalInstance = $modal.open({
-			  animation: true,
-			  templateUrl: 'modules/plans/views/plan-modal.html',
-			  controller: 'ModalInstanceCtrl',
-			  size: size,
-			  resolve: {
-			    plans: function () {
-			    	return $scope.plans;
-			    },
-			    authentication: function () {
-			    	return $scope.authentication;
-			    }
-			  }
-			});
-
-			modalInstance.result.then(function (plans) {
-				$scope.plans = plans;  
-			}, function () {
-
-			});
-		};
 	}
 ]);
 
-angular.module('plans').controller('PlansController', function ($scope, $modalInstance, plans, authentication, Plans, $window) {
+angular.module('plans').controller('PlansController', function ($scope, $modalInstance, plans, authentication, Plans, $window, $timeout) {
 	$scope.plans = plans;
 	$scope.authentication = authentication;
 	$scope.selected = {
 		item: null
 	};
+	$scope.alerts = [];
 	$scope.items = [
 			{	name: 'Whole Bible (1 year)',
 				plans: [{
@@ -110,7 +88,6 @@ angular.module('plans').controller('PlansController', function ($scope, $modalIn
 		];
 
 	$scope.ok = function () {
-		console.log($scope.plans);
 		$modalInstance.close($scope.plans);
 	};
 
@@ -118,10 +95,14 @@ angular.module('plans').controller('PlansController', function ($scope, $modalIn
 		$modalInstance.dismiss('cancel');
 	};
 
+	$scope.closeAlert = function(index){
+	    $scope.alerts.splice(index, 1);
+	};
+
 	$scope.myCreate = function(passedPlan) {
 		var plan = new Plans(passedPlan);
 		plan.$save(function(response) {
-			$scope.success = ('Plan saved!');
+			$scope.alerts.push({msg: 'Plan saved!', type: 'success'});
 		}, function(errorResponse) {
 			$scope.error = errorResponse.data.message;
 		});
@@ -136,7 +117,7 @@ angular.module('plans').controller('PlansController', function ($scope, $modalIn
 				}
 			}
 			if (exists) {
-				$scope.error = 'You\'re already using this plan.';
+				$scope.alerts.push({msg: 'You\'re already using this plan.', type: 'danger'});
 			} else {
 				$scope.myCreate(item.plans[i]);
 			}

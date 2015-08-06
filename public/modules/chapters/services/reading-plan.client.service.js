@@ -40,7 +40,6 @@ angular.module('chapters').factory('ReadingPlan', ['$http', '$q', 'BibleText', '
 				return $q( function(resolve) {
 					$http.get('/reference', {params: { chapterNumber: chaptersInPortion[0]}}).then(function(response) {
 							currentChapter = response.data;
-							console.log(currentChapter);
 							resolve(BibleText.getChapterText(currentChapter, 0));
 						});
 				});

@@ -1,28 +1,42 @@
-<div class="modal-header" data-ng-show="plans"><h3>Current Plan:</h3>
-	<div data-ng-repeat="plan in plans" class="row"> 
-		<div class="col-sm-4">
-			{{plan.name}}
-		</div> 
-		<div class="col-sm-4">
-			<progressbar value="plan.cursor - plan.startChapter" max="plan.endChapter - plan.startChapter">{{plan.cursor - plan.startChapter}} chapters read</progressbar>
-		</div>
-		<a class="btn btn-small pull-right" data-ng-click="remove(plan);">
-			<i class="glyphicon glyphicon-trash"></i>
-		</a>
-	</div>
+<div class="modal-header" data-ng-show="plans"><h3>Current Plan(s):</h3>
+	<accordion data-close-others="true" class="info"> 
+		<accordion-group data-ng-repeat="plan in plans">
+			<accordion-heading>
+				{{plan.name}} <b class="caret"></b>
+			</accordion-heading>
+			<div class="row">
+				<div class="col-sm-4">
+					{{plan.cursor - plan.startChapter}} chapters read
+				</div>
+				<div class="col-sm-6">
+					<progressbar value="plan.cursor - plan.startChapter" max="plan.endChapter - plan.startChapter"></progressbar>
+				</div>
+				<a class="btn btn-small pull-right" data-ng-click="remove(plan);">
+					<i class="glyphicon glyphicon-trash"></i>
+				</a>
+			</div>
+			<div class="row">
+				<div class="col-sm-12">
+					<b>Current Position: </b>{{plan.cursor}}
+				</div>
+			</div>
+		</accordion-group>
+	</accordion>
 </div>
     
 <div class="modal-header">
-    <h3 class="modal-title">Select a Reading Plan</h3>
+    <h3 class="modal-title">Add a Plan</h3>
 </div>
 <div class="modal-body">
-    <ul>
-        <li data-ng-repeat="item in items">
-            <a data-ng-click="createMultiple(item)">{{ item.name }}</a>
-        </li>
-    </ul>
-    <alert data-ng-show="error" type="danger" dismiss-on-timeout="500">{{error}}</alert>
-    <alert data-ng-show="success" type="success" dismiss-on-timeout="500">{{success}}</alert>
+    <div>
+        <button class="btn btn-default" style="margin: 5px;" data-ng-repeat="item in items" data-ng-click="createMultiple(item)">
+        	{{ item.name }}
+        </button>
+    </div>
+    <br>
+    <div>
+    	<alert data-ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3000">{{alert.msg}}</alert>
+    </div>
 </div>
 <div class="modal-footer">
     <button class="btn btn-warning" data-ng-click="cancel()">Cancel</button>
