@@ -3,8 +3,8 @@
 // Some module dependencies in \chapters\chapters.client.module.js
 
 // Chapters controller
-angular.module('chapters').controller('ChaptersController', ['$scope', '$modal', '$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', '$q', 'Plans', 'BibleText', 'ReadingPlan',
-	function($scope, $modal, $http, $stateParams, $location, Authentication, Chapters, Users, $q, Plans, BibleText, ReadingPlan) {
+angular.module('chapters').controller('ChaptersController', ['$scope', '$modal', '$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', '$q', 'Plans', 'BibleText', 'ReadingPlan', '$sce',
+	function($scope, $modal, $http, $stateParams, $location, Authentication, Chapters, Users, $q, Plans, BibleText, ReadingPlan, $sce) {
 		$scope.authentication = Authentication;
 		$http.get('/users/me').then(function(response) {
 			$scope.user = new Users(response.data);
@@ -119,6 +119,10 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		$scope.moveChapter = function(increment) {
 			$scope.chapterText = null;
 			$scope.create({name: ReadingPlan.getCurrentChapter()});
+		};
+
+		$scope.sceTrust = function(input) {
+			return $sce.trustAsHtml(input);
 		};
 
 		$scope.openPlansModal = function (size) {

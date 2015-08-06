@@ -40,13 +40,12 @@ angular.module('chapters').factory('BibleText', [ '$q', '$http',
 				    		combined.verses = combined.verses.concat(result[i].data.verses);
 				    	}
 				    	
-				    	/*
 				    		// replace chars for HTML output
 				    	for (i = 0; i < combined.verses.length; i++) {
-				    		combined.verses[i].text = combined.verses[i].text.replace('[', '<i>');
-				    		combined.verses[i].text = combined.verses[i].text.replace(']', '</i>');
+				    		combined.verses[i].text = combined.verses[i].text.split('[').join('<i>');
+				    		combined.verses[i].text = combined.verses[i].text.split(']').join('</i>');
 				    	}
-				    	*/
+				    	
 				    	combined.copyright = result[0].data.copyright;
 				    	
 				    	resolve(combined);

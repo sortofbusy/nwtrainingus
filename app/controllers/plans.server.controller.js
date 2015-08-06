@@ -86,8 +86,8 @@ exports.list = function(req, res) {
 	var year = d.getFullYear(); 
 	var month = d.getMonth(); // for reference, month is 0-11
 	var date = d.getDate(); // date is the day of month 1-31
-	
-	Plan.find().sort('-created').populate({
+	var params = req.query;
+	Plan.find(params).sort('-created').populate({
 			path: 'chapters',
 			match:  {created: {'$gte': new Date(year, month, date)}}
 		}).exec(function(err, plans) {
