@@ -52,7 +52,7 @@ angular.module('plans').controller('PlansControllerCrud', ['$scope', '$modal', '
 	}
 ]);
 
-angular.module('plans').controller('PlansController', function ($scope, $modalInstance, plans, authentication, Plans, $window, $timeout) {
+angular.module('plans').controller('PlansController', function ($scope, $modalInstance, plans, authentication, Plans, $window) {
 	$scope.plans = plans;
 	$scope.authentication = authentication;
 	$scope.selected = {

@@ -49,17 +49,26 @@
 						</tab>
 					</tabset>
 				</div>
+				<div class="col-md-4 h2 pull-left" data-ng-hide="plans.length">Choose a reading plan: </div>
 				<div class="col-md-2 h4 pull-right">
-					<button class="btn btn-default" data-ng-click="openPlansModal()">Reading Plan</button>
+					<button class="btn btn-default" data-ng-click="openPlansModal()" >Reading Plan</button>
 				</div>
 			</div>
 		<!--</div>-->	
 		
 		<br>
-		<mydir-show-chapter-text data-ng-show="plans.length"></mydir-show-chapter-text>
-		<mydir-nav-chapter data-ng-show="plans.length"></mydir-nav-chapter>
+		<div class="well" data-ng-show="completed">
+			<div class="h2">
+				You've read all your chapters for today!
+				<button class="btn btn-info btn-lg" data-ng-click="beginPlanPortion()">
+					Keep Reading
+				</button>
+			</div>
+		</div>
+		<mydir-show-chapter-text data-ng-show="plans.length" data-ng-hide="completed"></mydir-show-chapter-text>
+		<mydir-nav-chapter data-ng-show="plans.length" data-ng-hide="completed"></mydir-nav-chapter>
 		
-		<form class="form-inline well" data-ng-submit="submitChapterRange()" novalidate>
+		<form class="form-inline well" data-ng-show="plans.length" data-ng-hide="completed" data-ng-submit="submitChapterRange()" novalidate>
 			<fieldset>
                 <div class="form-group">
                     <div class="controls">

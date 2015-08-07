@@ -9,37 +9,41 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		$http.get('/users/me').then(function(response) {
 			$scope.user = new Users(response.data);
 		});
+		$scope.completed = false;
+		$scope.plans = null;
 		$scope.plansTabs = [];
 
 				// Initialize controller
 		$scope.init = function() {
-			var userId = $scope.authentication.user._id;
 			Plans.query({ 
-				user: userId
+				user: $scope.authentication.user._id
 			}, function(plans) {
 				ReadingPlan.setPlans(plans, 0);
-				if(plans.length)
+				if(plans[0])
+					console.log($scope.plans);
 					$scope.beginPlanPortion();
 			});
 		};
 
 		$scope.beginPlanPortion = function() {
+			$scope.completed = false;
 			$scope.textPromise = ReadingPlan.beginPlanPortion().then( function(response) {
 				$scope.chapterText = response;
 				$scope.find();
 			});
-			
 		};
 
-		$scope.incrementPlan = function() {
+		$scope.incrementPlan = function(chapterId) {
 				// advance the reading plan
-			$scope.textPromise = ReadingPlan.incrementPlan().then( function(response) {
+			$scope.textPromise = ReadingPlan.incrementPlan(chapterId).then( function(response) {
+				if (response === 'completed') {
+					$scope.completed = true;
+				} 
+
 				$scope.chapterText = response;
+				$scope.plansTabs[ReadingPlan.getPlanSegment()] = true;
 				$scope.find();
-			});
-			
-				// set active plan tab to reflect current tab
-			$scope.plansTabs[ReadingPlan.getPlanSegment()] = true;					
+			});					
 		};
 
 		$scope.changePlan = function(index) {
@@ -56,15 +60,12 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 				if(!params) params = {name: ReadingPlan.getCurrentChapter()};
 					// Create new Chapter object
 				var chapter = new Chapters(params);
-				
 				chapter.plan = ReadingPlan.getCurrentPlan()._id;
 				
-
 				$scope.alerts = [];
 				
 				chapter.$save(function(response) {
-					ReadingPlan.addChapter(response._id);
-					$scope.incrementPlan();
+					$scope.incrementPlan(response._id);
 
 					$scope.alerts.push({type: 'success', msg: 'Chapter entered', icon: 'check-square-o'});
 					resolve();
@@ -113,6 +114,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 				user: userId
 			}, function(plans) {
 				$scope.plans = plans;
+				console.log($scope.plans);
 			});
 		};
 

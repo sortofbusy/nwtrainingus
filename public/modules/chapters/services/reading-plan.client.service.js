@@ -78,41 +78,47 @@ angular.module('chapters').factory('ReadingPlan', ['$http', '$q', 'BibleText', '
 				});
 			};
 
-		service.incrementPlan = function() {
+		service.incrementPlan = function(chapterId) {
 				return $q( function(resolve) {
-					var plan = plans[planSegment];
-						// remove the current chapter from list to read
-					chaptersInPortion.shift(); 
-					
-						//check if portion is complete
-					if(chaptersInPortion.length === 0) {
-						planSegment += 1;
-						console.log('done reading ' + plan.name + ' today');
-						if (planSegment === plans.length) {
-							console.log('all reading plans finished for today!');
-							///////
-							// Show a 'keep reading' button
-							//////
-							planSegment = 0;
-							resolve();
-						} else {
-							service.beginPlanPortion();
+					service.addChapter(chapterId).then( function() {
+						var plan = plans[planSegment];
+							// remove the current chapter from list to read
+						chaptersInPortion.shift(); 
+						
+							//check if portion is complete
+						if(chaptersInPortion.length === 0) {
+							planSegment += 1;
+							console.log('done reading ' + plan.name + ' today, going to plan # ' + planSegment);
+							if (planSegment === plans.length) {
+								console.log('all reading plans finished for today!');
+								///////
+								// Show a 'keep reading' button
+								//////
+								
+								planSegment = 0;
+								resolve('completed');
+								return;
+							} else {
+								resolve(service.beginPlanPortion());
+								return;
+							}
 						}
-					}
-					resolve(service.getChapterText());
+						resolve(service.getChapterText());
+					});
 				}); 
 			};
 
 		service.addChapter = function(chapterId) {
-			var plan = plans[planSegment];
-			plan.cursor += 1;
-			plan.chapters.push(chapterId);
-			plan.$update(function(response) {
-				plans[planSegment] = response;
+			return $q( function(resolve) {
+				var plan = plans[planSegment];
+				plan.cursor += 1;
+				plan.chapters.push(chapterId);
+				plan.$update(function(response) {
+					plans[planSegment] = response;
+					resolve();
+				});
 			});
 		};
-
-		
 
 		// Public API
 		return service;
