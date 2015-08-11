@@ -212,37 +212,41 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		$http.get('/users/me').then(function(response) {
 			$scope.user = new Users(response.data);
 		});
+		$scope.completed = false;
+		$scope.plans = null;
 		$scope.plansTabs = [];
 
 				// Initialize controller
 		$scope.init = function() {
-			var userId = $scope.authentication.user._id;
 			Plans.query({ 
-				user: userId
+				user: $scope.authentication.user._id
 			}, function(plans) {
 				ReadingPlan.setPlans(plans, 0);
-				if(plans.length)
+				if(plans[0])
+					console.log($scope.plans);
 					$scope.beginPlanPortion();
 			});
 		};
 
 		$scope.beginPlanPortion = function() {
+			$scope.completed = false;
 			$scope.textPromise = ReadingPlan.beginPlanPortion().then( function(response) {
 				$scope.chapterText = response;
 				$scope.find();
 			});
-			
 		};
 
-		$scope.incrementPlan = function() {
+		$scope.incrementPlan = function(chapterId) {
 				// advance the reading plan
-			$scope.textPromise = ReadingPlan.incrementPlan().then( function(response) {
+			$scope.textPromise = ReadingPlan.incrementPlan(chapterId).then( function(response) {
+				if (response === 'completed') {
+					$scope.completed = true;
+				} 
+
 				$scope.chapterText = response;
+				$scope.plansTabs[ReadingPlan.getPlanSegment()] = true;
 				$scope.find();
-			});
-			
-				// set active plan tab to reflect current tab
-			$scope.plansTabs[ReadingPlan.getPlanSegment()] = true;					
+			});					
 		};
 
 		$scope.changePlan = function(index) {
@@ -259,15 +263,12 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 				if(!params) params = {name: ReadingPlan.getCurrentChapter()};
 					// Create new Chapter object
 				var chapter = new Chapters(params);
-				
 				chapter.plan = ReadingPlan.getCurrentPlan()._id;
 				
-
 				$scope.alerts = [];
 				
 				chapter.$save(function(response) {
-					ReadingPlan.addChapter(response._id);
-					$scope.incrementPlan();
+					$scope.incrementPlan(response._id);
 
 					$scope.alerts.push({type: 'success', msg: 'Chapter entered', icon: 'check-square-o'});
 					resolve();
@@ -316,6 +317,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 				user: userId
 			}, function(plans) {
 				$scope.plans = plans;
+				console.log($scope.plans);
 			});
 		};
 
@@ -566,41 +568,47 @@ angular.module('chapters').factory('ReadingPlan', ['$http', '$q', 'BibleText', '
 				});
 			};
 
-		service.incrementPlan = function() {
+		service.incrementPlan = function(chapterId) {
 				return $q( function(resolve) {
-					var plan = plans[planSegment];
-						// remove the current chapter from list to read
-					chaptersInPortion.shift(); 
-					
-						//check if portion is complete
-					if(chaptersInPortion.length === 0) {
-						planSegment += 1;
-						console.log('done reading ' + plan.name + ' today');
-						if (planSegment === plans.length) {
-							console.log('all reading plans finished for today!');
-							///////
-							// Show a 'keep reading' button
-							//////
-							planSegment = 0;
-							resolve();
-						} else {
-							service.beginPlanPortion();
+					service.addChapter(chapterId).then( function() {
+						var plan = plans[planSegment];
+							// remove the current chapter from list to read
+						chaptersInPortion.shift(); 
+						
+							//check if portion is complete
+						if(chaptersInPortion.length === 0) {
+							planSegment += 1;
+							console.log('done reading ' + plan.name + ' today, going to plan # ' + planSegment);
+							if (planSegment === plans.length) {
+								console.log('all reading plans finished for today!');
+								///////
+								// Show a 'keep reading' button
+								//////
+								
+								planSegment = 0;
+								resolve('completed');
+								return;
+							} else {
+								resolve(service.beginPlanPortion());
+								return;
+							}
 						}
-					}
-					resolve(service.getChapterText());
+						resolve(service.getChapterText());
+					});
 				}); 
 			};
 
 		service.addChapter = function(chapterId) {
-			var plan = plans[planSegment];
-			plan.cursor += 1;
-			plan.chapters.push(chapterId);
-			plan.$update(function(response) {
-				plans[planSegment] = response;
+			return $q( function(resolve) {
+				var plan = plans[planSegment];
+				plan.cursor += 1;
+				plan.chapters.push(chapterId);
+				plan.$update(function(response) {
+					plans[planSegment] = response;
+					resolve();
+				});
 			});
 		};
-
-		
 
 		// Public API
 		return service;
@@ -906,7 +914,7 @@ angular.module('plans').controller('PlansControllerCrud', ['$scope', '$modal', '
 	}
 ]);
 
-angular.module('plans').controller('PlansController', ["$scope", "$modalInstance", "plans", "authentication", "Plans", "$window", "$timeout", function ($scope, $modalInstance, plans, authentication, Plans, $window, $timeout) {
+angular.module('plans').controller('PlansController', ["$scope", "$modalInstance", "plans", "authentication", "Plans", "$window", function ($scope, $modalInstance, plans, authentication, Plans, $window) {
 	$scope.plans = plans;
 	$scope.authentication = authentication;
 	$scope.selected = {
@@ -942,7 +950,6 @@ angular.module('plans').controller('PlansController', ["$scope", "$modalInstance
 		];
 
 	$scope.ok = function () {
-		console.log($scope.plans);
 		$modalInstance.close($scope.plans);
 	};
 

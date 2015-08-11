@@ -3,8 +3,8 @@
 // Some module dependencies in \chapters\chapters.client.module.js
 
 // Chapters controller
-angular.module('chapters').controller('ChaptersController', ['$scope', '$modal', '$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', '$q', 'Plans', 'BibleText', 'ReadingPlan', '$sce',
-	function($scope, $modal, $http, $stateParams, $location, Authentication, Chapters, Users, $q, Plans, BibleText, ReadingPlan, $sce) {
+angular.module('chapters').controller('ChaptersController', ['$scope', '$modal', '$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', '$q', 'Plans', 'BibleText', 'ReadingPlan', '$sce', 'BibleRef',
+	function($scope, $modal, $http, $stateParams, $location, Authentication, Chapters, Users, $q, Plans, BibleText, ReadingPlan, $sce, BibleRef) {
 		$scope.authentication = Authentication;
 		$http.get('/users/me').then(function(response) {
 			$scope.user = new Users(response.data);
@@ -12,7 +12,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		$scope.completed = false;
 		$scope.plans = null;
 		$scope.plansTabs = [];
-
+		
 				// Initialize controller
 		$scope.init = function() {
 			Plans.query({ 
@@ -20,7 +20,6 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			}, function(plans) {
 				ReadingPlan.setPlans(plans, 0);
 				if(plans[0])
-					console.log($scope.plans);
 					$scope.beginPlanPortion();
 			});
 		};

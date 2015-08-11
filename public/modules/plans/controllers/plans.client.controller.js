@@ -52,13 +52,14 @@ angular.module('plans').controller('PlansControllerCrud', ['$scope', '$modal', '
 	}
 ]);
 
-angular.module('plans').controller('PlansController', function ($scope, $modalInstance, plans, authentication, Plans, $window) {
+angular.module('plans').controller('PlansController', function ($scope, $modalInstance, plans, authentication, Plans, $window, BibleRef) {
 	$scope.plans = plans;
 	$scope.authentication = authentication;
 	$scope.selected = {
 		item: null
 	};
 	$scope.alerts = [];
+	$scope.updateAlerts = [];
 	$scope.items = [
 			{	name: 'Whole Bible (1 year)',
 				plans: [{
@@ -99,12 +100,16 @@ angular.module('plans').controller('PlansController', function ($scope, $modalIn
 	    $scope.alerts.splice(index, 1);
 	};
 
+	$scope.closeUpdateAlert = function(index){
+	    $scope.updateAlerts.splice(index, 1);
+	};
+
 	$scope.myCreate = function(passedPlan) {
 		var plan = new Plans(passedPlan);
 		plan.$save(function(response) {
 			$scope.alerts.push({msg: 'Plan saved!', type: 'success'});
 		}, function(errorResponse) {
-			$scope.error = errorResponse.data.message;
+			$scope.alerts.push({msg: errorResponse.data.message, type: 'danger'});
 		});
 	};
 
@@ -125,6 +130,43 @@ angular.module('plans').controller('PlansController', function ($scope, $modalIn
 		$scope.selected = null;
 		$scope.find();
 	};
+
+	$scope.setPlan = function(plan) {
+		$scope.startChapter = BibleRef.chapterNameFromId(plan.startChapter);
+		$scope.endChapter = BibleRef.chapterNameFromId(plan.endChapter);
+		$scope.cursor = BibleRef.chapterNameFromId(plan.cursor);
+	}
+
+	$scope.updatePlan = function(planIndex) {
+		var plan = $scope.plans[planIndex];
+		
+		var cursorId = BibleRef.chapterIdFromName(this.cursor);
+		var startChapterId = BibleRef.chapterIdFromName(this.startChapter);
+		var endChapterId = BibleRef.chapterIdFromName(this.endChapter);
+		
+			// if the new value is a valid chapter
+		if (angular.isNumber(cursorId) && angular.isNumber(startChapterId) 
+			&& angular.isNumber(endChapterId) && cursorId >= startChapterId 
+			&& cursorId <= endChapterId) {
+				// update all fields
+			plan.cursor = cursorId;
+			plan.startChapter = startChapterId;
+			plan.endChapter = endChapterId;
+			
+			plan.$update(function(response) {
+				$scope.plans[planIndex] = response;
+				$scope.updateAlerts.push({msg: 'Plan updated.', type: 'success'});
+			}, function(errorResponse) {
+				$scope.updateAlerts.push({msg: errorResponse.data.message, type: 'danger'});
+			});
+		} else {
+			$scope.updateAlerts.push({msg: 'Invalid input.', type: 'danger'});
+				// reset form data
+			this.cursor = $scope.cursor;
+			this.startChapter = $scope.startChapter;
+			this.endChapter = $scope.endChapter;
+		}
+	}
 
 	// Remove existing Plan
 	$scope.remove = function(plan) {

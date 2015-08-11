@@ -1,6 +1,6 @@
 <div class="modal-header" data-ng-show="plans"><h3>Current Plan(s):</h3>
 	<accordion data-close-others="true" class="info"> 
-		<accordion-group data-ng-repeat="plan in plans">
+		<accordion-group data-ng-repeat="plan in plans" data-ng-click="setPlan(plan)">
 			<accordion-heading>
 				{{plan.name}} <b class="caret"></b>
 			</accordion-heading>
@@ -15,15 +15,42 @@
 					<i class="glyphicon glyphicon-trash"></i>
 				</a>
 			</div>
-			<div class="row">
-				<div class="col-sm-12">
-					<b>Current Position: </b>{{plan.cursor}}
-				</div>
+			<hr>
+			<div class="h4">
+				Edit Plan
 			</div>
+			<div class="row">
+				<form class="form-inline col-md-12" data-ng-submit="updatePlan($index)" novalidate>
+					<fieldset>
+						<label class="h5">Next Chapter: </label>
+						<formgroup class="pull-right">
+							<input type="text" data-ng-model="cursor" name="cursor" class="form-control">
+		               	</formgroup>
+					</fieldset>
+					<fieldset>
+						<label class="h5">Start Chapter: </label>
+						<formgroup class="pull-right">
+							<input type="text" data-ng-model="startChapter" name="startChapter" class="form-control">
+		               	</formgroup>
+					</fieldset>
+					<fieldset>
+						<label class="h5">End Chapter: </label>
+						<formgroup class="pull-right">
+							<input type="text" data-ng-model="endChapter" name="endChapter" class="form-control">
+		               	</formgroup>
+					</fieldset>
+					<br>
+					<input type="submit" class="btn btn-success pull-right" value="Save">
+				</form>
+			</div>
+			<br>
+			<div class="row">
+				<alert data-ng-repeat="alert in updateAlerts" type="{{alert.type}}" close="closeUpdateAlert($index)" dismiss-on-timeout="3500">{{alert.msg}}</alert>
+			</div>   
 		</accordion-group>
 	</accordion>
 </div>
-    
+ 
 <div class="modal-header">
     <h3 class="modal-title">Add a Plan</h3>
 </div>
@@ -35,7 +62,7 @@
     </div>
     <br>
     <div>
-    	<alert data-ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3000">{{alert.msg}}</alert>
+    	<alert data-ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3500">{{alert.msg}}</alert>
     </div>
 </div>
 <div class="modal-footer">
