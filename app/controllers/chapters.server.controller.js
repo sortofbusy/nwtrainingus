@@ -193,7 +193,7 @@ function callRCV (params) {
 
 exports.reference = function(req, res) {
 	try {
-			// handles a chapter number
+		console.log('here');	// handles a chapter number
 		if (req.query.chapterNumber) {
 			var chapterNumber = +req.query.chapterNumber;
 			var refString = Reference.fromChapterId(chapterNumber).toString();
@@ -205,7 +205,7 @@ exports.reference = function(req, res) {
 			var newRefString = Reference.fromChapterId(newChapterId).toString();
 			var verses = Reference.versesInChapterId(newChapterId);
 			var result = [];
-
+			console.log('here');
 			// push chunks of 30 verses onto the array
 			for (var i=1; i <= Math.floor(verses/30); i++){
 				result.push(newRefString + ':' + ((i-1)*30+1) + '-' + (i * 30));

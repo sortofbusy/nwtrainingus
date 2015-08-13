@@ -26,22 +26,7 @@
 				<fieldset>
 					<div class="form-group">
 						<label for="version">Bible Translation</label>
-						<select id="preferences.version" name="preferences.version" class="form-control" data-ng-model="user.preferences.version">
-							<option value="asv">American Standard Version</option>
-							<option value="amp">Amplified Version</option> 
-							<option value="basicenglish">Basic English Bible</option> 
-							<option value="cus">Union Simplified (Chinese)</option>
-							<option value="darby">Darby</option>
-							<option value="aleppo">Aleppo Codex (Hebrew)</option>
-							<option value="kjv">King James Version</option> 
-							<option value="akjv">KJV Easy Read</option> 
-							<option value="nasb">New American Standard</option> 
-							<option value="rcv">Recovery Version</option>
-							<option value="valera"><i>Reina Valera</i> (Español)</option>
-							<!--<option value="text"><i>Textus Receptus</i> (Greek)</option>-->
-							<option value="ylt">Young's Literal Translation</option> 
-							<option value="web">World English Bible</option> 
-							<option value="wb">Webster's Bible</option>
+						<select id="preferences.version" name="preferences.version" class="form-control" data-ng-model="user.preferences.version" data-ng-options="version.code as version.name group by version.language for version in bibleVersions">
 						</select>
 					</div>
 					<div class="text-center form-group">
