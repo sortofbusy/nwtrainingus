@@ -11,7 +11,7 @@
 				<div class="col-sm-6">
 					<progressbar value="plan.cursor - plan.startChapter" max="plan.endChapter - plan.startChapter"></progressbar>
 				</div>
-				<a class="btn btn-small pull-right" data-ng-click="remove(plan);">
+				<a class="btn btn-small btn-danger" data-ng-click="remove(plan);">
 					<i class="glyphicon glyphicon-trash"></i>
 				</a>
 			</div>
@@ -27,6 +27,7 @@
 							<input type="text" data-ng-model="cursor" name="cursor" class="form-control">
 		               	</formgroup>
 					</fieldset>
+					<br>
 					<fieldset>
 						<label class="h5">Start Chapter: </label>
 						<formgroup class="pull-right">
@@ -37,6 +38,13 @@
 						<label class="h5">End Chapter: </label>
 						<formgroup class="pull-right">
 							<input type="text" data-ng-model="endChapter" name="endChapter" class="form-control">
+		               	</formgroup>
+					</fieldset>
+					<br>
+					<fieldset>
+						<label class="h5">Reading Pace: </label>
+						<formgroup class="pull-right">
+							<input type="text" data-ng-model="pace" name="pace" class="form-control">
 		               	</formgroup>
 					</fieldset>
 					<br>

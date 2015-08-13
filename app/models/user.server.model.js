@@ -95,7 +95,13 @@ var UserSchema = new Schema({
 	plans: [{
 		type: Schema.ObjectId,
 		ref: 'Plan'
-	}]
+	}],
+	preferences: {
+		version: {
+			type: String,
+			default: 'rcv'
+		}
+	}
 });
 
 /**

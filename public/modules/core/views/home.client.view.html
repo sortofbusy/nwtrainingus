@@ -1,4 +1,5 @@
 <section data-ng-controller="HomeController">
+	
 	<div data-ng-hide="authentication.user">
 		<div class="jumbotron text-center">
 			<div class="row">
@@ -39,52 +40,58 @@
 		</div>
 	</div>
 	<div data-ng-controller="ChaptersController" data-ng-init="init()" data-ng-show="authentication.user">
-		<!--<div class="jumbotron text-center">-->
-			<div class="row">
-				<div class="col-md-3 pull-left" data-ng-show="plans">
-					<tabset vertical="true" type ="pills">
-						<tab data-ng-repeat="plan in plans" heading="{{plan.name}}" active="plansTabs[$index]" data-ng-click="changePlan($index)">
-							<b>Progress:</b> {{plan.chapters.length}} / {{plan.pace}} chapters today 
-							<progressbar value="plan.chapters.length" type="success" max="plan.pace"></progressbar>
-						</tab>
-					</tabset>
+		<div cg-busy="{promise:loadingPromise,message:'Loading ...'}"></div>
+		<div data-ng-show="loaded">
+			<!--<div class="jumbotron text-center">-->
+				<div class="row">
+					<div class="col-md-4 pull-left" data-ng-show="plans">
+						<tabset vertical="true" type ="pills">
+							<tab data-ng-repeat="plan in plans" active="plansTabs[$index]" data-ng-click="changePlan($index)">
+								<tab-heading>
+									{{plan.name}} <span class="badge">{{plan.chapters.length}}/{{plan.pace}}</span>
+								</tab-heading>
+								<!--<b>Progress:</b> {{plan.chapters.length}} / {{plan.pace}} chapters today 
+								<progressbar value="plan.chapters.length" type="success" max="plan.pace"></progressbar>-->
+							</tab>
+						</tabset>
+					</div>
+					<div class="col-md-4 h2 pull-left" data-ng-hide="plans.length">Choose a reading plan: </div>
+					<div class="col-md-2 h4 pull-right">
+						<button class="btn btn-default" data-ng-click="openPlansModal()" >Reading Plan</button>
+					</div>
 				</div>
-				<div class="col-md-4 h2 pull-left" data-ng-hide="plans.length">Choose a reading plan: </div>
-				<div class="col-md-2 h4 pull-right">
-					<button class="btn btn-default" data-ng-click="openPlansModal()" >Reading Plan</button>
+			<!--</div>-->	
+			
+			<br>
+			<div class="well" data-ng-show="completed">
+				<div class="h2">
+					You've read all your chapters for today!
+					<button class="btn btn-info btn-lg" data-ng-click="beginPlanPortion()">
+						Keep Reading
+					</button>
 				</div>
 			</div>
-		<!--</div>-->	
-		
-		<br>
-		<div class="well" data-ng-show="completed">
-			<div class="h2">
-				You've read all your chapters for today!
-				<button class="btn btn-info btn-lg" data-ng-click="beginPlanPortion()">
-					Keep Reading
-				</button>
-			</div>
-		</div>
-		
-		<mydir-show-chapter-text data-ng-show="plans.length" data-ng-hide="completed"></mydir-show-chapter-text>
-		<mydir-nav-chapter data-ng-show="plans.length" data-ng-hide="completed"></mydir-nav-chapter>
-		
-		<form class="form-inline well" data-ng-show="plans.length" data-ng-hide="completed" data-ng-submit="submitChapterRange()" novalidate>
-			<fieldset>
-                <div class="form-group">
-                    <div class="controls">
-                        <input type="text" data-ng-model="range" id="range" class="form-control" placeholder="enter a chapter range: 'Gen 1'">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <input type="submit" class="btn btn-default">
-                </div>
-				<span class="label label-{{alert.type}}" data-ng-repeat="alert in alerts"><i class="fa fa-{{alert.icon}}"></i> {{alert.msg}} </span>
-				<div data-ng-show="error" class="text-danger">
-					<strong data-ng-bind="error">{{error}}</strong>
-				</div>
-            </fieldset>
-        </form>
+			
+			<mydir-show-chapter-text data-ng-show="plans.length && !completed"></mydir-show-chapter-text>
+			<mydir-nav-chapter data-ng-show="plans.length && !completed"></mydir-nav-chapter>
+			
+			<!--<form class="form-inline well" data-ng-show="plans.length && !completed" data-ng-submit="submitChapterRange()" novalidate>
+				<fieldset>
+	                <div class="form-group">
+	                    <div class="controls">
+	                        <input type="text" data-ng-model="range" id="range" class="form-control" placeholder="enter a chapter range: 'Gen 1'">
+	                    </div>
+	                </div>
+	                <div class="form-group">
+	                    <input type="submit" class="btn btn-default">
+	                </div>
+					<span class="label label-{{alert.type}}" data-ng-repeat="alert in alerts"><i class="fa fa-{{alert.icon}}"></i> {{alert.msg}} </span>
+					<div data-ng-show="error" class="text-danger">
+						<strong data-ng-bind="error">{{error}}</strong>
+					</div>
+	            </fieldset>
+	        </form>-->
 
-	</div>
+		</div>
+	</div>	
 </section>

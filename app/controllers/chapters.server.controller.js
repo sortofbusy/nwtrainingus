@@ -193,10 +193,12 @@ function callRCV (params) {
 
 exports.reference = function(req, res) {
 	try {
+			// handles a chapter number
 		if (req.query.chapterNumber) {
 			var chapterNumber = +req.query.chapterNumber;
 			var refString = Reference.fromChapterId(chapterNumber).toString();
 			res.jsonp(refString);
+			// handles a chapter name, returns chunks of verses
 		} else if (req.query.chapterName) {
 			var increment = +req.query.increment;
 			var newChapterId = new Reference(req.query.chapterName).toChapterId() + increment;
@@ -217,6 +219,13 @@ exports.reference = function(req, res) {
 			
 			// code here to split up the chapter into blocks of 30 and return an array
 			res.jsonp(result);
+			// handles user input of a chapter, returns chapterNumber if valid
+		} else if (req.query.chapterInput) {
+			var chapterInput = [];
+			for (var r = 0; r < req.query.chapterInput.length; r++) {
+				chapterInput.push(new Reference(req.query.chapterInput[r]).toChapterId());
+			}
+			res.jsonp(chapterInput);
 		}
 	} catch(err) {
 		console.error(errorHandler.getErrorMessage(err));

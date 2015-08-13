@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('chapters').factory('ReadingPlan', ['$http', '$q', 'BibleText', 'Plans',
-	function($http, $q, BibleText, Plans) {
+angular.module('chapters').factory('ReadingPlan', ['$http', '$q', 'BibleText', 'Plans', 'Badges',
+	function($http, $q, BibleText, Plans, Badges) {
 		var service = {};
 
 		var plans = [];
@@ -74,9 +74,41 @@ angular.module('chapters').factory('ReadingPlan', ['$http', '$q', 'BibleText', '
 							chaptersInPortion.push(k);
 						}
 					}
+						// if we're beginning a portion but it's been completed (manual input)
+					if (chaptersInPortion.length === 0) {
+						
+						resolve('completed');
+						return;
+					}
 					resolve(service.getChapterText());
 				});
 			};
+
+		service.incompletePlan = function() {
+			for(var i = 0; i < plans.length; i++) {
+				var planChaptersReadToday = plans[i].chapters ? plans[i].chapters.length : 0;
+				if (planChaptersReadToday < plans[i].pace) {
+					return i;
+				}	
+			}
+			return null;
+		};
+
+		service.planEnded = function() {
+			var plan = angular.copy(plans[planSegment]);
+			if(plan.cursor >= plan.endChapter) {
+				var badge = new Badges({
+					name: plan.name,
+					created: plan.created,
+					user: plan.user,
+					startChapter: plan.startChapter,
+					endChapter: plan.endChapter
+				});
+				badge.$save();
+				return true;
+			}
+			return false;
+		};
 
 		service.incrementPlan = function(chapterId) {
 				return $q( function(resolve) {
@@ -87,9 +119,25 @@ angular.module('chapters').factory('ReadingPlan', ['$http', '$q', 'BibleText', '
 						
 							//check if portion is complete
 						if(chaptersInPortion.length === 0) {
-							planSegment += 1;
+							var incompletePlan = service.incompletePlan();	
+							
+								// check if plan is ended
+							if(service.planEnded()) {
+								var newPlan = angular.copy(plan);
+								plans.splice(planSegment, 1);
+								planSegment = service.incompletePlan();
+								newPlan.$remove().then(function(newPlan) {
+									resolve(newPlan);
+								});
+								return;
+							} else 
+								planSegment += 1;
+							
 							console.log('done reading ' + plan.name + ' today, going to plan # ' + planSegment);
-							if (planSegment === plans.length) {
+							
+							
+							if (incompletePlan === null) {
+
 								console.log('all reading plans finished for today!');
 								///////
 								// Show a 'keep reading' button
@@ -97,8 +145,10 @@ angular.module('chapters').factory('ReadingPlan', ['$http', '$q', 'BibleText', '
 								
 								planSegment = 0;
 								resolve('completed');
-								return;
+								return;								
 							} else {
+								if(incompletePlan !== null)
+									planSegment = incompletePlan;
 								resolve(service.beginPlanPortion());
 								return;
 							}

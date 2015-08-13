@@ -40,22 +40,19 @@ exports.update = function(req, res) {
 	var plan = req.plan ;
 		//replace populated chapters with only _ids
 	if (req.body.chapters) {
-		for (var i = 0; i < req.body.chapters.length - 1; i++) {
+		for (var i = 0; i < req.body.chapters.length; i++) {
 			if (req.body.chapters[i]._id) 
 				req.body.chapters[i] = req.body.chapters[i]._id;
 		}
 		plan.chapters = [];
 	}
 	plan = _.extend(plan , req.body);
-	console.log('before');
 	plan.save(function(err) {
 		if (err) {
-			console.log(err);
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
-			console.log('plan update success!');
 			res.jsonp(plan);
 		}
 	});

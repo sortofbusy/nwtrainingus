@@ -13,16 +13,29 @@ var BadgeSchema = new Schema({
 	name: {
 		type: String,
 		default: '',
-		required: 'Please fill Badge name',
 		trim: true
 	},
 	created: {
 		type: Date,
 		default: Date.now
 	},
+	completed: {
+		type: Date,
+		default: Date.now
+	},
 	user: {
 		type: Schema.ObjectId,
 		ref: 'User'
+	},
+	startChapter: {
+		type: Number,
+		min: 1,
+		max: 1189
+	},
+	endChapter: {
+		type: Number,
+		min: 1,
+		max: 1189
 	}
 });
 

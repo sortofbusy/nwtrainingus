@@ -2,18 +2,23 @@
     <div class="page-header">
         <h1>Badges</h1>
     </div>
-    <div class="list-group">
-        <a data-ng-repeat="badge in badges" data-ng-href="#!/badges/{{badge._id}}" class="list-group-item">
-			<small class="list-group-item-text">
-				Posted on
-				<span data-ng-bind="badge.created | date:'medium'"></span>
-				by
-				<span data-ng-bind="badge.user.displayName"></span>
-			</small>
-			<h4 class="list-group-item-heading" data-ng-bind="badge.name"></h4>
-        </a>
-    </div>
+    <ul class="list-group">
+        <li class="list-group-item" data-ng-repeat="badge in badges">
+            <div class="row">
+                <div class="col-xs-4">
+                    <span class="fa-stack fa-3x">
+                      <i class="fa fa-certificate fa-stack-2x text-warning"></i>
+                      <i class="fa fa-book fa-stack-1x fa-inverse"></i>
+                    </span>
+                </div>
+                <div class="col-xs-8 vcenter">
+                    <b> {{badge.name}}</b> <br>
+                    <i class="small i"> Completed: {{badge.completed | date}}</i>
+                </div>
+            </div>
+        </li>
+    </ul>
     <div class="alert alert-warning text-center" data-ng-hide="!badges.$resolved || badges.length">
-    	No Badges yet, why don't you <a href="/#!/badges/create">create one</a>?
+    	No badges yet!
     </div>
 </section>

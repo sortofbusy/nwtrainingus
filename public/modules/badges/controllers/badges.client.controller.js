@@ -4,6 +4,7 @@
 angular.module('badges').controller('BadgesController', ['$scope', '$stateParams', '$location', 'Authentication', 'Badges',
 	function($scope, $stateParams, $location, Authentication, Badges) {
 		$scope.authentication = Authentication;
+		
 
 		// Create new Badge
 		$scope.create = function() {
@@ -53,7 +54,7 @@ angular.module('badges').controller('BadgesController', ['$scope', '$stateParams
 
 		// Find a list of Badges
 		$scope.find = function() {
-			$scope.badges = Badges.query();
+			$scope.badges = Badges.query({user: $scope.authentication.user._id});
 		};
 
 		// Find existing Badge
@@ -62,5 +63,27 @@ angular.module('badges').controller('BadgesController', ['$scope', '$stateParams
 				badgeId: $stateParams.badgeId
 			});
 		};
+
+	}
+]);
+
+// Badges controller
+angular.module('badges').controller('BadgesModalController', ['$scope', '$modalInstance', 'Authentication', 'Badges',
+	function($scope, $modalInstance, Authentication, Badges) {
+		$scope.authentication = Authentication;
+		$scope.badges = [];
+
+		// Find a list of Badges
+		$scope.find = function() {
+			Badges.query({user: $scope.authentication.user._id}, function(result) {
+				$scope.badges.push(result[0]);
+			});
+		};
+
+		$scope.ok = function () {
+			$modalInstance.close();
+		};
+
+		$scope.find();
 	}
 ]);

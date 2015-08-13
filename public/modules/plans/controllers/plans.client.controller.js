@@ -52,7 +52,7 @@ angular.module('plans').controller('PlansControllerCrud', ['$scope', '$modal', '
 	}
 ]);
 
-angular.module('plans').controller('PlansController', function ($scope, $modalInstance, plans, authentication, Plans, $window, BibleRef) {
+angular.module('plans').controller('PlansController', function ($scope, $http, $modalInstance, plans, authentication, Plans, $window, BibleRef) {
 	$scope.plans = plans;
 	$scope.authentication = authentication;
 	$scope.selected = {
@@ -135,38 +135,45 @@ angular.module('plans').controller('PlansController', function ($scope, $modalIn
 		$scope.startChapter = BibleRef.chapterNameFromId(plan.startChapter);
 		$scope.endChapter = BibleRef.chapterNameFromId(plan.endChapter);
 		$scope.cursor = BibleRef.chapterNameFromId(plan.cursor);
-	}
+		$scope.pace = plan.pace;
+	};
 
 	$scope.updatePlan = function(planIndex) {
-		var plan = $scope.plans[planIndex];
 		
-		var cursorId = BibleRef.chapterIdFromName(this.cursor);
-		var startChapterId = BibleRef.chapterIdFromName(this.startChapter);
-		var endChapterId = BibleRef.chapterIdFromName(this.endChapter);
-		
-			// if the new value is a valid chapter
-		if (angular.isNumber(cursorId) && angular.isNumber(startChapterId) 
-			&& angular.isNumber(endChapterId) && cursorId >= startChapterId 
-			&& cursorId <= endChapterId) {
-				// update all fields
-			plan.cursor = cursorId;
-			plan.startChapter = startChapterId;
-			plan.endChapter = endChapterId;
-			
-			plan.$update(function(response) {
-				$scope.plans[planIndex] = response;
-				$scope.updateAlerts.push({msg: 'Plan updated.', type: 'success'});
-			}, function(errorResponse) {
-				$scope.updateAlerts.push({msg: errorResponse.data.message, type: 'danger'});
+		$scope.pace = this.pace;
+		$http.get('/reference', {params: {chapterInput: [this.cursor, this.startChapter, this.endChapter]}})
+			.then(function(response) {
+				var cursorId = response.data[0];
+				var startChapterId = response.data[1];
+				var endChapterId = response.data[2];
+				
+					// if the new value is a valid chapter
+				if (angular.isNumber(cursorId) && angular.isNumber(startChapterId) && angular.isNumber(endChapterId) && cursorId >= startChapterId && cursorId <= endChapterId) {
+						// update all fields
+					var plan = $scope.plans[planIndex];
+					plan.cursor = cursorId;
+					plan.startChapter = startChapterId;
+					plan.endChapter = endChapterId;
+					plan.pace = $scope.pace;
+					
+					plan.$update(function(response) {
+						$scope.plans[planIndex] = response;
+						$scope.setPlan($scope.plans[planIndex]);
+						$scope.updateAlerts.push({msg: 'Plan updated.', type: 'success'});
+					}, function(errorResponse) {
+						$scope.updateAlerts.push({msg: errorResponse.data.message, type: 'danger'});
+					});
+				} else {
+					$scope.updateAlerts.push({msg: 'Invalid input.', type: 'danger'});
+						// reset form data
+					this.cursor = $scope.cursor;
+					this.startChapter = $scope.startChapter;
+					this.endChapter = $scope.endChapter;
+				}
+			}, function(error) {
+				$scope.updateAlerts.push({msg: 'Invalid input.', type: 'danger'});
 			});
-		} else {
-			$scope.updateAlerts.push({msg: 'Invalid input.', type: 'danger'});
-				// reset form data
-			this.cursor = $scope.cursor;
-			this.startChapter = $scope.startChapter;
-			this.endChapter = $scope.endChapter;
-		}
-	}
+	};
 
 	// Remove existing Plan
 	$scope.remove = function(plan) {

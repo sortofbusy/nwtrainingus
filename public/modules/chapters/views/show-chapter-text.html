@@ -6,7 +6,7 @@
 		<div cg-busy="textPromise"></div>
 	
 		<div class="lead">
-			<span data-ng-repeat="verse in chapterText.verses"> <sup class="text-muted" data-ng-click="share(verse.text)">{{verse.ref.split(':')[1]}}</sup><span data-ng-bind-html="sceTrust(verse.text)"></span></span>
+			<span data-ng-repeat="verse in chapterText.verses"> <sup class="text-muted" data-ng-click="share(verse.text)">{{verse.ref}}</sup><span data-ng-bind-html="sceTrust(verse.text)"></span></span>
 		</div>
 		<small class="text-muted">{{chapterText.copyright}}</small>
 	</div>

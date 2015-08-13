@@ -148,9 +148,9 @@ angular.module('chapters').factory('BibleRef', [
 		    		chaptersRemaining -= chaptersInNextBook;
 		    	else {
 		        	return service.books[i].name + ' ' + chaptersRemaining;
-				};
+				}
 			}
-			return "Chapter not recognized."
+			return 'Chapter not recognized.';
 		};
 
 		service.chapterIdFromName = function(chapterName) {
@@ -171,7 +171,7 @@ angular.module('chapters').factory('BibleRef', [
 		    	} else 
 		        	chapters += service.books[i].chapters.length;
 			}
-			return "Chapter not recognized."
+			return 'Chapter not recognized.';
 		};
 
 		// Public API
