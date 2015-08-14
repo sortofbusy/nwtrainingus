@@ -46,7 +46,19 @@ var PlanSchema = new Schema({
 	chapters: [{
 		type: Schema.ObjectId,
 		ref: 'Chapter'
-	}]
+	}],
+	active: {
+		type: Boolean,
+		default: true
+	},
+	parent: {
+		type: Schema.ObjectId,
+		ref: 'Plan'
+	},
+	isParent: {
+		type: Boolean,
+		default: false
+	}
 });
 
 mongoose.model('Plan', PlanSchema);

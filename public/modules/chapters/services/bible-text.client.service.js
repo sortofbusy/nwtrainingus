@@ -51,7 +51,7 @@ angular.module('chapters').factory('BibleText', [ '$q', '$http', 'Authentication
 			return $q(function(resolve) {
 				$http.get('/reference', {params: { chapterName: chapterName, increment: increment}})
 					.then(					
-							// create an array of calls since the RcV API only returns 30 verses / call
+							// get an array of calls since the RcV API only returns 30 verses / call
 						function (response) {
 							var calls = [];
 							for(var i =0; i < response.data.length; i++) {

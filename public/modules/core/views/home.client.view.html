@@ -2,39 +2,33 @@
 	
 	<div data-ng-hide="authentication.user">
 		<div class="jumbotron text-center">
-			<div class="row">
-				<div class="col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12">
-					<i class="fa fa-book fa-5x"></i> <p>EatTheBible.com</p>
-				</div>
-			</div>
 			<br>
 			<div class="row">
+				<div class="col-xs-10 col-xs-offset-1">
+					<img src="modules/core/img/brand/eatthebible.png" class="img-responsive" alt="Eat the Bible">
+				</div>
 				<blockquote>
 				  <p>Your words were found and I ate them, and Your word became to me the gladness and joy of my heart.</p>
 				  <footer><cite title="Reference">Jeremiah 15:16a</cite></footer>
 				</blockquote>
 			</div>
 			<div class="row">
-				<a ui-route="/signup" ng-class="{active: $uiRoute}" class="btn btn-primary btn-lg" href="/#!/signup">Sign Up</a>
+				<a ui-route="/signup" ng-class="{active: $uiRoute}" class="btn btn-warning btn-lg" href="/#!/signup"><i class="fa fa-fw fa-plus"></i> Sign Up</a>
 			
-				<a ui-route="/signin" ng-class="{active: $uiRoute}" class="btn btn-primary btn-lg" href="/#!/signin">Sign In</a>
+				<a ui-route="/signin" ng-class="{active: $uiRoute}" class="btn btn-primary btn-lg" href="/#!/signin"><i class="fa fa-fw fa-sign-in"></i> Sign In</a>
 			</div>
 		</div>
-			<div class="row">
-				<div class="list-group col-md-6">
-					<h1>Get Started!</h1>
-					<div class="list-group-item text-warning">
-						<i class="fa fa-edit fa-2x fa-fw"></i> <span class="h2">Sign up</span>
-					</div>
-					<div class="list-group-item text-primary">
-						<i class="fa fa-group fa-2x fa-fw"></i> <span class="h2">Join a group</span>
-					</div>
-					<div class="list-group-item text-success" style="background : lightzorange;">
-						<i class="fa fa-bookmark fa-2x fa-fw success"></i> <span class="h2">Enter chapters you read</span>
-					</div>
+		<div class="row">
+			<div class="list-group col-xs-10 col-xs-offset-1">
+				<h1>Get Started!</h1>
+				<div class="list-group-item text-warning">
+					<i class="fa fa-edit fa-2x fa-fw"></i> <span class="h2">Sign up</span>
 				</div>
-				<div class="col-md-6">
-					<h2>Top Groups</h2>
+				<div class="list-group-item text-primary">
+					<i class="fa fa-calendar fa-2x fa-fw"></i> <span class="h2">Choose a plan</span>
+				</div>
+				<div class="list-group-item text-success" style="background : lightorange;">
+					<i class="fa fa-bookmark fa-2x fa-fw success"></i> <span class="h2">Enter chapters you read</span>
 				</div>
 			</div>
 		</div>
@@ -55,10 +49,7 @@
 							</tab>
 						</tabset>
 					</div>
-					<div class="col-md-4 h2 pull-left" data-ng-hide="plans.length">Choose a reading plan: </div>
-					<div class="col-md-2 h4 pull-right">
-						<button class="btn btn-default" data-ng-click="openPlansModal()" >Reading Plan</button>
-					</div>
+					<div class="col-md-4 h2 pull-left" data-ng-hide="plans.length">Choose a reading plan to get started!</div>
 				</div>
 			<!--</div>-->	
 			

@@ -19,6 +19,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		
 				// Initialize controller
 		$scope.init = function() {
+			if (!$scope.authentication.user) return;
 			Plans.query({ 
 				user: $scope.authentication.user._id
 			}, function(plans) {
