@@ -29,15 +29,15 @@
 						<select id="preferences.version" name="preferences.version" class="form-control" data-ng-model="user.preferences.version" data-ng-options="version.code as version.name group by version.language for version in bibleVersions">
 						</select>
 					</div>
-					<div class="text-center form-group">
-						<button type="submit" class="btn btn-large btn-primary">Save</button>
-					</div>
 					<div data-ng-show="success" class="text-center text-success">
 						<strong>Preferences Saved Successfully</strong>
 					</div>
 					<div data-ng-show="error" class="text-center text-danger">
 						<strong data-ng-bind="error"></strong>
 					</div>
+					<div class="text-center form-group">
+						<button type="submit" class="btn btn-large btn-primary">Save</button>
+					</div>	
 				</fieldset>
 		</div>
 	</form>

@@ -11,3 +11,4 @@ data/
 node_modules/
 test.*
 lettheword.sublime*
+*.env

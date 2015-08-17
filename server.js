@@ -1,4 +1,11 @@
 'use strict';
+
+/**
+ * load .env variables.
+ */
+var env = require('node-env-file');
+env('config/env/all.env');
+
 /**
  * Module dependencies.
  */
@@ -27,7 +34,7 @@ var app = require('./config/express')(db);
 require('./config/passport')();
 
 // Start the app by listening on <port>
-app.listen(config.port);
+app.listen(config.port, '0.0.0.0');
 
 // Expose app
 exports = module.exports = app;

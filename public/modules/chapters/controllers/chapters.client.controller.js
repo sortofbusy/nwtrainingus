@@ -10,9 +10,9 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		$scope.loaded = false;
 
 		$scope.authentication = Authentication;
-		$http.get('/users/me').then(function(response) {
-			$scope.user = new Users(response.data);
-		});
+		$scope.user = new Users(Authentication.user);
+		$scope.bibleTextStyle = {'font-size': 100 + ($scope.user.preferences.fontSize * 15) + '%'};
+
 		$scope.completed = false;
 		$scope.plans = null;
 		$scope.plansTabs = [];
@@ -195,6 +195,16 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			  controller: 'BadgesModalController',
 			  size: 'md',
 			});
+		};
+
+		$scope.textResize = function(direction) {
+			var sizes = [0, 1, 2];
+			var size = $scope.user.preferences.fontSize;
+			if((direction === 1 && size < 2) || (direction === -1 && size > 0)) {
+				$scope.user.preferences.fontSize += direction;
+				$scope.bibleTextStyle = {'font-size': 100 + ($scope.user.preferences.fontSize * 15) + '%'};
+				$scope.user.$update();
+			}
 		};
 	}
 

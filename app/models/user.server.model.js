@@ -100,6 +100,11 @@ var UserSchema = new Schema({
 		version: {
 			type: String,
 			default: 'rcv'
+		},
+		fontSize: {
+			type: Number,
+			enum: [0, 1, 2],
+			default: 0
 		}
 	}
 });

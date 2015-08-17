@@ -1,13 +1,12 @@
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<h2 class="panel-title">Current chapter: <b>{{chapterText.inputstring}}</b></h2>
+
+	<h4 class=""><b>{{chapterText.inputstring}}</b></h4>
+<hr>
+<div cg-busy="textPromise"></div>
+<div> 
+	<div class="lead text-justify" data-ng-style="bibleTextStyle">
+		<span data-ng-repeat="verse in chapterText.verses" data-ng-style="bibleTextStyle">
+			 <sup class="text-muted" data-ng-click="share(verse.text)">{{verse.ref}}</sup><span data-ng-bind-html="sceTrust(verse.text)"></span>
+		</span>
 	</div>
-	<div class="panel-body"> 
-		<div cg-busy="textPromise"></div>
-	
-		<div class="lead">
-			<span data-ng-repeat="verse in chapterText.verses"> <sup class="text-muted" data-ng-click="share(verse.text)">{{verse.ref}}</sup><span data-ng-bind-html="sceTrust(verse.text)"></span></span>
-		</div>
-		<small class="text-muted">{{chapterText.copyright}}</small>
-	</div>
+	<small class="text-muted">{{chapterText.copyright}}</small>
 </div>

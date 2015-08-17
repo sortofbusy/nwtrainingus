@@ -10,25 +10,25 @@
 	</div>
 	<nav class="collapse navbar-collapse" collapse="!isCollapsed" role="navigation">
 		<!--<ul class="nav navbar-nav" data-ng-if="menu.shouldRender(authentication.user);">
-			<li data-ng-repeat="item in menu.items | orderBy: 'position'" data-ng-if="item.shouldRender(authentication.user);" ng-switch="item.menuItemType" ui-route="{{item.uiRoute}}" class="{{item.menuItemClass}}" ng-class="{active: ($uiRoute)}" dropdown>
-				<a ng-switch-when="dropdown" dropdown-toggle>
+			<li data-ng-repeat="item in menu.items | orderBy: 'position'" data-ng-if="item.shouldRender(authentication.user);" data-ng-switch="item.menuItemType" ui-route="{{item.uiRoute}}" class="{{item.menuItemClass}}" data-ng-class="{active: ($uiRoute)}" dropdown>
+				<a data-ng-switch-when="dropdown" dropdown-toggle>
 					<span data-ng-bind="item.title"></span>
 					<b class="caret"></b>
 				</a>
 				<ul class="dropdown-menu">
-					<li data-ng-repeat="subitem in item.items | orderBy: 'position'" data-ng-if="subitem.shouldRender(authentication.user);" ui-route="{{subitem.uiRoute}}" ng-class="{active: $uiRoute}">
+					<li data-ng-repeat="subitem in item.items | orderBy: 'position'" data-ng-if="subitem.shouldRender(authentication.user);" ui-route="{{subitem.uiRoute}}" data-ng-class="{active: $uiRoute}">
 						<a href="/#!/{{subitem.link}}" data-ng-bind="subitem.title"></a>
 					</li>
 				</ul>
-				<a ng-switch-default href="/#!/{{item.link}}" data-ng-bind="item.title"></a>
+				<a data-ng-switch-default href="/#!/{{item.link}}" data-ng-bind="item.title"></a>
 			</li>
 		</ul>-->
 		<ul class="nav navbar-nav navbar-right" data-ng-hide="authentication.user">
-			<li ui-route="/signup" ng-class="{active: $uiRoute}">
+			<li ui-route="/signup" data-ng-class="{active: $uiRoute}">
 				<a href="/#!/signup">Sign Up</a>
 			</li>
 			<li class="divider-vertical"></li>
-			<li ui-route="/signin" ng-class="{active: $uiRoute}">
+			<li ui-route="/signin" data-ng-class="{active: $uiRoute}">
 				<a href="/#!/signin">Sign In</a>
 			</li>
 		</ul>
@@ -44,6 +44,7 @@
 					<i class="fa fa-fw fa-user"></i> <b class="caret"></b>
 				</a>
 				<ul class="dropdown-menu">
+					<br>
 					<li>
 						<a href="/#!/settings/profile">Edit Profile</a>
 					</li>
@@ -55,7 +56,7 @@
 					</li>
 					<li class="divider"></li>
 					<li>
-						<a href="/auth/signout"><i class="fa fa-fw fa-sign-out"></i> Signout</a>
+						<a href="/auth/signout"><i class="fa fa-fw fa-sign-out"></i> Sign Out</a>
 					</li>
 				</ul>
 			</li>

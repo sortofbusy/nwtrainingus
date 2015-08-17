@@ -47,6 +47,20 @@ angular.module('chapters').factory('BibleText', [ '$q', '$http', 'Authentication
 			{ language: 'Xhosa', name: 'Xhosa', code: 'xhosa'}
 		];
 
+		var appendTransform = function(defaults, transform) {
+
+		  // We can't guarantee that the default transformation is an array
+		  defaults = angular.isArray(defaults) ? defaults : [defaults];
+
+		  // Append the new transformation to the defaults
+		  return defaults.concat(transform);
+		};
+
+		var doTransform = function(value) {
+			console.log(value);
+			return value;
+		};
+
 		var getRCVText = function(chapterName, increment) {
 			return $q(function(resolve) {
 				$http.get('/reference', {params: { chapterName: chapterName, increment: increment}})
