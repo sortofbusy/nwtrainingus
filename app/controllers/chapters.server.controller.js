@@ -115,21 +115,26 @@ exports.list = function(req, res) {
 };
 
 /**
- * List of Chapters by User
+ * List of Chapters by Group
  */
-exports.listUserChapters = function(req, res) { 
-	var params = '';
-	if (req.user) {
-		console.log(req.user);
-		params = '{ user: ObjectId("' + req.user._id + '")}'; 
+exports.listGroupChapters = function(req, res) { 
+	var users = [];
+	if (req.group) {
+		
+		for (var i = 0; i < req.group.users.length; i++){
+			users.push('ObjectId(\"' + req.group.users[i]._id + '\")');
+		}
 	}
-
-	Chapter.find(params).sort('-created').populate('user', 'displayName').exec(function(err, chapters) {
+	var params = '{user: { $in: [' + users.join(', ') + ']}}';
+	console.log('[' + users.join(', ') + ']');
+	Chapter.find(params).sort('-created').limit(5).populate('user', 'displayName').exec(function(err, chapters) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
+
+			console.log(chapters);
 			res.jsonp(chapters);
 		}
 	});

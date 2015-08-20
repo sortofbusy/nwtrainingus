@@ -10,9 +10,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		$scope.loaded = false;
 
 		$scope.authentication = Authentication;
-		$scope.user = new Users(Authentication.user);
-		$scope.bibleTextStyle = {'font-size': 100 + ($scope.user.preferences.fontSize * 15) + '%'};
-
+		
 		$scope.completed = false;
 		$scope.plans = null;
 		$scope.plansTabs = [];
@@ -20,6 +18,10 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 				// Initialize controller
 		$scope.init = function() {
 			if (!$scope.authentication.user) return;
+			
+			$scope.user = new Users(Authentication.user);
+			$scope.bibleTextStyle = {'font-size': 100 + ($scope.user.preferences.fontSize * 15) + '%'};
+			
 			Plans.query({ 
 				user: $scope.authentication.user._id
 			}, function(plans) {

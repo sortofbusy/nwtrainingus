@@ -56,6 +56,10 @@ ApplicationConfiguration.registerModule('core');
 'use strict';
 
 // Use applicaion configuration module to register a new module
+ApplicationConfiguration.registerModule('groups');
+'use strict';
+
+// Use applicaion configuration module to register a new module
 ApplicationConfiguration.registerModule('plans');
 'use strict';
 
@@ -236,13 +240,12 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		$scope.loaded = false;
 
 		$scope.authentication = Authentication;
-		$http.get('/users/me').then(function(response) {
-			$scope.user = new Users(response.data);
-		});
+		$scope.user = new Users(Authentication.user);
+		$scope.bibleTextStyle = {'font-size': 100 + ($scope.user.preferences.fontSize * 15) + '%'};
+
 		$scope.completed = false;
 		$scope.plans = null;
 		$scope.plansTabs = [];
-		//$scope.bibleTextStyle = {'font-size':'100%'};
 		
 				// Initialize controller
 		$scope.init = function() {
@@ -422,6 +425,16 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			  controller: 'BadgesModalController',
 			  size: 'md',
 			});
+		};
+
+		$scope.textResize = function(direction) {
+			var sizes = [0, 1, 2];
+			var size = $scope.user.preferences.fontSize;
+			if((direction === 1 && size < 2) || (direction === -1 && size > 0)) {
+				$scope.user.preferences.fontSize += direction;
+				$scope.bibleTextStyle = {'font-size': 100 + ($scope.user.preferences.fontSize * 15) + '%'};
+				$scope.user.$update();
+			}
 		};
 	}
 
@@ -1229,6 +1242,123 @@ angular.module('core').service('Menus', [
 
 		//Adding the topbar menu
 		this.addMenu('topbar');
+	}
+]);
+'use strict';
+
+// Configuring the Articles module
+angular.module('groups').run(['Menus',
+	function(Menus) {
+		// Set top bar menu items
+		Menus.addMenuItem('topbar', 'Groups', 'groups', 'dropdown', '/groups(/create)?');
+		Menus.addSubMenuItem('topbar', 'groups', 'List Groups', 'groups');
+		Menus.addSubMenuItem('topbar', 'groups', 'New Group', 'groups/create');
+	}
+]);
+'use strict';
+
+//Setting up route
+angular.module('groups').config(['$stateProvider',
+	function($stateProvider) {
+		// Groups state routing
+		$stateProvider.
+		state('listGroups', {
+			url: '/groups',
+			templateUrl: 'modules/groups/views/list-groups.client.view.html'
+		}).
+		state('createGroup', {
+			url: '/groups/create',
+			templateUrl: 'modules/groups/views/create-group.client.view.html'
+		}).
+		state('viewGroup', {
+			url: '/groups/:groupId',
+			templateUrl: 'modules/groups/views/view-group.client.view.html'
+		}).
+		state('editGroup', {
+			url: '/groups/:groupId/edit',
+			templateUrl: 'modules/groups/views/edit-group.client.view.html'
+		});
+	}
+]);
+'use strict';
+
+// Groups controller
+angular.module('groups').controller('GroupsController', ['$scope', '$stateParams', '$location', 'Authentication', 'Groups',
+	function($scope, $stateParams, $location, Authentication, Groups) {
+		$scope.authentication = Authentication;
+
+		// Create new Group
+		$scope.create = function() {
+			// Create new Group object
+			var group = new Groups ({
+				name: this.name,
+				users: [$scope.authentication.user._id]
+			});
+			
+			// Redirect after save
+			group.$save(function(response) {
+				console.log('here');
+				$location.path('groups/' + response._id);
+
+				// Clear form fields
+				$scope.name = '';
+			}, function(errorResponse) {
+				$scope.error = errorResponse.data.message;
+			});
+		};
+
+		// Remove existing Group
+		$scope.remove = function(group) {
+			if ( group ) { 
+				group.$remove();
+
+				for (var i in $scope.groups) {
+					if ($scope.groups [i] === group) {
+						$scope.groups.splice(i, 1);
+					}
+				}
+			} else {
+				$scope.group.$remove(function() {
+					$location.path('groups');
+				});
+			}
+		};
+
+		// Update existing Group
+		$scope.update = function() {
+			var group = $scope.group;
+
+			group.$update(function() {
+				$location.path('groups/' + group._id);
+			}, function(errorResponse) {
+				$scope.error = errorResponse.data.message;
+			});
+		};
+
+		// Find a list of Groups
+		$scope.find = function() {
+			$scope.groups = Groups.query();
+		};
+
+		// Find existing Group
+		$scope.findOne = function() {
+			$scope.group = Groups.get({ 
+				groupId: $stateParams.groupId
+			});
+		};
+	}
+]);
+'use strict';
+
+//Groups service used to communicate Groups REST endpoints
+angular.module('groups').factory('Groups', ['$resource',
+	function($resource) {
+		return $resource('groups/:groupId', { groupId: '@_id'
+		}, {
+			update: {
+				method: 'PUT'
+			}
+		});
 	}
 ]);
 'use strict';

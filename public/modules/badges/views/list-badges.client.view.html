@@ -1,6 +1,12 @@
 <section data-ng-controller="BadgesController" data-ng-init="find()">
     <div class="page-header">
-        <h1>Badges</h1>
+        <div class="h1">
+            <span class="fa-stack fa-1x">
+                <i class="fa fa-certificate fa-stack-2x"></i>
+                <i class="fa fa-book fa-stack-1x fa-inverse"></i>
+            </span>
+             Badges
+        </div>
     </div>
     <ul class="list-group">
         <li class="list-group-item" data-ng-repeat="badge in badges">

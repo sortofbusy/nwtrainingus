@@ -1,0 +1,37 @@
+<section data-ng-controller="GroupsController" data-ng-init="findOne()">
+	<div class="page-header">
+		<a href="/#!/groups"><i class="fa fa-angle-double-left"></i> Back To Groups</a>
+		<br>
+		<span class="h1" data-ng-bind="group.name"></span>
+		<span class="label label-success" data-ng-show="(group.users.indexOf(authentication.user._id) > -1)">MEMBER</span> 
+        <span class="label label-primary" data-ng-show="(String(group.creator) === String(authentication.user._id))">CREATOR</span>
+	</div>
+	<div class="row">
+		<div class="col-xs-12 col-md-4">
+			<ul class="list-group">
+				<li class="h3 list-group-item list-group-item-warning"><i class="fa fa-comment fa-fw"></i> Notes</li>
+				<li class="list-group-item" data-ng-repeat="comment in group.recentComments">{{comment.message}}</li>
+			</ul>
+		</div>
+		<div class="col-xs-12 col-md-4">
+			<ul class="list-group">
+				<li class="h3 list-group-item list-group-item-info"><i class="fa fa-bookmark fa-fw"></i> Recent Chapters</li>
+				<li class="list-group-item" data-ng-repeat="chapter in group.recentChapters">{{chapter.name}} <small class="pull-right">{{chapter.user.displayName}}, <em>{{chapter.created | date : "MMM. d"}}</em></small></li>
+			</ul>
+		</div>
+		<div class="col-xs-12 col-md-4">
+			<ul class="list-group">
+				<li class="h3 list-group-item list-group-item-success"><i class="fa fa-group fa-fw"></i> Members</li>
+				<li class="list-group-item" data-ng-repeat="user in group.users">{{user.displayName}}</li>
+			</ul>
+		</div>
+	</div>
+	<div class="pull-right" data-ng-show="((authentication.user) && (authentication.user._id == group.creator))">
+		<a class="btn btn-primary" href="/#!/groups/{{group._id}}/edit">
+			<i class="glyphicon glyphicon-edit"></i>
+		</a>
+		<a class="btn btn-primary" data-ng-click="remove();">
+			<i class="glyphicon glyphicon-trash"></i>
+		</a>
+	</div>
+</section>

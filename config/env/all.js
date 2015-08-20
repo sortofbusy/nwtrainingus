@@ -17,6 +17,7 @@ module.exports = {
 				'public/lib/bootstrap/dist/css/bootstrap-theme.css',
 				'public/lib/fontawesome/css/font-awesome.min.css',
 				'public/lib/angular-busy/dist/angular-busy.css',
+				'public/lib/angular-loading-bar/build/loading-bar.min.css',
 			],
 			js: [
 				'public/lib/angular/angular.js',
@@ -28,6 +29,7 @@ module.exports = {
 				'public/lib/angular-ui-utils/ui-utils.js',
 				'public/lib/angular-bootstrap/ui-bootstrap-tpls.js',
 				'public/lib/biblejs/dist/bible.js',
+				'public/lib/angular-loading-bar/build/loading-bar.min.js',
 			]
 		},
 		css: [

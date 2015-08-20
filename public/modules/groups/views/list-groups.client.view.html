@@ -1,0 +1,29 @@
+<section data-ng-controller="GroupsController" data-ng-init="find()">
+    <div class="page-header">
+        <div class="h1">
+            <i class="fa fa-group fa-1x"></i>
+             Groups
+        </div>
+    </div>
+    <div class="list-group">
+        <a data-ng-repeat="group in groups" data-ng-href="#!/groups/{{group._id}}" class="list-group-item">
+			<div class="row">
+                    <span class="h2 list-group-item-heading" data-ng-bind="group.name"></span>
+                    <span class="label label-success" data-ng-show="(group.users.indexOf(authentication.user._id) > -1)">MEMBER</span> 
+                    <span class="label label-primary" data-ng-show="(String(group.creator) === String(authentication.user._id))">CREATOR</span>
+            </div>
+            <br>
+            <div class="row list-group-item-text">
+                <div class="col-xs-6"> 
+                    <span class="h2">{{group.users.length}}</span> <em>MEMBERS</em>
+                </div>
+                <div class="col-xs-6"> 
+                    <span class="h2">{{group.created | daysOld}}</span> <em>DAYS OLD</em>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="alert alert-warning text-center" data-ng-hide="!groups.$resolved || groups.length">
+    	No Groups yet, why don't you <a href="/#!/groups/create">create one</a>?
+    </div>
+</section>
