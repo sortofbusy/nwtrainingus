@@ -15,9 +15,9 @@
                 <i class="fa fa-fw fa-play"></i> Resume Plan
             </button>
         </div>-->
-        <form class="form-inline col-md-12 text-center" data-ng-submit="updatePlan()" novalidate>
+        <form class="form-inline col-md-12" data-ng-submit="updatePlan()" novalidate>
             <br>
-            <div class="">
+            <div class="col-md-4 col-md-offset-1">
                 <div class="input-group">
                     <label class="b input-group-addon success"><i class="fa fa-fw fa-bookmark"></i> <b>Next</b>
                     </label>
@@ -31,7 +31,7 @@
                 </div>
                 <br><br>
             </div>
-            <div class="">
+            <div class="col-md-4 col-md-offset-1">
                 <div class="input-group col">
                     <label class="b input-group-addon info"><i class="fa fa-fw fa-step-backward"></i> <b>First</b>
                     </label>
@@ -44,12 +44,13 @@
                     <input type="text" data-ng-model="endChapter" name="endChapter" class="form-control">
                 </div>                
                 <br><br>
-            </div>
-            <div>
-                <a class="btn btn-danger" style="margin-right: 100px;" data-ng-click="remove();">
+                <div class="text-right">
+                    <input type="submit" class="btn btn-success align-right" value="Save">
+                </div>
+                <a class="btn btn-danger pull-left" data-ng-click="remove();">
                     <i class="glyphicon glyphicon-trash"></i>
                 </a>
-                <input type="submit" class="btn btn-success" value="Save">
+                
             </div>
         </form>
     </div>
@@ -58,4 +59,3 @@
         <alert data-ng-repeat="alert in updateAlerts" type="{{alert.type}}" close="closeUpdateAlert($index)" dismiss-on-timeout="3500">{{alert.msg}}</alert>
     </div>   
 </section>
-

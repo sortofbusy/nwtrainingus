@@ -5,7 +5,7 @@
 			<br>
 			<div class="row">
 				<div class="col-xs-10 col-xs-offset-1">
-					<img src="modules/core/img/brand/eatthebible.png" class="img-responsive" alt="Eat the Bible">
+					<img src="modules/core/img/brand/eatthebible.png" class="img-responsive center-block" alt="Eat the Bible">
 				</div>
 				<div class="col-xs-12">
 					<br>
@@ -53,7 +53,8 @@
 							</tab>
 						</tabset>
 					</div>
-					<div class="col-xs-2 text-right pull-right">
+					<div class="col-xs-2 text-right text-center">
+						<br>
 						<a data-ng-click="textResize(1)"><i class="fa fa-fw fa-plus-circle fa-2x"></i></a>
 						<a data-ng-click="textResize(-1)"><i class="fa fa-fw fa-minus-circle fa-2x"></i></a>
 					</div>
@@ -75,27 +76,9 @@
 					</button>
 				</div>
 			</div>
-			
 			<mydir-show-chapter-text data-ng-show="plans.length && !completed"></mydir-show-chapter-text>
-			<mydir-nav-chapter data-ng-show="plans.length && !completed"></mydir-nav-chapter>
 			<br>
-			<!--<form class="form-inline well" data-ng-show="plans.length && !completed" data-ng-submit="submitChapterRange()" novalidate>
-				<fieldset>
-	                <div class="form-group">
-	                    <div class="controls">
-	                        <input type="text" data-ng-model="range" id="range" class="form-control" placeholder="enter a chapter range: 'Gen 1'">
-	                    </div>
-	                </div>
-	                <div class="form-group">
-	                    <input type="submit" class="btn btn-default">
-	                </div>
-					<span class="label label-{{alert.type}}" data-ng-repeat="alert in alerts"><i class="fa fa-{{alert.icon}}"></i> {{alert.msg}} </span>
-					<div data-ng-show="error" class="text-danger">
-						<strong data-ng-bind="error">{{error}}</strong>
-					</div>
-	            </fieldset>
-	        </form>-->
-
+			<mydir-nav-chapter data-ng-show="plans.length && !completed"></mydir-nav-chapter>
 		</div>
 	</div>	
 </section>

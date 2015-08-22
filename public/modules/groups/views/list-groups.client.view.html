@@ -7,18 +7,18 @@
     </div>
     <div class="list-group">
         <a data-ng-repeat="group in groups" data-ng-href="#!/groups/{{group._id}}" class="list-group-item">
-			<div class="row">
-                    <span class="h2 list-group-item-heading" data-ng-bind="group.name"></span>
+			<div class="col-xs-12">
+                    <span class="h1 list-group-item-heading" data-ng-bind="group.name"></span>
                     <span class="label label-success" data-ng-show="(group.users.indexOf(authentication.user._id) > -1)">MEMBER</span> 
-                    <span class="label label-primary" data-ng-show="(String(group.creator) === String(authentication.user._id))">CREATOR</span>
+                    <span class="label label-primary" data-ng-show="group.creator._id === authentication.user._id">CREATOR</span>
             </div>
             <br>
             <div class="row list-group-item-text">
                 <div class="col-xs-6"> 
-                    <span class="h2">{{group.users.length}}</span> <em>MEMBERS</em>
+                    <em>MEMBERS</em> <span class="h2">{{group.users.length}}</span>
                 </div>
                 <div class="col-xs-6"> 
-                    <span class="h2">{{group.created | daysOld}}</span> <em>DAYS OLD</em>
+                     <em>STARTED</em> <span class="h2">{{group.created | timeago}}</span>
                 </div>
             </div>
         </a>

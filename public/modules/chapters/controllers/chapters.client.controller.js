@@ -165,29 +165,27 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			});*/
 		};
 
-		$scope.openPlansModal = function (size) {
+		$scope.openMessagesModal = function (inputstring, verse) {
 			var modalInstance = $modal.open({
 			  animation: true,
-			  templateUrl: 'modules/plans/views/plan-modal.html',
-			  controller: 'PlansController',
-			  size: size,
+			  templateUrl: 'modules/messages/views/message-modal.client.view.html',
+			  controller: 'MessagesModalController',
+			  size: 'md',
 			  resolve: {
-			    plans: function () {
-			    	return ReadingPlan.getPlans();
-			    },
-			    authentication: function () {
-			    	return $scope.authentication;
+			    verse: function () {
+			    	verse.inputstring = inputstring;
+			    	return verse;
 			    }
 			  }
 			});
 
-			modalInstance.result.then(function (plans) {
+			/*modalInstance.result.then(function () {
 				ReadingPlan.setPlans(plans);
 				if(plans) 
 					$scope.beginPlanPortion();
 			}, function () {
 
-			});
+			});*/
 		};
 
 		$scope.openBadgesModal = function (size) {

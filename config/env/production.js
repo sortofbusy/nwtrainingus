@@ -10,7 +10,8 @@ module.exports = {
 				'public/lib/bootstrap/dist/css/bootstrap-theme.min.css',
 				'public/lib/fontawesome/css/font-awesome.min.css',
 				'public/lib/angular-busy/dist/angular-busy.css',
-				'public/lib/angular-loading-bar/build/loading-bar.min.css'
+				'public/lib/angular-loading-bar/build/loading-bar.min.css',
+				'public/lib/ladda/dist/ladda-themeless.min.css'
 			],
 			js: [
 				'public/lib/angular/angular.min.js',
@@ -23,6 +24,9 @@ module.exports = {
 				'public/lib/angular-bootstrap/ui-bootstrap-tpls.min.js',
 				'public/lib/biblejs/dist/bible.js',
 				'public/lib/angular-loading-bar/build/loading-bar.min.js',
+				'public/lib/ladda/dist/spin.min.js',
+				'public/lib/ladda/dist/ladda.min.js',
+				'public/lib/angular-ladda/dist/angular-ladda.min.js',
 			]
 		},
 		css: 'public/dist/application.min.css',

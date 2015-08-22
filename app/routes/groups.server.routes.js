@@ -10,7 +10,7 @@ module.exports = function(app) {
 		.post(users.requiresLogin, groups.create);
 
 	app.route('/groups/:groupId')
-		.get(groups.read)
+		.get(groups.read, groups.addMessages)
 		.put(users.requiresLogin, groups.hasAuthorization, groups.update)
 		.delete(users.requiresLogin, groups.creatorAuthorization, groups.delete);
 

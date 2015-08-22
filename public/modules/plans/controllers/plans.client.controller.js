@@ -6,6 +6,14 @@ angular.module('plans').controller('PlansMainController', ['$scope', '$http', 'A
 		$scope.selected = {
 			item: null
 		};
+		$scope.listStartChapter = [];
+		$scope.listEndChapter = [];
+		$scope.listCursor = [];
+		$scope.listPace = [];
+		$scope.listProjected = [];
+
+		$scope.pace = 1;
+
 		$scope.alerts = [];
 		$scope.updateAlerts = [];
 		$scope.items = [
@@ -44,13 +52,37 @@ angular.module('plans').controller('PlansMainController', ['$scope', '$http', 'A
 		    $scope.updateAlerts.splice(index, 1);
 		};
 
-		$scope.myCreate = function(passedPlan) {
-			var plan = new Plans(passedPlan);
-			plan.$save(function(response) {
-				$scope.alerts.push({msg: 'Plan saved!', type: 'success'});
-			}, function(errorResponse) {
-				$scope.alerts.push({msg: errorResponse.data.message, type: 'danger'});
-			});
+		$scope.myCreate = function() {
+			$http.get('/reference', {params: {chapterInput: [$scope.startChapter, $scope.startChapter, $scope.endChapter]}})
+				.then(function(response) {
+					var cursorId = response.data[0];
+					var startChapterId = response.data[1];
+					var endChapterId = response.data[2];
+					
+						// if the new value is a valid chapter
+					if (angular.isNumber(cursorId) && angular.isNumber(startChapterId) && angular.isNumber(endChapterId) && cursorId >= startChapterId && cursorId <= endChapterId) {
+							// update all fields
+						var plan = new Plans({
+							name: $scope.name,
+							startChapter: startChapterId,
+							endChapter: endChapterId,
+							pace: $scope.pace,
+							cursor: startChapterId,
+							user: $scope.authentication.user._id
+						});
+
+						plan.$save(function(response) {
+							$location.path('plans');
+						}, function(errorResponse) {
+							$scope.updateAlerts.push({msg: 'Invalid input.', type: 'danger'});
+						});
+
+					} else {
+						$scope.updateAlerts.push({msg: 'Invalid input.', type: 'danger'});
+					}
+				}, function(error) {
+					$scope.updateAlerts.push({msg: 'Invalid input.', type: 'danger'});
+				});
 		};
 
 		$scope.createMultiple = function(item) {
@@ -125,14 +157,9 @@ angular.module('plans').controller('PlansMainController', ['$scope', '$http', 'A
 		$scope.remove = function(plan) {
 			
 			var areYouSure = $window.confirm('Are you absolutely sure you want to delete this plan? All progress will be permanently lost.');
-			if ( plan && areYouSure) { 
-				plan.$remove();
-
-				for (var i in $scope.plans) {
-					if ($scope.plans [i] === plan) {
-						$scope.plans.splice(i, 1);
-					}
-				}
+			if (areYouSure) { 
+				$scope.plan.$remove();
+				$location.path('plans');
 			}
 		};
 
@@ -145,8 +172,20 @@ angular.module('plans').controller('PlansMainController', ['$scope', '$http', 'A
 
 		// Find a list of Plans
 		$scope.find = function() {
-			$scope.plans = Plans.query({ 
+			Plans.query({ 
 				user: $scope.authentication.user._id
+			}, function(plans) {
+				for (var i = 0; i < plans.length; i++) {
+					$scope.listStartChapter[i] = BibleRef.chapterNameFromId(plans[i].startChapter);
+					$scope.listEndChapter[i] = BibleRef.chapterNameFromId(plans[i].endChapter);
+					$scope.listCursor[i] = BibleRef.chapterNameFromId(plans[i].cursor);
+					$scope.listPace[i] = plans[i].pace;
+
+					var projectedDate = new Date();
+					projectedDate.setDate(projectedDate.getDate() + (plans[i].endChapter - plans[i].cursor) / plans[i].pace);
+					$scope.listProjected[i] = projectedDate;
+				}
+				$scope.plans = plans;
 			});
 		};
 
