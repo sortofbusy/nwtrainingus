@@ -13,3 +13,12 @@
 .ng-valid.ng-dirty {
 	border-color: #78FA89;
 }
+
+.footer {
+	background-color: #D5D5D5;
+	height: 50px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+}

@@ -38,7 +38,7 @@ describe('Message CRUD tests', function() {
 		// Save a user to the test db and create new Message
 		user.save(function() {
 			message = {
-				name: 'Message Name'
+				text: 'Message Name'
 			};
 
 			done();
@@ -75,7 +75,7 @@ describe('Message CRUD tests', function() {
 
 								// Set assertions
 								(messages[0].user._id).should.equal(userId);
-								(messages[0].name).should.match('Message Name');
+								(messages[0].text).should.match('Message Name');
 
 								// Call the assertion callback
 								done();
@@ -94,9 +94,9 @@ describe('Message CRUD tests', function() {
 			});
 	});
 
-	it('should not be able to save Message instance if no name is provided', function(done) {
-		// Invalidate name field
-		message.name = '';
+	it('should not be able to save Message instance if no text is provided', function(done) {
+		// Invalidate text field
+		message.text = '';
 
 		agent.post('/auth/signin')
 			.send(credentials)
@@ -114,7 +114,7 @@ describe('Message CRUD tests', function() {
 					.expect(400)
 					.end(function(messageSaveErr, messageSaveRes) {
 						// Set message assertion
-						(messageSaveRes.body.message).should.match('Please fill Message name');
+						(messageSaveRes.body.message).should.match('Please enter text');
 						
 						// Handle Message save error
 						done(messageSaveErr);
@@ -141,8 +141,8 @@ describe('Message CRUD tests', function() {
 						// Handle Message save error
 						if (messageSaveErr) done(messageSaveErr);
 
-						// Update Message name
-						message.name = 'WHY YOU GOTTA BE SO MEAN?';
+						// Update Message text
+						message.text = 'WHY YOU GOTTA BE SO MEAN?';
 
 						// Update existing Message
 						agent.put('/messages/' + messageSaveRes.body._id)
@@ -154,7 +154,7 @@ describe('Message CRUD tests', function() {
 
 								// Set assertions
 								(messageUpdateRes.body._id).should.equal(messageSaveRes.body._id);
-								(messageUpdateRes.body.name).should.match('WHY YOU GOTTA BE SO MEAN?');
+								(messageUpdateRes.body.text).should.match('WHY YOU GOTTA BE SO MEAN?');
 
 								// Call the assertion callback
 								done();
@@ -192,7 +192,7 @@ describe('Message CRUD tests', function() {
 			request(app).get('/messages/' + messageObj._id)
 				.end(function(req, res) {
 					// Set assertion
-					res.body.should.be.an.Object.with.property('name', message.name);
+					res.body.should.be.an.Object.with.property('text', message.text);
 
 					// Call the assertion callback
 					done();

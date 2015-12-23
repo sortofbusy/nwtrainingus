@@ -17,6 +17,7 @@ var credentials, user, chapter;
  * Chapter routes tests
  */
 describe('Chapter CRUD tests', function() {
+	
 	beforeEach(function(done) {
 		// Create user credentials
 		credentials = {
@@ -38,7 +39,7 @@ describe('Chapter CRUD tests', function() {
 		// Save a user to the test db and create new Chapter
 		user.save(function() {
 			chapter = {
-				name: 'Chapter Name'
+				name: 'Genesis 5'
 			};
 
 			done();
@@ -75,7 +76,7 @@ describe('Chapter CRUD tests', function() {
 
 								// Set assertions
 								(chapters[0].user._id).should.equal(userId);
-								(chapters[0].name).should.match('Chapter Name');
+								(chapters[0].name).should.match('Genesis 5');
 
 								// Call the assertion callback
 								done();
@@ -114,7 +115,7 @@ describe('Chapter CRUD tests', function() {
 					.expect(400)
 					.end(function(chapterSaveErr, chapterSaveRes) {
 						// Set message assertion
-						(chapterSaveRes.body.message).should.match('Please fill Chapter name');
+						(chapterSaveRes.body.message).should.match('');
 						
 						// Handle Chapter save error
 						done(chapterSaveErr);
@@ -260,9 +261,73 @@ describe('Chapter CRUD tests', function() {
 		});
 	});
 
+	it('should be able to return a chapter name from chapter number if not signed in', function(done) {
+		// Create new Chapter model instance
+		var chapterObj = new Chapter(chapter);
+
+		// Save the Chapter
+		chapterObj.save(function() {
+			// Request reference
+			request(app).get('/reference?chapterNumber=5')
+				.expect(200)
+				.end(function(req, res) {
+					
+					// Set assertion
+					res.body.should.match('Genesis 5');
+
+					// Call the assertion callback
+					done();
+				});
+		});
+	});
+
+	it('should be able to return a chapter number from chapter name if not signed in', function(done) {
+		// Create new Chapter model instance
+		var chapterObj = new Chapter(chapter);
+
+		// Save the Chapter
+		chapterObj.save(function() {
+			// Request reference
+			request(app).get('/reference?chapterName=Genesis%201&increment=1')
+				.expect(200)
+				.end(function(req, res) {
+
+					// Set assertion
+					res.body.should.be.an.Array.with.lengthOf(1)
+
+					// Call the assertion callback
+					done();
+				});
+		});
+	});
+
+	it('should not be able to return an array of reference strings for the chapter after a given one', function(done) {
+		// Set Chapter user 
+		chapter.user = user;
+
+		// Create new Chapter model instance
+		var chapterObj = new Chapter(chapter);
+
+		// Save the Chapter
+		chapterObj.save(function() {
+			// Call next
+			request(app).get('/chapters/' + chapterObj._id + '/next')
+			.expect(200)
+			.end(function(req, res) {
+				// Set assertion
+				res.body.should.be.an.Array.with.lengthOf(1);
+
+				// Handle Chapter error error
+				done();
+			});
+
+		});
+	});
+
 	afterEach(function(done) {
 		User.remove().exec();
 		Chapter.remove().exec();
 		done();
 	});
+	
 });

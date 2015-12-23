@@ -17,6 +17,7 @@ var user, chapter;
  * Unit tests
  */
 describe('Chapter Model Unit Tests:', function() {
+
 	beforeEach(function(done) {
 		user = new User({
 			firstName: 'Full',
@@ -29,7 +30,7 @@ describe('Chapter Model Unit Tests:', function() {
 
 		user.save(function() { 
 			chapter = new Chapter({
-				name: 'Chapter Name',
+				name: 'Genesis 5',
 				user: user
 			});
 
@@ -53,6 +54,7 @@ describe('Chapter Model Unit Tests:', function() {
 				done();
 			});
 		});
+
 	});
 
 	afterEach(function(done) { 
@@ -61,4 +63,5 @@ describe('Chapter Model Unit Tests:', function() {
 
 		done();
 	});
+	
 });

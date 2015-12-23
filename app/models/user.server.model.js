@@ -105,6 +105,12 @@ var UserSchema = new Schema({
 			type: Number,
 			enum: [0, 1, 2],
 			default: 0
+		},
+		tour: {
+			type: Number,
+			min: 0,
+			max: 6,
+			default: 0
 		}
 	}
 });

@@ -156,10 +156,10 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		};
 
 		$scope.share = function(input) {
-			var params = {
+			/*var params = {
 				message: input,
 				accessToken: $scope.user.additionalProvidersData.facebook.accessToken,
-			};
+			};*/
 			/*$http.post('https://graph.facebook.com/v2.4/me/feed', params).then(function(response) {
 				console.log(response);
 			});*/

@@ -103,7 +103,7 @@ exports.list = function(req, res) {
 	if (req.user) {
 		params = '{ user: ObjectId("' + req.user._id + '")}'; 
 	}
-	Chapter.find({ user: req.query.user}).sort('-created').populate('user', 'displayName').exec(function(err, chapters) {
+	Chapter.find(params).sort('-created').populate('user', 'displayName').exec(function(err, chapters) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -145,8 +145,7 @@ exports.listGroupChapters = function(req, res) {
  */
 exports.getNextChapter = function(req, res) {
 	try {
-		var increment = +req.query.increment;
-		console.log(increment);
+		var increment = 1; //+req.query.increment;
 		var newChapterId = new Reference(req.chapter.name).toChapterId() + increment;
 		var newRefString = Reference.fromChapterId(newChapterId).toString();
 		var verses = Reference.versesInChapterId(newChapterId);

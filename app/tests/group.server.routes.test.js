@@ -74,7 +74,7 @@ describe('Group CRUD tests', function() {
 								var groups = groupsGetRes.body;
 
 								// Set assertions
-								(groups[0].user._id).should.equal(userId);
+								(groups[0].creator._id).should.equal(userId);
 								(groups[0].name).should.match('Group Name');
 
 								// Call the assertion callback

@@ -6,6 +6,7 @@
 		<span class="label label-success" data-ng-show="(group.users.indexOf(authentication.user._id) > -1)">MEMBER</span> 
         <span class="label label-primary" data-ng-show="(String(group.creator) === String(authentication.user._id))">CREATOR</span>
 	</div>
+	{{group}}
 	<div class="row">
 		<div class="col-xs-12 col-md-4">
 			<ul class="list-group">

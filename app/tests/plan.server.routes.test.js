@@ -38,7 +38,11 @@ describe('Plan CRUD tests', function() {
 		// Save a user to the test db and create new Plan
 		user.save(function() {
 			plan = {
-				name: 'Plan Name'
+				name: 'Plan Name',
+				startChapter: 1,
+				endChapter: 9,
+				cursor: 1,
+				pace: 1
 			};
 
 			done();
@@ -72,9 +76,8 @@ describe('Plan CRUD tests', function() {
 
 								// Get Plans list
 								var plans = plansGetRes.body;
-
 								// Set assertions
-								(plans[0].user._id).should.equal(userId);
+								(plans[0].user).should.equal(userId);
 								(plans[0].name).should.match('Plan Name');
 
 								// Call the assertion callback

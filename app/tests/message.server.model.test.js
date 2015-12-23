@@ -29,8 +29,7 @@ describe('Message Model Unit Tests:', function() {
 
 		user.save(function() { 
 			message = new Message({
-				name: 'Message Name',
-				user: user
+				text: 'Message Name'
 			});
 
 			done();
@@ -45,8 +44,8 @@ describe('Message Model Unit Tests:', function() {
 			});
 		});
 
-		it('should be able to show an error when try to save without name', function(done) { 
-			message.name = '';
+		it('should be able to show an error when try to save without text', function(done) { 
+			message.text = '';
 
 			return message.save(function(err) {
 				should.exist(err);

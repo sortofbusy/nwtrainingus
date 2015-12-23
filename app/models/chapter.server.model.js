@@ -12,7 +12,6 @@ var mongoose = require('mongoose'),
 var ChapterSchema = new Schema({
 	name: {
 		type: String,
-		default: '',
 		required: 'Please fill Chapter name',
 		trim: true
 	},

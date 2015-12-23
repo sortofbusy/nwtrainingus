@@ -11,7 +11,7 @@ module.exports = function(app) {
 
 	app.route('/groups/:groupId')
 		.get(groups.read, groups.addMessages)
-		.put(users.requiresLogin, groups.hasAuthorization, groups.update)
+		.put(users.requiresLogin, groups.creatorAuthorization, groups.update)
 		.delete(users.requiresLogin, groups.creatorAuthorization, groups.delete);
 
 	// Finish by binding the Group middleware
