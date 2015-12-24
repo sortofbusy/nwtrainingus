@@ -8,12 +8,58 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		$scope.loadingDefer = $q.defer();
 		$scope.loadingPromise = $scope.loadingDefer.promise;
 		$scope.loaded = false;
+		$scope.optionsCollapsed = true;
 
 		$scope.authentication = Authentication;
 		
 		$scope.completed = false;
 		$scope.plans = null;
 		$scope.plansTabs = [];
+
+		$scope.bibleVersions = [
+			{ language: 'Afrikaans', name: 'Ou Vertaling', code: 'aov' },
+			{ language: 'Albanian', name: 'Albanian', code: 'albanian' },
+			{ language: 'Amharic', name: 'Haile Selassie Amharic Bible', code: 'hsab' },
+			{ language: 'Arabic', name: 'Smith and Van Dyke', code: 'arabicsv' },
+			{ language: 'Chinese', name: 'NCV Traditional', code: 'cnt' },
+			{ language: 'Chinese', name: 'Union Simplified', code: 'cus' },
+			{ language: 'Chinese', name: 'NCV Simplified', code: 'cns' },
+			{ language: 'Chinese', name: 'Union Traditional', code: 'cut' },
+			{ language: 'Croatian', name: 'Croatian', code: 'croatia' },
+			{ language: 'Danish', name: 'Danish', code: 'danish' },
+			{ language: 'Dutch', name: 'Dutch Staten Vertaling', code: 'statenvertaling' },
+			{ language: 'English', name: 'American Standard Version', code: 'asv' },
+			{ language: 'English', name: 'Amplified Version', code: 'amp' },
+			{ language: 'English', name: 'Basic English Bible', code: 'basicenglish' },
+			{ language: 'English', name: 'Darby', code: 'darby' },
+			{ language: 'English', name: 'King James Version', code: 'kjv' },
+			{ language: 'English', name: 'KJV Easy Read', code: 'akjv' },
+			{ language: 'English', name: 'New American Standard', code: 'nasb' },
+			{ language: 'English', name: 'Recovery Version', code: 'rcv' },
+			{ language: 'English', name: 'Young\'s Literal Translation', code: 'ylt' },
+			{ language: 'English', name: 'World English Bible', code: 'web' },
+			{ language: 'English', name: 'Webster\'s Bible', code: 'wb' },
+			{ language: 'Esperanto', name: 'Esperanto', code: 'esperanto' },
+			{ language: 'Estonian', name: 'Estonian', code: 'estonian' },
+			{ language: 'Finnish', name: 'Finnish Bible (1776)', code: 'finnish1776' },
+			{ language: 'French', name: 'Martin (1744)', code: 'martin' },
+			{ language: 'German', name: 'Luther (1912)', code: 'luther1912' },
+			{ language: 'Greek', name: 'Greek Modern', code: 'moderngreek' },
+			{ language: 'Greek', name: 'Textus Receptus', code: 'text' },
+			{ language: 'Hebrew', name: 'Aleppo Codex', code: 'aleppo' },
+			{ language: 'Hungarian', name: 'Hungarian Karoli', code: 'karoli' },
+			{ language: 'Italian', name: 'Giovanni Diodati Bible (1649)', code: 'giovanni' },
+			{ language: 'Korean', name: 'Korean', code: 'korean' },
+			{ language: 'Norwegian', name: 'Bibelselskap (1930)', code: 'bibelselskap' },
+			{ language: 'Portuguese', name: 'Almeida Atualizada', code: 'almeida' },
+			{ language: 'Russian', name: 'Synodal Translation (1876)', code: 'synodal' },
+			{ language: 'Spanish', name: 'Reina Valera (1909)', code: 'valera' },
+			{ language: 'Swahili', name: 'Swahili', code: 'swahili' },
+			{ language: 'Swedish', name: 'Swedish (1917)', code: 'swedish' },
+			{ language: 'Turkish', name: 'Turkish', code: 'turkish' },
+			{ language: 'Vietnamese', name: 'Vietnamese (1934)', code: 'vietnamese' },
+			{ language: 'Xhosa', name: 'Xhosa', code: 'xhosa' }
+		];
 		
 				// Initialize controller
 		$scope.init = function() {
@@ -98,36 +144,6 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			return $scope.textPromise;
 		};
 
-		// Create new range of Chapters
-		$scope.submitChapterRange = function(name) {
-			if(!$scope.range) return;
-
-			var range = $scope.range.split('-');
-			
-			var rangeStart = range[0].trim();
-			var rangeEnd = range[1];
-
-			$scope.alerts = [];
-				// if a range was entered
-			if (rangeEnd) {
-				rangeEnd = rangeEnd.trim();
-				$http.get('/range', {params: { rangeStart: rangeStart, rangeEnd: rangeEnd}})
-					.then(function (response) {
-						var calls = [];
-							for(var i= response.data.rangeStart; i < response.data.rangeEnd; i++) {
-								calls.push($scope.create({absoluteChapter: i}));
-							}
-							$q.all(calls);
-					}, function(err) {
-						$scope.alerts.push({type: 'danger', msg: 'Range entry failed.', icon: 'times'});
-					});
-				// if only one chapter was entered
-			} else {
-				$scope.create({name: rangeStart});
-			}
-			$scope.range='';
-		};
-
 		// Find a list of Chapters
 		$scope.find = function(userId) {
 			if(!userId) userId = $scope.authentication.user._id;
@@ -204,7 +220,15 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 				$scope.user.preferences.fontSize += direction;
 				$scope.bibleTextStyle = {'font-size': 100 + ($scope.user.preferences.fontSize * 15) + '%'};
 				$scope.user.$update();
+			console.log('here');
 			}
+		};
+
+		$scope.updateVersion = function() {
+			$scope.user.$update().then(function() {
+				$scope.init();
+			});
+			
 		};
 	}
 

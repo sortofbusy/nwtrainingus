@@ -7,20 +7,14 @@ module.exports = function(app) {
 
 	// Chapters Routes
 	app.route('/chapters')
-		.get(chapters.list)
+		.get(users.requiresLogin, chapters.list)
 		.post(users.requiresLogin, chapters.create);
 
 	app.route('/reference')
 		.get(chapters.reference);
 
-	app.route('/range')
-		.get(chapters.range);
-
 	app.route('/chapters/group/:groupId')
 		.get(chapters.listGroupChapters);
-
-	app.route('/chapters/:chapterId/next')
-		.get(chapters.getNextChapter);
 
 	app.route('/chapters/:chapterId')
 		.get(chapters.read)

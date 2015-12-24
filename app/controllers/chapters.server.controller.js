@@ -140,36 +140,6 @@ exports.listGroupChapters = function(req, res) {
 	});
 };
 
-/**
- * receives a chapter._id of current chapter, return an array of reference strings for the next chapter
- */
-exports.getNextChapter = function(req, res) {
-	try {
-		var increment = 1; //+req.query.increment;
-		var newChapterId = new Reference(req.chapter.name).toChapterId() + increment;
-		var newRefString = Reference.fromChapterId(newChapterId).toString();
-		var verses = Reference.versesInChapterId(newChapterId);
-		var result = [];
-
-		// push chunks of 30 verses onto the array
-		for (var i=1; i <= Math.floor(verses/30); i++){
-			result.push(newRefString + ':' + ((i-1)*30+1) + '-' + (i * 30));
-		}	
-
-		// take care of the chunk less than 30
-		if (verses % 30  > 0) {
-			var counter = Math.floor(verses/30) * 30;
-			result.push(newRefString + ':' + (counter + 1) + '-' + (counter + verses % 30));
-		}
-		// code here to split up the chapter into blocks of 30 and return an array
-		res.jsonp(result);
-	} catch(err) {
-		return res.status(400).send({
-			message: errorHandler.getErrorMessage(err)
-		});
-	}
-};
-
 function callRCV (params) {
 	var deferred = q.defer();
 	http.get('https://api.lsm.org/recver.php', {params: params}, function(res) {
@@ -230,27 +200,6 @@ exports.reference = function(req, res) {
 				chapterInput.push(new Reference(req.query.chapterInput[r]).toChapterId());
 			}
 			res.jsonp(chapterInput);
-		}
-	} catch(err) {
-		console.error(errorHandler.getErrorMessage(err));
-		return res.status(400).send({
-			message: errorHandler.getErrorMessage(err)
-		});
-	}
-};
-
-exports.range = function(req, res) {
-	try {
-		if (req.query.rangeStart && req.query.rangeEnd) {
-			var result = {};
-			var rangeStart = new Reference(req.query.rangeStart).toChapterId();
-			var rangeEnd = new Reference(req.query.rangeEnd).toChapterId();
-			
-			result.rangeStart = rangeStart;
-			result.rangeEnd = rangeEnd;
-			res.jsonp(result);
-		} else {
-			throw new Error('Invalid range supplied.');
 		}
 	} catch(err) {
 		console.error(errorHandler.getErrorMessage(err));

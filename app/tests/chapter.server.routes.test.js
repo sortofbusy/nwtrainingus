@@ -293,7 +293,7 @@ describe('Chapter CRUD tests', function() {
 				.end(function(req, res) {
 
 					// Set assertion
-					res.body.should.be.an.Array.with.lengthOf(1)
+					res.body.should.be.an.Array.with.lengthOf(1);
 
 					// Call the assertion callback
 					done();

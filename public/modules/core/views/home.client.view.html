@@ -41,23 +41,36 @@
 		<div cg-busy="{promise:loadingPromise,message:'Loading ...'}"></div>
 		<div data-ng-show="loaded">
 			<!--<div class="jumbotron text-center">-->
-				<div class="row">
-					<div class="col-xs-10 col-md-4 pull-left" data-ng-show="plans">
-						<tabset vertical="true" type ="pills">
-							<tab data-ng-repeat="plan in plans" active="plansTabs[$index]" data-ng-click="changePlan($index)" class="bg-info">
-								<tab-heading>
-									{{plan.name}} <span class="badge">{{plan.chapters.length}}/{{plan.pace}}</span>
-								</tab-heading>
-								<!--<b>Progress:</b> {{plan.chapters.length}} / {{plan.pace}} chapters today 
-								<progressbar value="plan.chapters.length" type="success" max="plan.pace"></progressbar>-->
-							</tab>
-						</tabset>
+				<div >
+					<br>
+					<button type="button" class="btn btn-default pull-right" ng-click="optionsCollapsed = !optionsCollapsed"><i class="fa fa-fw fa-gear"></i><b class="caret"></b></button>
+					<div collapse="optionsCollapsed">
+						<div class="well well-lg">
+							<div class="" data-ng-show="plans">
+							<h3>Reading Plans</h3>
+							<tabset vertical="true" type ="pills">
+								<tab data-ng-repeat="plan in plans" active="plansTabs[$index]" data-ng-click="changePlan($index)" class="bg-info">
+									<tab-heading>
+										{{plan.name}} <span class="badge">{{plan.chapters.length}}/{{plan.pace}}</span>
+									</tab-heading>
+									<!--<b>Progress:</b> {{plan.chapters.length}} / {{plan.pace}} chapters today 
+									<progressbar value="plan.chapters.length" type="success" max="plan.pace"></progressbar>-->
+								</tab>
+							</tabset>
+							</div>
+							<h3>Text Size</h3>
+							<div class="text-center">
+								<button type="button" data-ng-click="textResize(1)"><i class="fa fa-fw fa-plus fa-2x"></i></button>
+								<button type="button" data-ng-click="textResize(-1)"><i class="fa fa-fw fa-minus fa-2x"></i></button>
+							</div>
+							<h3>Choose Translation</h3>
+								<form>
+									<select id="preferences.version" name="preferences.version" class="form-control" data-ng-model="user.preferences.version" data-ng-options="version.code as version.name group by version.language for version in bibleVersions" data-ng-change="updateVersion()">
+									</select>
+								</form>
+						</div>
 					</div>
-					<div class="col-xs-2 text-right text-center">
-						<br>
-						<a data-ng-click="textResize(1)"><i class="fa fa-fw fa-plus-circle fa-2x"></i></a>
-						<a data-ng-click="textResize(-1)"><i class="fa fa-fw fa-minus-circle fa-2x"></i></a>
-					</div>
+					
 					<div class="col-md-4 h2 pull-left" data-ng-hide="plans.length">
 						Choose a reading plan to get started! 
 						<a class="btn btn-info btn-lg" href="/#!/plans">

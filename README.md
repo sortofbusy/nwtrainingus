@@ -30,14 +30,12 @@ Eat The Bible is a MEANJS-based SPA designed to help people read the Bible in a 
 * GET /plans/:planId/today - returns chapters read today in this plan 
 
 ### Chapters
-* GET /chapters - returns all chapters
+* GET /chapters - returns all chapters (of the authenticated user)
 * POST /chapters - creates a new chapter (of the authenticated user)
 * GET /reference - returns a reference to a chapter  MESSY
-* GET /range - handles a range of chapters, does ??? DEPRECATED
 * GET /chapters/:chapterId - reads one chapter
 * PUT /chapters/:chapterId - updates one chapter
 * DELETE /chapters/:chapterId - deletes one chapter
-* GET /chapters/:chapterId/next - returns an array of reference strings for the chapter after this ID MESSY
 * GET /chapters/group/:groupId - returns recently read chapters by members of this group WRONG
 
 ### Groups
