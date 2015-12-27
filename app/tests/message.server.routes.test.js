@@ -163,39 +163,55 @@ describe('Message CRUD tests', function() {
 			});
 	});
 
-	it('should be able to get a list of Messages if not signed in', function(done) {
+	it('should be able to get a list of Messages if signed in', function(done) {
 		// Create new Message model instance
 		var messageObj = new Message(message);
 
-		// Save the Message
-		messageObj.save(function() {
-			// Request Messages
-			request(app).get('/messages')
-				.end(function(req, res) {
-					// Set assertion
-					res.body.should.be.an.Array.with.lengthOf(1);
+		agent.post('/auth/signin')
+			.send(credentials)
+			.expect(200)
+			.end(function(signinErr, signinRes) {
+				// Handle signin error
+				if (signinErr) done(signinErr);
 
-					// Call the assertion callback
-					done();
+				// Save the Message
+				messageObj.save(function() {
+					// Request Messages
+					agent.get('/messages')
+						.end(function(req, res) {
+							// Set assertion
+							res.body.should.be.an.Array.with.lengthOf(1);
+
+							// Call the assertion callback
+							done();
+						});
+
 				});
-
-		});
+			});
 	});
 
 
-	it('should be able to get a single Message if not signed in', function(done) {
+	it('should be able to get a single Message if signed in', function(done) {
 		// Create new Message model instance
 		var messageObj = new Message(message);
 
-		// Save the Message
-		messageObj.save(function() {
-			request(app).get('/messages/' + messageObj._id)
-				.end(function(req, res) {
-					// Set assertion
-					res.body.should.be.an.Object.with.property('text', message.text);
+		agent.post('/auth/signin')
+			.send(credentials)
+			.expect(200)
+			.end(function(signinErr, signinRes) {
+				// Handle signin error
+				if (signinErr) done(signinErr);
 
-					// Call the assertion callback
-					done();
+				// Save the Message
+				messageObj.save(function() {
+				agent.get('/messages/' + messageObj._id)
+					.end(function(req, res) {
+						// Set assertion
+						res.body.should.be.an.Object.with.property('text', message.text);
+
+						// Call the assertion callback
+						done();
+					});
 				});
 		});
 	});

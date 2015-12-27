@@ -39,15 +39,11 @@ angular.module('groups').controller('GroupsController', ['$scope', '$http', '$st
 		// Update existing Group
 		$scope.update = function() {
 			var group = $scope.group;
-			/*
-
-
-
 			group.$update(function() {
 				$location.path('groups/' + group._id);
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
-			});*/
+			});
 		};
 
 		// Find a list of Groups
@@ -69,6 +65,7 @@ angular.module('groups').controller('GroupsController', ['$scope', '$http', '$st
 			$scope.group = Groups.get({ 
 				groupId: $stateParams.groupId
 			});
+
 		};
 	}
 ]);

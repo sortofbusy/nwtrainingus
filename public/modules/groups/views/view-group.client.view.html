@@ -3,8 +3,9 @@
 		<a href="/#!/groups"><i class="fa fa-angle-double-left"></i> Back To Groups</a>
 		<br>
 		<span class="h1" data-ng-bind="group.name"></span>
+		<span class="label label-primary" data-ng-show="group.creator === authentication.user._id">CREATOR</span>
 		<span class="label label-success" data-ng-show="(group.users.indexOf(authentication.user._id) > -1)">MEMBER</span> 
-        <span class="label label-primary" data-ng-show="(String(group.creator) === String(authentication.user._id))">CREATOR</span>
+        
 	</div>
 	{{group}}
 	<div class="row">

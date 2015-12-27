@@ -16,20 +16,18 @@ var mongoose = require('mongoose'),
  */
 exports.create = function(req, res) {
 	var group = new Group(req.body);
-	
 	group.creator = req.user._id;
-	try {
-		group.save(function(err) {
-			if (err) {
-				return res.status(400).send({
-					message: errorHandler.getErrorMessage(err)
-				});
-			} else {
-				res.jsonp(group);
-			}
-		});
-	} catch (e) {
-	}
+	group.users = [req.user];
+	
+	group.save(function(err) {
+		if (err) {
+			return res.status(400).send({
+				message: errorHandler.getErrorMessage(err)
+			});
+		} else {
+			res.jsonp(group);
+		}
+	});
 };
 
 /**
@@ -37,16 +35,9 @@ exports.create = function(req, res) {
  */
 exports.read = function(req, res, next) {
 	try {
-		var users = [];
-		for (var i = 0; i < req.group.users.length; i++){
-			users.push('ObjectId(\"' + req.group.users[i]._id + '\")');
-		}
 	
-		var params = '{user: { $in: [' + users.join(', ') + ']}}';
-		
-		Chapter.find(params).sort('-created').limit(10).populate('user', 'displayName').exec(function(err, chapters) {
+		Chapter.find().where('user').in(req.group.users).sort('-created').limit(10).populate('user', 'displayName').exec(function(err, chapters) {
 			if (err) {
-				console.log(err);
 				throw err;
 			} else {
 				req.group.recentChapters = chapters;
@@ -59,6 +50,8 @@ exports.read = function(req, res, next) {
 		});
 	}
 };
+//{user: { $in: [ObjectId("55a75731b6e730ac00af9919")]}}
+
 
 /**
  * Adds recent messages
@@ -72,7 +65,6 @@ exports.addMessages = function(req, res) {
 				console.log(err);
 				throw err;
 			} else {
-				console.log(messages);
 				req.group.recentMessages = messages;
 				res.jsonp(req.group);
 			}
@@ -92,34 +84,20 @@ exports.update = function(req, res) {
 	
 	var now = new Date();
 	group.modified = now;
-	
-	if (req.body.users) {
-		for (var i = 0; i < req.body.users.length; i++) {
-			if (req.body.users[i]._id) 
-				req.body.users[i] = req.body.users[i]._id;
-		}
-		group.users = [];
-	}
 
-	if (req.body.creator) {
-		req.body.creator = req.body.creator._id;
-	} 
-
-	group = _.extend(group , req.body);
-
-	group.save(function(err) {
+	Group.findOneAndUpdate({_id: group._id}, {name: req.body.name, modified: req.body.modified}, {upsert: true}, function(err, newGroup) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
-			res.jsonp(group);
+			res.jsonp(newGroup);
 		}
 	});
 };
 
 /**
- * Delete an Group
+ * Delete a Group
  */
 exports.delete = function(req, res) {
 	var group = req.group ;
@@ -140,7 +118,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) { 
 	//req.query.users = mongoose.Types.ObjectId(String(req.query.users));
-	Group.find().sort('-created').populate('creator', 'displayName').exec(function(err, groups) {
+	Group.find().sort('-created').exec(function(err, groups) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -151,11 +129,68 @@ exports.list = function(req, res) {
 	});
 };
 
+exports.getChapters = function(req, res) {
+	var group = req.group;
+	try {
+		var params = {user: req.group.creator};
+		
+		Chapter.find(params).sort('-created').limit(10).populate('user', 'displayName').exec(function(err, chapters) {
+			if (err) {
+				console.log(err);
+				throw err;
+			} else {
+				res.jsonp(chapters);
+			}
+		});
+	} catch (e) {
+		return res.status(400).send({
+			message: errorHandler.getErrorMessage(e)
+		});
+	}
+
+};
+
+/**
+ * Adds recent messages
+ */
+exports.getMessages = function(req, res) {
+	try {
+		var params = {group: req.group._id};
+		
+		Message.find(params).sort('-created').limit(10).populate('user', 'displayName').exec(function(err, messages) {
+			if (err) {
+				throw err;
+			} else {
+				console.log(messages);
+				res.jsonp(messages);
+			}
+		});
+	} catch (e) {
+		return res.status(400).send({
+			message: errorHandler.getErrorMessage(e)
+		});
+	}
+};
+
+exports.addUser = function(req, res) {
+	req.group.users.push(req.body.newUser._id);
+	
+	req.group.save(function (err) {
+		if (err) {
+			return res.status(400).send({
+				message: errorHandler.getErrorMessage(err)
+			});
+		} else {
+			res.jsonp(req.group);
+		}
+	});
+};
+
 /**
  * Group middleware
  */
 exports.groupByID = function(req, res, next, id) { 
-	Group.findById(id).populate('users', 'displayName').exec(function(err, group) {
+	Group.findById(id).exec(function(err, group) {
 		if (err) return next(err);
 		if (! group) return next(new Error('Failed to load Group ' + id));
 		req.group = group ;
@@ -168,7 +203,7 @@ exports.groupByID = function(req, res, next, id) {
  */
 exports.hasAuthorization = function(req, res, next) {
 	if (req.group.users.indexOf(req.user.id) === -1) {
-		//return res.status(403).send('User is not authorized');
+		return res.status(403).send('User is not authorized');
 	}
 	next();
 };

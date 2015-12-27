@@ -6,12 +6,14 @@ var should = require('should'),
 	mongoose = require('mongoose'),
 	User = mongoose.model('User'),
 	Group = mongoose.model('Group'),
+	Chapter = mongoose.model('Chapter'),
+	Message = mongoose.model('Message'),
 	agent = request.agent(app);
 
 /**
  * Globals
  */
-var credentials, user, group;
+var credentials, credentials2, user, user2, group, chapter, message;
 
 /**
  * Group routes tests
@@ -38,7 +40,14 @@ describe('Group CRUD tests', function() {
 		// Save a user to the test db and create new Group
 		user.save(function() {
 			group = {
-				name: 'Group Name'
+				name: 'Group Name',
+				creator: user.id,
+				users: [ user.id ]
+			};
+
+			chapter = {
+				name: 'Genesis 5',
+				user: user.id
 			};
 
 			done();
@@ -74,7 +83,7 @@ describe('Group CRUD tests', function() {
 								var groups = groupsGetRes.body;
 
 								// Set assertions
-								(groups[0].creator._id).should.equal(userId);
+								(groups[0].creator).should.equal(userId);
 								(groups[0].name).should.match('Group Name');
 
 								// Call the assertion callback
@@ -142,11 +151,11 @@ describe('Group CRUD tests', function() {
 						if (groupSaveErr) done(groupSaveErr);
 
 						// Update Group name
-						group.name = 'WHY YOU GOTTA BE SO MEAN?';
+						groupSaveRes.body.name = 'WHY YOU GOTTA BE SO MEAN?';
 
 						// Update existing Group
 						agent.put('/groups/' + groupSaveRes.body._id)
-							.send(group)
+							.send(groupSaveRes.body)
 							.expect(200)
 							.end(function(groupUpdateErr, groupUpdateRes) {
 								// Handle Group update error
@@ -174,7 +183,7 @@ describe('Group CRUD tests', function() {
 				.end(function(req, res) {
 					// Set assertion
 					res.body.should.be.an.Array.with.lengthOf(1);
-
+					
 					// Call the assertion callback
 					done();
 				});
@@ -183,19 +192,29 @@ describe('Group CRUD tests', function() {
 	});
 
 
-	it('should be able to get a single Group if not signed in', function(done) {
-		// Create new Group model instance
-		var groupObj = new Group(group);
+	it('should be able to get a single Group if signed in', function(done) {
+		agent.post('/auth/signin')
+			.send(credentials)
+			.expect(200)
+			.end(function(signinErr, signinRes) {
+				// Handle signin error
+				if (signinErr) done(signinErr);
 
-		// Save the Group
-		groupObj.save(function() {
-			request(app).get('/groups/' + groupObj._id)
-				.end(function(req, res) {
-					// Set assertion
-					res.body.should.be.an.Object.with.property('name', group.name);
+				// Create new Group model instance
+				var groupObj = new Group(group);
 
-					// Call the assertion callback
-					done();
+				// Save the Group
+				groupObj.save(function() {
+					agent.get('/groups/' + groupObj._id)
+						.expect(200)
+						.end(function(err, res) {
+
+							if (err) done(err);
+							// Set assertion
+							res.body.should.be.an.Object.with.property('name', group.name);
+							// Call the assertion callback
+							done();
+						});
 				});
 		});
 	});
@@ -263,6 +282,181 @@ describe('Group CRUD tests', function() {
 	afterEach(function(done) {
 		User.remove().exec();
 		Group.remove().exec();
+		Chapter.remove().exec();
+		Message.remove().exec();
+		done();
+	});
+});
+
+describe('Group detail tests', function() {
+	beforeEach(function(done) {
+		// Create user credentials
+		credentials = {
+			username: 'username',
+			password: 'password'
+		};
+
+		// Create a new user
+		user = new User({
+			firstName: 'Full',
+			lastName: 'Name',
+			displayName: 'Full Name',
+			email: 'test@test.com',
+			username: credentials.username,
+			password: credentials.password,
+			provider: 'local'
+		});
+
+		// Create user credentials
+		credentials2 = {
+			username: 'username2',
+			password: 'password2'
+		};
+
+		// Create a new user
+		user2 = new User({
+			firstName: 'Full2',
+			lastName: 'Name2',
+			displayName: 'Full2 Name2',
+			email: 'test2222@test.com',
+			username: credentials2.username,
+			password: credentials2.password,
+			provider: 'local'
+		});
+
+		// Save a user to the test db
+		user.save(function() {
+			user2.save(function() {
+				// login
+				agent.post('/auth/signin')
+				.send(credentials)
+				.expect(200)
+				.end(function(signinErr, signinRes) {
+					// Handle signin error
+					if (signinErr) done(signinErr);	
+					//create group
+					
+					agent.post('/groups')
+					.send(new Group({
+						name: 'Group Name'}))
+					.expect(200)
+					.end(function(groupErr, groupRes) {
+						
+						group = groupRes.body;
+						
+						agent.post('/chapters')
+						.send(new Chapter({
+							name: 'Genesis 5'}))
+						.expect(200)
+						.end(function(chapterErr, chapterRes) {
+						
+							agent.post('/messages')
+							.send(new Message({
+								text: 'I enjoyed this.', 
+								group: group._id }))
+							.expect(200)
+							.end(function(messageErr, messageRes) {
+								done();
+							});
+						});
+					});
+				});
+			});
+		});
+	});
+
+	it('should be able to get a single Group', function(done) {
+		agent.get('/groups/' + group._id)
+			.end(function(err, res) {
+				if (err) done(err);	
+					
+				// Set assertion
+				(res.body.creator).should.equal(user.id);
+				(res.body.name).should.match('Group Name');
+
+				// Call the assertion callback
+				done();
+			});
+	});
+
+	it('should be able to get the chapters from a single Group', function(done) {
+		agent.get('/groups/' + group._id + '/chapters')
+			.end(function(err, res) {
+				if (err) done(err);	
+				
+				// Set assertion
+				res.body.should.be.an.Array.with.lengthOf(1);
+				res.body[0].name.should.match('Genesis 5');
+
+				// Call the assertion callback
+				done();
+			});
+	});
+
+	it('should be able to get the messages from a single Group', function(done) {
+		agent.get('/groups/' + group._id + '/messages')
+			.end(function(err, res) {
+				if (err) done(err);
+				// Set assertion
+				res.body.should.be.an.Array.with.lengthOf(1);
+				res.body[0].text.should.match('I enjoyed this.');
+
+				// Call the assertion callback
+				done();
+			});
+	});
+
+	it('should not be able to get the messages from a single Group if the wrong user is signed in', function(done) {
+		Message.find().exec(function(err, messages) {
+			//console.log(messages);
+		});
+
+		agent.get('/auth/signout')
+			.end(function() {
+				agent.post('/auth/signin')
+					.send(credentials2)
+					.expect(200)
+					.end(function(signinErr, signinRes) {
+						// Handle signin error
+						if (signinErr) done(signinErr);	
+						
+						agent.get('/groups/' + group._id + '/messages')
+							.expect(403)
+							.end(function(msgErr, msgRes) {
+								// Set message assertion
+								(msgRes.error.text).should.match('User is not authorized');
+
+								// Handle error
+								done(msgErr);
+							});
+					});
+			});
+	});
+
+	it('should be able to add a user to a Group', function(done) {
+		agent.post('/groups/' + group._id + '/enroll')
+			.send({ newUser: user2 })
+			.expect(200)
+			.end(function(err, res) {
+				if (err) done(err);
+				
+				agent.get('/groups/' + group._id)
+				.end(function(err, res) {
+
+					if (err) done(err);	
+					
+					(res.body.users).should.be.an.Array.with.lengthOf(2);
+					// Call the assertion callback
+					done();
+				});
+			});
+	});
+
+	afterEach(function(done) {
+		User.remove().exec();
+		Group.remove().exec();
+		Chapter.remove().exec();
+		Message.remove().exec();
 		done();
 	});
 });

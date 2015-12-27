@@ -164,41 +164,62 @@ describe('Chapter CRUD tests', function() {
 			});
 	});
 
-	it('should be able to get a list of Chapters if not signed in', function(done) {
+	it('should be able to get a list of Chapters if signed in', function(done) {
 		// Create new Chapter model instance
 		var chapterObj = new Chapter(chapter);
 
-		// Save the Chapter
-		chapterObj.save(function() {
-			// Request Chapters
-			request(app).get('/chapters')
-				.end(function(req, res) {
-					// Set assertion
-					res.body.should.be.an.Array.with.lengthOf(1);
+		agent.post('/auth/signin')
+			.send(credentials)
+			.expect(200)
+			.end(function(signinErr, signinRes) {
+				// Handle signin error
+				if (signinErr) done(signinErr);
 
-					// Call the assertion callback
-					done();
+				// Save the Chapter
+				chapterObj.save(function() {
+					// Get a list of Chapters
+					agent.get('/chapters')
+						.end(function(chaptersGetErr, chaptersGetRes) {
+							// Handle Chapter save error
+							if (chaptersGetErr) done(chaptersGetErr);
+
+							// Get Chapters list
+							var chapters = chaptersGetRes.body;
+
+							// Set assertions
+							(chapters[0].name).should.match('Genesis 5');
+
+							// Call the assertion callback
+							done();
+						});
+
 				});
-
-		});
+			});
 	});
 
 
-	it('should be able to get a single Chapter if not signed in', function(done) {
+	it('should be able to get a single Chapter if signed in', function(done) {
 		// Create new Chapter model instance
 		var chapterObj = new Chapter(chapter);
+		agent.post('/auth/signin')
+			.send(credentials)
+			.expect(200)
+			.end(function(signinErr, signinRes) {
+				// Handle signin error
+				if (signinErr) done(signinErr);
+				
+				// Save the Chapter
+				chapterObj.save(function() {
+					request(app).get('/chapters/' + chapterObj._id)
+						.end(function(req, res) {
+							// Set assertion
+							res.body.should.be.an.Object.with.property('name', chapter.name);
 
-		// Save the Chapter
-		chapterObj.save(function() {
-			request(app).get('/chapters/' + chapterObj._id)
-				.end(function(req, res) {
-					// Set assertion
-					res.body.should.be.an.Object.with.property('name', chapter.name);
-
-					// Call the assertion callback
-					done();
+							// Call the assertion callback
+							done();
+						});
 				});
-		});
+			});
 	});
 
 	it('should be able to delete Chapter instance if signed in', function(done) {
@@ -298,29 +319,6 @@ describe('Chapter CRUD tests', function() {
 					// Call the assertion callback
 					done();
 				});
-		});
-	});
-
-	it('should not be able to return an array of reference strings for the chapter after a given one', function(done) {
-		// Set Chapter user 
-		chapter.user = user;
-
-		// Create new Chapter model instance
-		var chapterObj = new Chapter(chapter);
-
-		// Save the Chapter
-		chapterObj.save(function() {
-			// Call next
-			request(app).get('/chapters/' + chapterObj._id + '/next')
-			.expect(200)
-			.end(function(req, res) {
-				// Set assertion
-				res.body.should.be.an.Array.with.lengthOf(1);
-
-				// Handle Chapter error error
-				done();
-			});
-
 		});
 	});
 

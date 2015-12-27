@@ -44,6 +44,8 @@ Eat The Bible is a MEANJS-based SPA designed to help people read the Bible in a 
 * GET /groups/:groupId - returns one group
 * PUT /groups/:groupId - updates one group
 * DELETE /groups/:groupId - deletes one group
+* GET /groups/:groupId/chapters - returns recently read chapters in this group
+* GET /groups/:groupId/messages - returns recent messages in this group
 
 ### Messages
 * GET /messages - returns all messages
