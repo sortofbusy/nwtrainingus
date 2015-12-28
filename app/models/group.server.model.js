@@ -28,7 +28,8 @@ var GroupSchema = new Schema({
 	},
 	users: [{
 		type: Schema.ObjectId,
-		ref: 'User'
+		ref: 'User',
+		unique: true
 	}],
 	creator: {
 		type: Schema.ObjectId,
@@ -40,10 +41,10 @@ var GroupSchema = new Schema({
 	},
 	open: {
 		type: Boolean,
-		default: true
+		default: false
 	},
 	recentChapters: [{
-		type: Schema.ObjectId
+		type: Schema.Types.Mixed
 	}],
 	recentMessages: [{
 		type: Schema.Types.Mixed

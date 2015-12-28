@@ -172,23 +172,31 @@ describe('Group CRUD tests', function() {
 			});
 	});
 
-	it('should be able to get a list of Groups if not signed in', function(done) {
-		// Create new Group model instance
-		var groupObj = new Group(group);
+	it('should be able to get a list of Groups if signed in', function(done) {
+		agent.post('/auth/signin')
+			.send(credentials)
+			.expect(200)
+			.end(function(signinErr, signinRes) {
+				// Handle signin error
+				if (signinErr) done(signinErr);
 
-		// Save the Group
-		groupObj.save(function() {
-			// Request Groups
-			request(app).get('/groups')
-				.end(function(req, res) {
-					// Set assertion
-					res.body.should.be.an.Array.with.lengthOf(1);
-					
-					// Call the assertion callback
-					done();
+				// Create new Group model instance
+				var groupObj = new Group(group);
+
+				// Save the Group
+				groupObj.save(function() {
+					// Request Groups
+					agent.get('/groups')
+						.end(function(req, res) {
+							// Set assertion
+							res.body.should.be.an.Array.with.lengthOf(1);
+							
+							// Call the assertion callback
+							done();
+						});
+
 				});
-
-		});
+			});
 	});
 
 
@@ -434,8 +442,8 @@ describe('Group detail tests', function() {
 	});
 
 	it('should be able to add a user to a Group', function(done) {
-		agent.post('/groups/' + group._id + '/enroll')
-			.send({ newUser: user2 })
+		agent.post('/groups/enroll')
+			.send({ token: group.accessToken })
 			.expect(200)
 			.end(function(err, res) {
 				if (err) done(err);
@@ -448,6 +456,32 @@ describe('Group detail tests', function() {
 					(res.body.users).should.be.an.Array.with.lengthOf(2);
 					// Call the assertion callback
 					done();
+				});
+			});
+	});
+
+	it('should not be able to add a user to a Group with a wrong token', function(done) {
+		agent.post('/groups/enroll')
+			.send({ token: 'asvn24n2m1134452m3453' })
+			.expect(400)
+			.end(function(err, res) {
+				done(err);
+
+			});
+	});
+
+	it('should be able to unenroll a user from a Group', function(done) {
+		agent.post('/groups/' + group._id + '/unenroll')
+			.send()
+			.expect(200)
+			.end(function(err, res) {
+				if (err) done(err);
+				
+				agent.get('/groups/' + group._id)
+				.expect(403)
+				.end(function(err, res) {
+
+					done(err);	
 				});
 			});
 	});

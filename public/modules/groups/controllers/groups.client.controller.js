@@ -4,13 +4,15 @@
 angular.module('groups').controller('GroupsController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Groups', 'Chapters', '$window',
 	function($scope, $http, $stateParams, $location, Authentication, Groups, Chapters, $window) {
 		$scope.authentication = Authentication;
-
+		$scope.optionsCollapsed = true;
+		$scope.open = false;
 
 		// Create new Group
 		$scope.create = function() {
 			// Create new Group object
 			var group = new Groups ({
 				name: this.name,
+				open: $scope.open,
 				users: [$scope.authentication.user._id]
 			});
 			
@@ -22,6 +24,23 @@ angular.module('groups').controller('GroupsController', ['$scope', '$http', '$st
 				$scope.name = '';
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
+			});
+		};
+
+		// Enroll in existing Group
+		$scope.enroll = function() {
+			var params = {
+				token: this.token
+			};
+			
+			$http.post('/groups/enroll', params).then(function(success) {
+				if(success.data){
+					$location.path('groups/' + success.data._id);
+					$scope.token = '';
+				}
+			}, function(err) {
+				$scope.error = err.data.message;
+				$scope.token = '';
 			});
 		};
 

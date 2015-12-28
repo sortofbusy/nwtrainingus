@@ -10,6 +10,13 @@
                     <div class="controls">
                         <input type="text" data-ng-model="group.name" id="name" class="form-control" placeholder="Name" required>
                     </div>
+                    <div>
+                        <label>Require Access Token</label>
+                        <select id="open" name="open" class="form-control" data-ng-model="group.open">
+                            <option value="false">Yes</option>
+                            <option value = "true">No</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Update" class="btn btn-default">

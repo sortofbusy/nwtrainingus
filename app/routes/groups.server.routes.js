@@ -6,7 +6,7 @@ module.exports = function(app) {
 
 	// Groups Routes
 	app.route('/groups')
-		.get(groups.list)
+		.get(users.requiresLogin, groups.list)
 		.post(users.requiresLogin, groups.create);
 
 	app.route('/groups/:groupId')
@@ -20,8 +20,8 @@ module.exports = function(app) {
 	app.route('/groups/:groupId/messages')
 		.get(groups.hasAuthorization, groups.getMessages);
 
-	app.route('/groups/:groupId/enroll')
-		.post(groups.addUser);
+	app.route('/groups/enroll')
+		.post(users.requiresLogin, groups.addUser);
 		
 	// Finish by binding the Group middleware
 	app.param('groupId', groups.groupByID);

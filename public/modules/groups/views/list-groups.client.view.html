@@ -19,12 +19,31 @@
                     <em>MEMBERS</em> <span class="h2">{{group.users.length}}</span>
                 </div>
                 <div class="col-xs-6"> 
-                     <em>STARTED</em> <span class="h2">{{group.created | timeago}}</span>
+                     <em>STARTED</em> <span class="">{{group.created | timeago}}</span>
                 </div>
             </div>
         </a>
     </div>
-    <div class="alert alert-warning text-center" data-ng-hide="!groups.$resolved || groups.length">
-    	No Groups yet, why don't you <a href="/#!/groups/create">create one</a>?
+    <div class="col-md-4 h2" data-ng-hide="plans.length"> 
+        <a class="btn btn-info btn-lg" href="/#!/groups/create">
+            New Group
+        </a>
+    </div>
+    <div class="well">
+        <form class="form-horizontal" data-ng-submit="enroll()" novalidate>
+            <fieldset>
+                <div class="form-group">
+                    <div class="controls">
+                        <input type="text" data-ng-model="token" id="token" class="form-control" placeholder="Token" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Join Group" class="btn btn-lg btn-default">
+                </div>
+                <div data-ng-show="error" class="text-danger">
+                    <strong data-ng-bind="error"></strong>
+                </div>
+            </fieldset>
+        </form>
     </div>
 </section>

@@ -35,7 +35,7 @@ exports.create = function(req, res) {
  */
 exports.read = function(req, res, next) {
 	try {
-	
+		
 		Chapter.find().where('user').in(req.group.users).sort('-created').limit(10).populate('user', 'displayName').exec(function(err, chapters) {
 			if (err) {
 				throw err;
@@ -50,7 +50,6 @@ exports.read = function(req, res, next) {
 		});
 	}
 };
-//{user: { $in: [ObjectId("55a75731b6e730ac00af9919")]}}
 
 
 /**
@@ -85,7 +84,7 @@ exports.update = function(req, res) {
 	var now = new Date();
 	group.modified = now;
 
-	Group.findOneAndUpdate({_id: group._id}, {name: req.body.name, modified: req.body.modified}, {upsert: true}, function(err, newGroup) {
+	Group.findOneAndUpdate({_id: group._id}, {name: req.body.name, open: req.body.open, modified: req.body.modified}, {upsert: true}, function(err, newGroup) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -118,7 +117,7 @@ exports.delete = function(req, res) {
  */
 exports.list = function(req, res) { 
 	//req.query.users = mongoose.Types.ObjectId(String(req.query.users));
-	Group.find().sort('-created').exec(function(err, groups) {
+	Group.find({users: req.user}).sort('-created').exec(function(err, groups) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -173,15 +172,25 @@ exports.getMessages = function(req, res) {
 };
 
 exports.addUser = function(req, res) {
-	req.group.users.push(req.body.newUser._id);
-	
-	req.group.save(function (err) {
+	Group.findOne({accessToken: req.body.token}).exec(function(err, group) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
-			res.jsonp(req.group);
+			if (!group) return res.status(400).send({
+				message: 'Token not found'
+			});
+			group.users.push(req.user._id);
+			group.save(function (err, savedGroup) {
+				if (err) {
+					return res.status(400).send({
+						message: errorHandler.getErrorMessage(err)
+					});
+				} else {
+					res.jsonp(savedGroup);
+				}
+			});
 		}
 	});
 };
@@ -190,7 +199,7 @@ exports.addUser = function(req, res) {
  * Group middleware
  */
 exports.groupByID = function(req, res, next, id) { 
-	Group.findById(id).exec(function(err, group) {
+	Group.findById(id).populate('users', 'displayName').exec(function(err, group) {
 		if (err) return next(err);
 		if (! group) return next(new Error('Failed to load Group ' + id));
 		req.group = group ;
@@ -202,9 +211,13 @@ exports.groupByID = function(req, res, next, id) {
  * Group authorization middleware
  */
 exports.hasAuthorization = function(req, res, next) {
-	if (req.group.users.indexOf(req.user.id) === -1) {
-		return res.status(403).send('User is not authorized');
+	var authorized = false;
+	for(var i=0; i < req.group.users.length; i++) {
+		if (req.group.users[i].id === req.user.id) authorized = true;
 	}
+
+	if (!authorized) return res.status(403).send('User is not authorized');
+
 	next();
 };
 
