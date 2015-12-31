@@ -12,7 +12,6 @@ var mongoose = require('mongoose'),
 var PlanSchema = new Schema({
 	name: {
 		type: String,
-		default: '',
 		required: 'Please fill Plan name',
 		trim: true
 	},

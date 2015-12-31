@@ -36,13 +36,14 @@ describe('Plan CRUD tests', function() {
 		});
 
 		// Save a user to the test db and create new Plan
-		user.save(function() {
+		user.save(function(err, newUser) {
 			plan = {
 				name: 'Plan Name',
-				startChapter: 1,
-				endChapter: 9,
-				cursor: 1,
-				pace: 1
+				startChapter: 'Matthew 1',
+				endChapter: 'Matthew 9',
+				cursor: 'Matthew 2',
+				pace: 1,
+				user: newUser.id
 			};
 
 			done();
@@ -125,6 +126,28 @@ describe('Plan CRUD tests', function() {
 			});
 	});
 
+	it('should not be able to save Plan instance if invalid chapters entered', function(done) {
+		agent.post('/auth/signin')
+			.send(credentials)
+			.expect(200)
+			.end(function(signinErr, signinRes) {
+				// Handle signin error
+				if (signinErr) done(signinErr);
+
+				// Get the userId
+				var userId = user.id;
+				plan.cursor = 1; // this value is before plan.startChapter
+				// Save a new Plan
+				agent.post('/plans')
+					.send(plan)
+					.expect(400)
+					.end(function(planSaveErr, planSaveRes) {
+						// Handle Plan save error
+						done(planSaveErr);
+					});
+			});
+	});
+
 	it('should be able to update Plan instance if signed in', function(done) {
 		agent.post('/auth/signin')
 			.send(credentials)
@@ -146,7 +169,7 @@ describe('Plan CRUD tests', function() {
 
 						// Update Plan name
 						plan.name = 'WHY YOU GOTTA BE SO MEAN?';
-
+						plan.endChapter = 'Matthew 21';
 						// Update existing Plan
 						agent.put('/plans/' + planSaveRes.body._id)
 							.send(plan)
@@ -158,6 +181,7 @@ describe('Plan CRUD tests', function() {
 								// Set assertions
 								(planUpdateRes.body._id).should.equal(planSaveRes.body._id);
 								(planUpdateRes.body.name).should.match('WHY YOU GOTTA BE SO MEAN?');
+								(planUpdateRes.body.endChapter).should.equal(950);
 
 								// Call the assertion callback
 								done();
@@ -166,41 +190,123 @@ describe('Plan CRUD tests', function() {
 			});
 	});
 
-	it('should be able to get a list of Plans if not signed in', function(done) {
+	it('should not be able to update Plan instance if invalid chapters entered', function(done) {
+		agent.post('/auth/signin')
+			.send(credentials)
+			.expect(200)
+			.end(function(signinErr, signinRes) {
+				// Handle signin error
+				if (signinErr) done(signinErr);
+
+				// Get the userId
+				var userId = user.id;
+
+				// Save a new Plan
+				agent.post('/plans')
+					.send(plan)
+					.expect(200)
+					.end(function(planSaveErr, planSaveRes) {
+						// Handle Plan save error
+						if (planSaveErr) done(planSaveErr);
+
+						// Update Plan name
+						plan.name = 'WHY YOU GOTTA BE SO MEAN?';
+						plan.endChapter = 'Genesis 1';
+						// Update existing Plan
+						agent.put('/plans/' + planSaveRes.body._id)
+							.send(plan)
+							.expect(400)
+							.end(function(planUpdateErr, planUpdateRes) {
+								// Handle Plan update error
+								done(planUpdateErr);
+							});
+					});
+			});
+	});
+
+	it('should not be able to get a list of Plans if not signed in', function(done) {
 		// Create new Plan model instance
 		var planObj = new Plan(plan);
 
 		// Save the Plan
 		planObj.save(function() {
 			// Request Plans
-			request(app).get('/plans')
-				.end(function(req, res) {
-					// Set assertion
-					res.body.should.be.an.Array.with.lengthOf(1);
-
-					// Call the assertion callback
-					done();
+			agent.get('/plans')
+				.expect(401)
+				.end(function(err, res) {
+					done(err);
 				});
 
 		});
 	});
 
+	it('should be able to get a single Plan if signed in', function(done) {
+		agent.post('/auth/signin')
+			.send(credentials)
+			.expect(200)
+			.end(function(signinErr, signinRes) {
+				// Handle signin error
+				if (signinErr) done(signinErr);
 
-	it('should be able to get a single Plan if not signed in', function(done) {
-		// Create new Plan model instance
-		var planObj = new Plan(plan);
+				// Get the userId
+				var userId = user.id;
 
-		// Save the Plan
-		planObj.save(function() {
-			request(app).get('/plans/' + planObj._id)
-				.end(function(req, res) {
-					// Set assertion
-					res.body.should.be.an.Object.with.property('name', plan.name);
+				// Save a new Plan
+				agent.post('/plans')
+					.send(plan)
+					.expect(200)
+					.end(function(planSaveErr, planSaveRes) {
+						// Handle Plan save error
+						if (planSaveErr) done(planSaveErr);
 
-					// Call the assertion callback
-					done();
-				});
-		});
+						agent.get('/plans/' + planSaveRes.body._id)
+							.expect(200)
+							.end(function(planGetErr, planGetRes) {
+								// Handle Plan Get error
+								if (planGetErr) done(planGetErr);
+
+								// Set assertions
+								(planGetRes.body._id).should.equal(planSaveRes.body._id);
+								(planGetRes.body.name).should.match('Plan Name');
+								(planGetRes.body.endChapter).should.equal(938);
+
+								// Call the assertion callback
+								done();
+							});
+					});
+			});
+	});
+
+	it('should not be able to get a single Plan if not signed in', function(done) {
+		agent.post('/auth/signin')
+			.send(credentials)
+			.expect(200)
+			.end(function(signinErr, signinRes) {
+				// Handle signin error
+				if (signinErr) done(signinErr);
+
+				// Get the userId
+				var userId = user.id;
+
+				// Save a new Plan
+				agent.post('/plans')
+					.send(plan)
+					.expect(200)
+					.end(function(planSaveErr, planSaveRes) {
+						// Handle Plan save error
+						if (planSaveErr) done(planSaveErr);
+
+						agent.get('/auth/signout')
+							.expect(200)
+							.end(function() {
+								agent.get('/plans/' + planSaveRes.body._id)
+									.expect(401)
+									.end(function(err, res) {
+										done(err);
+									});
+							});
+					});
+			});
 	});
 
 	it('should be able to delete Plan instance if signed in', function(done) {
@@ -238,29 +344,43 @@ describe('Plan CRUD tests', function() {
 							});
 					});
 			});
+
 	});
 
 	it('should not be able to delete Plan instance if not signed in', function(done) {
-		// Set Plan user 
-		plan.user = user;
+		agent.post('/auth/signin')
+			.send(credentials)
+			.expect(200)
+			.end(function(signinErr, signinRes) {
+				// Handle signin error
+				if (signinErr) done(signinErr);
 
-		// Create new Plan model instance
-		var planObj = new Plan(plan);
+				// Get the userId
+				var userId = user.id;
 
-		// Save the Plan
-		planObj.save(function() {
-			// Try deleting Plan
-			request(app).delete('/plans/' + planObj._id)
-			.expect(401)
-			.end(function(planDeleteErr, planDeleteRes) {
-				// Set message assertion
-				(planDeleteRes.body.message).should.match('User is not logged in');
+				// Save a new Plan
+				agent.post('/plans')
+					.send(plan)
+					.expect(200)
+					.end(function(planSaveErr, planSaveRes) {
+						// Handle Plan save error
+						if (planSaveErr) done(planSaveErr);
 
-				// Handle Plan error error
-				done(planDeleteErr);
+						agent.get('/auth/signout')
+							.expect(200)
+							.end(function() {
+						
+								// Delete existing Plan
+								agent.delete('/plans/' + planSaveRes.body._id)
+									.send(plan)
+									.expect(401)
+									.end(function(planDeleteErr, planDeleteRes) {
+										// Handle Plan error error
+										done(planDeleteErr);
+									});
+							});
+					});
 			});
-
-		});
 	});
 
 	afterEach(function(done) {

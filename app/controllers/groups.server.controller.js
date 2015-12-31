@@ -181,6 +181,17 @@ exports.addUser = function(req, res) {
 			if (!group) return res.status(400).send({
 				message: 'Token not found'
 			});
+
+			// check if this user is already in this group (because mongoDB doesn't handle
+			// indexes on subdocuments apparently)
+			for(var i=0; i < group.users.length; i++) {
+				if (String(group.users[i]) === String(req.user._id)) {
+					return res.status(400).send({
+						message: 'User already a member of this group'
+					});
+				}
+			}
+
 			group.users.push(req.user._id);
 			group.save(function (err, savedGroup) {
 				if (err) {
@@ -191,6 +202,28 @@ exports.addUser = function(req, res) {
 					res.jsonp(savedGroup);
 				}
 			});
+		}
+	});
+};
+
+exports.removeUser = function(req, res) {
+	if(String(req.user.id) === String(req.group.creator)) return res.status(400).send({
+				message: 'Cannot remove creator from group'
+			});
+	for(var i=0; i < req.group.users.length; i++) {
+		if (req.group.users[i].id === req.user.id) {
+			req.group.users.splice(i, 1);
+			break;
+		}
+	}
+
+	req.group.save(function (err, savedGroup) {
+		if (err) {
+			return res.status(400).send({
+				message: errorHandler.getErrorMessage(err)
+			});
+		} else {
+			res.jsonp(savedGroup);
 		}
 	});
 };
@@ -222,7 +255,7 @@ exports.hasAuthorization = function(req, res, next) {
 };
 
 exports.creatorAuthorization = function(req, res, next) {
-	if (String(req.group.creator) !== String(req.user.id)) {
+	if (!req.user || (String(req.group.creator) !== String(req.user.id))) {
 		return res.status(403).send('User is not authorized');
 	}
 	next();

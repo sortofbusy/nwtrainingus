@@ -43,11 +43,11 @@
 			<!--<div class="jumbotron text-center">-->
 				<div >
 					<br>
-					<button type="button" class="btn btn-default pull-right" ng-click="optionsCollapsed = !optionsCollapsed"><i class="fa fa-fw fa-gear"></i><b class="caret"></b></button>
+					<a class="pull-right" ng-click="optionsCollapsed = !optionsCollapsed"><i class="fa fa-2x fa-fw fa-gear"></i></a>
 					<div collapse="optionsCollapsed">
 						<div class="well well-lg">
 							<div class="" data-ng-show="plans">
-							<h3>Reading Plans</h3>
+							<h4>Reading Plans</h4>
 							<tabset vertical="true" type ="pills">
 								<tab data-ng-repeat="plan in plans" active="plansTabs[$index]" data-ng-click="changePlan($index)" class="bg-info">
 									<tab-heading>
@@ -58,12 +58,12 @@
 								</tab>
 							</tabset>
 							</div>
-							<h3>Text Size</h3>
+							<h4>Text Size</h4>
 							<div class="text-center">
 								<button type="button" data-ng-click="textResize(1)"><i class="fa fa-fw fa-plus fa-2x"></i></button>
 								<button type="button" data-ng-click="textResize(-1)"><i class="fa fa-fw fa-minus fa-2x"></i></button>
 							</div>
-							<h3>Choose Translation</h3>
+							<h4>Choose Translation</h4>
 								<form>
 									<select id="preferences.version" name="preferences.version" class="form-control" data-ng-model="user.preferences.version" data-ng-options="version.code as version.name group by version.language for version in bibleVersions" data-ng-change="updateVersion()">
 									</select>

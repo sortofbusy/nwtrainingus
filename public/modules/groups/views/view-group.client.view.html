@@ -4,7 +4,7 @@
 		<br>
 		<span class="h1" data-ng-bind="group.name"></span>
 		<span class="label label-primary" data-ng-show="group.creator === authentication.user._id">CREATOR</span>
-		<span class="label label-success" data-ng-show="(group.users.indexOf(authentication.user._id) > -1)">MEMBER</span> 
+		<!--<span class="label label-success" data-ng-show="(group.users.indexOf(authentication.user._id) > -1)">MEMBER</span>--> 
         
 	</div>
 	<div class="row">
@@ -13,6 +13,9 @@
 				<li class="h3 list-group-item list-group-item-warning"><i class="fa fa-comment fa-fw"></i> Notes</li>
 				<li class="list-group-item" data-ng-repeat="message in group.recentMessages">
 					<a data-ng-click="showVerse[$index]=!showVerse[$index]"><strong>{{message.verse.inputstring + ':' + message.verse.ref}} <span class="caret"></span></strong></a>
+					<span class="pull-right" data-ng-show="message.user.id === authentication.user.id">
+		            	<a data-ng-href="#!/messages/{{message._id}}"><i class="fa fa-edit fa-fw"></i></a> 
+		            </span>
 					<div data-ng-show="showVerse[$index]" class="border"><em>{{message.verse.text}}</em></div>
 					<div data-ng-show="message.text">
 						"{{message.text}}"
@@ -45,10 +48,10 @@
 				</div>
 				<div class="" data-ng-show="((authentication.user) && (authentication.user._id == group.creator))">
 					<a class="btn btn-primary" href="/#!/groups/{{group._id}}/edit">
-						<i class="glyphicon glyphicon-edit"></i>
+						<i class="glyphicon glyphicon-edit"></i> Edit
 					</a>
 					<a class="btn btn-danger" data-ng-click="remove();">
-						<i class="glyphicon glyphicon-trash"></i>
+						<i class="glyphicon glyphicon-trash"></i> Delete
 					</a>
 				</div>
 				<div data-ng-show="((authentication.user) && (authentication.user._id !== group.creator))">

@@ -442,21 +442,31 @@ describe('Group detail tests', function() {
 	});
 
 	it('should be able to add a user to a Group', function(done) {
-		agent.post('/groups/enroll')
-			.send({ token: group.accessToken })
-			.expect(200)
-			.end(function(err, res) {
-				if (err) done(err);
-				
-				agent.get('/groups/' + group._id)
-				.end(function(err, res) {
+		agent.get('/auth/signout')
+			.end(function() {
+				agent.post('/auth/signin')
+					.send(credentials2)
+					.expect(200)
+					.end(function(signinErr, signinRes) {
+						// Handle signin error
+						if (signinErr) done(signinErr);	
+						agent.post('/groups/enroll')
+							.send({ token: group.accessToken })
+							.expect(200)
+							.end(function(err, res) {
+								if (err) done(err);
+								
+								agent.get('/groups/' + group._id)
+								.end(function(groupErr, groupRes) {
 
-					if (err) done(err);	
-					
-					(res.body.users).should.be.an.Array.with.lengthOf(2);
-					// Call the assertion callback
-					done();
-				});
+									if (groupErr) done(groupErr);	
+									
+									(groupRes.body.users).should.be.an.Array.with.lengthOf(2);
+									// Call the assertion callback
+									done();
+								});
+							});
+					});
 			});
 	});
 
@@ -470,19 +480,55 @@ describe('Group detail tests', function() {
 			});
 	});
 
+	it('should not be able to add a user to a Group twice', function(done) {
+		agent.post('/groups/enroll')
+			.send({ token: group.accessToken })
+			.expect(400)
+			.end(function(err, res) {
+				done(err);
+			});
+	});
+
 	it('should be able to unenroll a user from a Group', function(done) {
+		agent.get('/auth/signout')
+			.end(function() {
+				agent.post('/auth/signin')
+					.send(credentials2)
+					.expect(200)
+					.end(function(signinErr, signinRes) {
+						// Handle signin error
+						if (signinErr) done(signinErr);	
+						
+						agent.post('/groups/enroll')
+							.send({ token: group.accessToken })
+							.expect(200)
+							.end(function(enrollErr, enrollRes) {
+								if (enrollErr) done(enrollErr);
+								
+								agent.post('/groups/' + group._id + '/unenroll')
+									.send()
+									.expect(200)
+									.end(function(err, res) {
+										if (err) done(err);
+										else {
+											agent.get('/groups/' + group._id)
+											.expect(403)
+											.end(function(groupErr, groupRes) {
+												done(groupErr);	
+											});
+										}
+									});
+							});
+					});
+			});
+	});
+
+	it('should not be able to unenroll the creator from a Group', function(done) {
 		agent.post('/groups/' + group._id + '/unenroll')
 			.send()
-			.expect(200)
+			.expect(400)
 			.end(function(err, res) {
-				if (err) done(err);
-				
-				agent.get('/groups/' + group._id)
-				.expect(403)
-				.end(function(err, res) {
-
-					done(err);	
-				});
+				done(err);
 			});
 	});
 

@@ -1,7 +1,73 @@
-<section class="row" data-ng-controller="SettingsController">
-	<form name="userForm" data-ng-submit="updateUserProfile(userForm.$valid)" class="signin form-horizontal" autocomplete="off">
-		<div class="col-xs-offset-2 col-xs-8 col-md-offset-1 col-md-4">
-			<h3 class="text-center">Profile</h3>
+<section class="row" data-ng-controller="SettingsController" data-ng-init="getActivity()">
+	<div class="col-xs-offset-1 col-xs-10">
+		<br>
+		<a href="/#!/settings/accounts">Link Accounts</a> 
+		<span data-ng-show="authentication.user.provider === 'local'">
+				| <a href="/#!/settings/password">Password</a> 
+		</span>
+		<div class = "pull-right"><a href="/auth/signout"><i class="fa fa-fw fa-sign-out"></i>Sign Out </a></div>
+		<br>
+	</div>
+	<div class="col-xs-12 col-md-6">
+	    <ul class="list-group">
+	        <li class="h3 list-group-item list-group-item-info"><i class="fa fa-comment fa-fw"></i> Recent Notes</li>
+	        <li class="list-group-item" data-ng-repeat="message in messages">
+	            <a data-ng-click="showVerse[$index]=!showVerse[$index]"><strong>{{message.verse.inputstring + ':' + message.verse.ref}} <span class="caret"></span></strong></a>
+	            <span class="pull-right">
+	            	<a data-ng-href="#!/messages/{{message._id}}"><i class="fa fa-edit fa-fw"></i></a> 
+	            </span>
+	            <div data-ng-show="showVerse[$index]" class="border"><em>{{message.verse.text}}</em></div>
+	            <div data-ng-show="message.text">
+	                "{{message.text}}"
+	            </div>
+	            <div class="text-right">
+	                <small>Posted on <em>{{message.created | date : "MMM. d"}}</em></small>
+	            </div>
+	        </li>
+	        <li class="list-group-item text-center" data-ng-click="showAll('messages')" data-ng-show="allmessages.length">
+	        	<a><i class="fa fa-ellipsis-h fa-2x fa-fw"></i></a>
+	        </li>
+	    </ul>
+	</div>
+	<div class="col-xs-12 col-md-6">
+	    <ul class="list-group">
+	        <li class="h3 list-group-item list-group-item-warning"><i class="fa fa-certificate fa-fw"></i> Recent Badges</li>
+	        <li class="list-group-item" data-ng-repeat="badge in badges">
+	            {{badge.name}}
+	            <div class="text-right">
+	                <small>Posted on <em>{{badge.created | date : "MMM. d"}}</em></small>
+	            </div>
+	        </li>
+	        <li class="list-group-item text-center" data-ng-click="showAll('badges')" data-ng-show="allbadges.length">
+	        	<a><i class="fa fa-ellipsis-h fa-2x fa-fw"></i></a>
+	        </li>
+	    </ul>
+	</div>
+	<div class="col-xs-12 col-md-6">
+	    <ul class="list-group">
+	        <li class="h3 list-group-item list-group-item-success"><i class="fa fa-group fa-fw"></i> Your Groups</li>
+	        <a class="list-group-item" data-ng-href="#!/groups/{{group._id}}" data-ng-repeat="group in groups">
+	            <div class="col-xs-12">
+	                <span class="h2 list-group-item-heading" data-ng-bind="group.name"></span>
+	                <span class="label label-primary" data-ng-show="group.creator === authentication.user._id">CREATOR</span>
+	            </div>
+	            <br>
+	            <div class="row list-group-item-text">
+	                <div class="col-xs-6"> 
+	                    <em>MEMBERS</em> <span class="h2">{{group.users.length}}</span>
+	                </div>
+	                <div class="col-xs-6"> 
+	                     <em>STARTED</em> <span class="">{{group.created | timeago}}</span>
+	                </div>
+	            </div>
+	        </a>
+	    </ul>
+	</div>
+
+	<div class="col-xs-12 col-md-12">
+		<h2>Profile Details</h2>
+		<form name="userForm" data-ng-submit="updateUserProfile(userForm.$valid)" class="signin form-horizontal" autocomplete="off">
+			<div class=" col-xs-offset-1 col-xs-10 col-md-offset-1 col-md-4">
 				<fieldset>
 					<div class="form-group">
 						<label for="firstName">First Name</label>
@@ -20,20 +86,23 @@
 						<input type="text" id="username" name="username" class="form-control" data-ng-model="user.username" placeholder="Username">
 					</div>
 				</fieldset>
-		</div>
-		<div class="col-xs-offset-2 col-xs-8 col-md-offset-1 col-md-4">
-			<h3 class="text-center">Preferences</h3>
-				<fieldset>
-					<div data-ng-show="success" class="text-center text-success">
-						<strong>Preferences Saved Successfully</strong>
-					</div>
-					<div data-ng-show="error" class="text-center text-danger">
-						<strong data-ng-bind="error"></strong>
-					</div>
-					<div class="text-center form-group">
-						<button type="submit" class="btn btn-large btn-primary">Save</button>
-					</div>	
-				</fieldset>
-		</div>
-	</form>
+				<div class="form-group">
+					<button type="submit" class="btn btn-large btn-primary">Save</button>
+				</div>
+			</div>
+			<!--<div class="col-xs-offset-2 col-xs-8 col-md-offset-1 col-md-4">
+				<h3 class="text-center">Preferences</h3>
+					<fieldset>
+						<div data-ng-show="success" class="text-center text-success">
+							<strong>Preferences Saved Successfully</strong>
+						</div>
+						<div data-ng-show="error" class="text-center text-danger">
+							<strong data-ng-bind="error"></strong>
+						</div>
+							
+					</fieldset>
+			</div>-->
+			
+		</form>
+	</div>
 </section>

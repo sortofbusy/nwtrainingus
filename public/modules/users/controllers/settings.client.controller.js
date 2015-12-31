@@ -67,5 +67,37 @@ angular.module('users').controller('SettingsController', ['$scope', '$http', '$l
 				$scope.error = response.message;
 			});
 		};
+
+		// Find a list of User Messages
+		$scope.getActivity = function() {
+			var listLength = 3;
+			$http.get('/users/messages').success(function(response) {
+				if (!response.length) return;
+				
+				if(response.length > listLength) {
+					$scope.messages = response.slice(0, listLength);
+					$scope.allmessages = response;
+				} else $scope.messages = response;
+
+			});
+			$http.get('/badges').success(function(response) {
+				if (!response.length) return;
+				
+				if(response.length > listLength) {
+					$scope.badges = response.slice(0, listLength);
+					$scope.allbadges = response;
+				} else $scope.badges = response;
+
+			});
+			$http.get('/groups').success(function(response) {
+				$scope.groups = response;
+			});
+		};
+
+		$scope.showAll = function(list) {
+			var all = 'all' + list;
+			$scope[list] = $scope[all];
+			$scope[all] = [];
+		};
 	}
 ]);

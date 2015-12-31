@@ -29,7 +29,9 @@ var GroupSchema = new Schema({
 	users: [{
 		type: Schema.ObjectId,
 		ref: 'User',
-		unique: true
+		index: true,
+		unique: true,
+		background: false
 	}],
 	creator: {
 		type: Schema.ObjectId,

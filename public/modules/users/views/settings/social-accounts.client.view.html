@@ -1,4 +1,7 @@
 <section class="row" data-ng-controller="SettingsController">
+	<br>
+	<a href="/#!/settings/profile"><i class="fa fa-angle-double-left"></i> Back To Profile</a>
+	<br>
 	<h3 class="col-md-12 text-center" data-ng-show="hasConnectedAdditionalSocialAccounts()">Connected social accounts:</h3>
 	<div class="col-md-12 text-center">
 		<div data-ng-repeat="(providerName, providerData) in user.additionalProvidersData" class="remove-account-container">

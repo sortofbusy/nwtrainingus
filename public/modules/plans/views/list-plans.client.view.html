@@ -1,56 +1,51 @@
 <section data-ng-controller="PlansMainController" data-ng-init="find()">
     <div class="page-header">
+        <a href="/#!/"><i class="fa fa-angle-double-left"></i> Back To Reading</a>
+        <br>
         <div class="h1">
             <i class="fa fa-calendar fa-1x"></i>
              Plans
         </div>
     </div>
-    <h2>Current Plan(s)</h2>
-    <div class="list-group" data-ng-show="plans">
+   <div class="list-group" data-ng-show="plans">
         <a data-ng-repeat="plan in plans" data-ng-href="#!/plans/{{plan._id}}/edit" class="list-group-item">
-            <div class="h4 list-group-item-heading"><b>{{plan.name}}</b>
-            <hr>
+            <div class="h2 list-group-item-heading">
+                <b>{{plan.name}}</b>
             </div>
+            <br>
             <div class="row list-group-item-text">
-                <div class="col-md-4 col-offset-1">
-                    <strong><i class="fa fa-fw fa-bookmark text-success"></i>Next:</strong> {{listCursor[$index]}}
-                    <br><br>
-                </div>
-                <div class="col-xs-12 col-md-4">
-                    <i class="fa fa-fw fa-step-backward text-info"></i>{{listStartChapter[$index]}} - 
-                    {{listEndChapter[$index]}}<i class="fa fa-fw fa-step-forward text-info"></i>
-                    <br>
-                    <em>({{plan.cursor - plan.startChapter}} of {{plan.endChapter - plan.startChapter}} chapters read)</em>
+                <div class="col-xs-12">
                     <progressbar value="plan.cursor - plan.startChapter" max="plan.endChapter - plan.startChapter"></progressbar>
-
                 </div>
-                <div class="col-md-4">
-                    <i class="fa fa-fw fa-clock-o"></i><b>Pace:</b> {{plan.pace}} chapters per day
+                <div class="col-xs-6"> 
+                    <em>{{plan.cursor - plan.startChapter}} of {{plan.endChapter - plan.startChapter}} chapters read</em>
                     <br>
-                    <strong>Started:</strong> <em>{{plan.created | date}}</em>
-                    <br>
-                    <strong>Projected completion:</strong> <em>{{listProjected[$index] | date}}</em>
-                    <br>
+                    
+                </div>
+                <div class="col-xs-6 pull-right"> 
+                     You'll finish: {{listProjected[$index] | date}}
                 </div>
             </div>
         </a>
     </div>
-    <div class="alert alert-warning text-center" data-ng-hide="!plans.$resolved || plans.length">
-    	No plans yet, why don't you add one?
-    </div>
-    <h2>Add a Plan</h2>
-    <div class="">
-        <div>
-            <button class="btn btn-success" style="margin: 5px;" data-ng-repeat="item in items" data-ng-click="createMultiple(item)">
-                {{ item.name }}
-            </button>
-            <a class="btn btn-warning" style="margin: 5px;" href="/#!/plans/create">
-                Create Your Own
-            </a>
-        </div>
-        <br>
-        <div>
-            <alert data-ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3500">{{alert.msg}}</alert>
+    
+    <div >
+        <a class="pull-right" data-ng-click="addCollapsed = !addCollapsed"><i class="fa fa-3x fa-fw fa-plus"></i></a>
+        <div class="well" data-collapse="!addCollapsed">
+    
+            <div class="">
+                <div>
+                    <button class="btn btn-success" style="margin: 5px;" data-ng-repeat="item in items" data-ng-click="createMultiple(item)">
+                        {{ item.name }}
+                    </button>
+                    <a class="btn btn-warning" style="margin: 5px;" href="/#!/plans/create">
+                        Create Your Own
+                    </a>
+                </div>
+                <div>
+                    <alert data-ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3500">{{alert.msg}}</alert>
+                </div>
+            </div>
         </div>
     </div>
 </section>

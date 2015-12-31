@@ -19,6 +19,12 @@
             <br>
             <div class="">
                 <div class="input-group">
+                    <label class="b input-group-addon"><b>Name</b>
+                    </label>
+                    <input type="text" data-ng-model="name" name="name" class="form-control">
+                </div>
+                <br><br>
+                <div class="input-group">
                     <label class="b input-group-addon success"><i class="fa fa-fw fa-bookmark"></i> <b>Next</b>
                     </label>
                     <input type="text" data-ng-model="cursor" name="cursor" class="form-control">
@@ -44,18 +50,24 @@
                     <input type="text" data-ng-model="endChapter" name="endChapter" class="form-control">
                 </div>                
                 <br><br>
-            </div>
-            <div>
-                <a class="btn btn-danger" style="margin-right: 100px;" data-ng-click="remove();">
-                    <i class="glyphicon glyphicon-trash"></i>
-                </a>
                 <input type="submit" class="btn btn-success" value="Save">
             </div>
         </form>
+        <br>
+        
+            <alert data-ng-repeat="alert in updateAlerts" type="{{alert.type}}" close="closeUpdateAlert($index)" dismiss-on-timeout="3500">{{alert.msg}}</alert>
+          
     </div>
-    <br>
-    <div class="row">
-        <alert data-ng-repeat="alert in updateAlerts" type="{{alert.type}}" close="closeUpdateAlert($index)" dismiss-on-timeout="3500">{{alert.msg}}</alert>
-    </div>   
+    <div >
+        <a class="pull-right" ng-click="optionsCollapsed = !optionsCollapsed"><i class="fa fa-2x fa-fw fa-chevron-down"></i></a>
+        <div collapse="!optionsCollapsed">
+            <div class="well well-lg">
+                <a class="btn btn-danger" style="margin-right: 100px;" data-ng-click="remove();">
+                    <i class="glyphicon glyphicon-trash"></i> Delete Plan
+                </a>
+            </div>
+            </div>
+        </div>
+    </div> 
 </section>
 

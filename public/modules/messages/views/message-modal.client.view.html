@@ -13,22 +13,24 @@
 	        </button>
 	    </div>
     </div>
-    <hr>
-    <form class="form-inline" data-ng-submit="updatePlan()" novalidate>
-        <div class="input-group input-group-lg">
-            <label class="b input-group-addon warning"><i class="fa fa-fw fa-comment"></i></label>
-            <textarea data-ng-model="comment" rows="3" name="comment" class="form-control" style="height:auto;"></textarea>
-        </div>
-        <br>
-        <span class="h4">Share: </span>
-        <button data-ng-repeat="group in groups" ladda="groups[$index].loading" class="btn btn-info" style="margin: 5px;" data-ng-click="create($index)"><i class="fa fa-group"></i> {{group.name}} <i class="fa" data-ng-class="group.resultIcon"></i></button> 
-        
-    </form>
+    <br>
+    <div class="col-xs-12">
+        <form class="form-inline" data-ng-submit="updatePlan()" novalidate>
+            <div class="input-group input-group-lg">
+                <label class="b input-group-addon warning"><i class="fa fa-fw fa-comment"></i></label>
+                <textarea data-ng-model="comment" rows="3" name="comment" class="form-control" style="height:auto;" autofocus></textarea>
+            </div>
+            <br>
+            <span class="h4">Share: </span>
+            <button data-ng-repeat="group in groups" ladda="groups[$index].loading" class="btn btn-info" style="margin: 5px;" data-ng-click="create($index)" data-ng-disabled="group.disabled"><i class="fa fa-group"></i> {{group.name}} <i class="fa" data-ng-class="group.resultIcon"></i></button> 
+            
+        </form>
+    </div>
     <br>
     <div>
     	<alert data-ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3500">{{alert.msg}}</alert>
     </div>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-primary" data-ng-click="ok()">OK</button>
+    <button class="btn btn-default" data-ng-click="ok()">Close</button>
 </div>

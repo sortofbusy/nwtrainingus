@@ -94,7 +94,7 @@ describe('Message CRUD tests', function() {
 			});
 	});
 
-	it('should not be able to save Message instance if no text is provided', function(done) {
+	it('should be able to save Message instance if no text is provided', function(done) {
 		// Invalidate text field
 		message.text = '';
 
@@ -111,13 +111,13 @@ describe('Message CRUD tests', function() {
 				// Save a new Message
 				agent.post('/messages')
 					.send(message)
-					.expect(400)
+					.expect(200)
 					.end(function(messageSaveErr, messageSaveRes) {
 						// Set message assertion
-						(messageSaveRes.body.message).should.match('Please enter text');
+						(messageSaveRes.body.text).should.match('');
 						
 						// Handle Message save error
-						done(messageSaveErr);
+						done();
 					});
 			});
 	});

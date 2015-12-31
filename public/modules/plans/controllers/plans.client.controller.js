@@ -52,37 +52,34 @@ angular.module('plans').controller('PlansMainController', ['$scope', '$http', 'A
 		    $scope.updateAlerts.splice(index, 1);
 		};
 
-		$scope.myCreate = function() {
-			$http.get('/reference', {params: {chapterInput: [$scope.startChapter, $scope.startChapter, $scope.endChapter]}})
-				.then(function(response) {
-					var cursorId = response.data[0];
-					var startChapterId = response.data[1];
-					var endChapterId = response.data[2];
-					
-						// if the new value is a valid chapter
-					if (angular.isNumber(cursorId) && angular.isNumber(startChapterId) && angular.isNumber(endChapterId) && cursorId >= startChapterId && cursorId <= endChapterId) {
-							// update all fields
-						var plan = new Plans({
-							name: $scope.name,
-							startChapter: startChapterId,
-							endChapter: endChapterId,
-							pace: $scope.pace,
-							cursor: startChapterId,
-							user: $scope.authentication.user._id
-						});
+		$scope.myCreate = function(newPlan) {
+			if (!newPlan) {
+				newPlan = {
+					name: this.name,
+					startChapter: this.startChapter,
+					endChapter: this.endChapter,
+					pace: this.pace,
+					cursor: this.startChapter
+				};
+			}
+			var plan = new Plans({
+				name: newPlan.name,
+				startChapter: newPlan.startChapter,
+				endChapter: newPlan.endChapter,
+				pace: newPlan.pace,
+				cursor: newPlan.cursor
+			});
+			
+			plan.$save(function(response) {
+				$location.path('plans');
+			}, function(errorResponse) {
+				$scope.updateAlerts.push({msg: 'Invalid input.', type: 'danger'});
+				$scope.name = '';
+				$scope.startChapter = '';
+				$scope.endChapter = '';
+				$scope.pace = 1;
+			});
 
-						plan.$save(function(response) {
-							$location.path('plans');
-						}, function(errorResponse) {
-							$scope.updateAlerts.push({msg: 'Invalid input.', type: 'danger'});
-						});
-
-					} else {
-						$scope.updateAlerts.push({msg: 'Invalid input.', type: 'danger'});
-					}
-				}, function(error) {
-					$scope.updateAlerts.push({msg: 'Invalid input.', type: 'danger'});
-				});
 		};
 
 		$scope.createMultiple = function(item) {
@@ -110,6 +107,7 @@ angular.module('plans').controller('PlansMainController', ['$scope', '$http', 'A
 			$scope.endChapter = BibleRef.chapterNameFromId(usePlan.endChapter);
 			$scope.cursor = BibleRef.chapterNameFromId(usePlan.cursor);
 			$scope.pace = usePlan.pace;
+			$scope.name = usePlan.name;
 
 			var projectedDate = new Date();
 			projectedDate.setDate(projectedDate.getDate() + (usePlan.endChapter - usePlan.cursor) / usePlan.pace);
@@ -118,39 +116,26 @@ angular.module('plans').controller('PlansMainController', ['$scope', '$http', 'A
 
 		$scope.updatePlan = function() {
 			
-			$scope.pace = this.pace;
-			$http.get('/reference', {params: {chapterInput: [this.cursor, this.startChapter, this.endChapter]}})
-				.then(function(response) {
-					var cursorId = response.data[0];
-					var startChapterId = response.data[1];
-					var endChapterId = response.data[2];
-					
-						// if the new value is a valid chapter
-					if (angular.isNumber(cursorId) && angular.isNumber(startChapterId) && angular.isNumber(endChapterId) && cursorId >= startChapterId && cursorId <= endChapterId) {
-							// update all fields
-						var plan = $scope.plan;
-						plan.cursor = cursorId;
-						plan.startChapter = startChapterId;
-						plan.endChapter = endChapterId;
-						plan.pace = $scope.pace;
-						
-						plan.$update(function(response) {
-							$scope.plan = response;
-							$scope.setPlan();
-							$scope.updateAlerts.push({msg: 'Plan updated.', type: 'success'});
-						}, function(errorResponse) {
-							$scope.updateAlerts.push({msg: errorResponse.data.message, type: 'danger'});
-						});
-					} else {
-						$scope.updateAlerts.push({msg: 'Invalid input.', type: 'danger'});
-							// reset form data
-						this.cursor = $scope.cursor;
-						this.startChapter = $scope.startChapter;
-						this.endChapter = $scope.endChapter;
-					}
-				}, function(error) {
-					$scope.updateAlerts.push({msg: 'Invalid input.', type: 'danger'});
-				});
+			var plan = $scope.plan;
+			plan.name = this.name;
+			plan.cursor = this.cursor;
+			plan.startChapter = this.startChapter;
+			plan.endChapter = this.endChapter;
+			plan.pace = this.pace;
+			
+			plan.$update(function(response) {
+				$scope.plan = response;
+				$scope.setPlan();
+				$scope.updateAlerts.push({msg: 'Plan updated.', type: 'success'});
+			}, function(errorResponse) {
+				$scope.updateAlerts.push({msg: errorResponse.data.message, type: 'danger'});
+				
+				// reset form data
+				this.name = $scope.name;
+				this.cursor = $scope.cursor;
+				this.startChapter = $scope.startChapter;
+				this.endChapter = $scope.endChapter;
+			});
 		};
 
 		// Remove existing Plan
@@ -196,6 +181,11 @@ angular.module('plans').controller('PlansMainController', ['$scope', '$http', 'A
 			}, function(response) {
 				$scope.setPlan(response);
 			});
+		};
+
+		// Change pace on create-plan.html
+		$scope.changePace = function(inc) {
+			if(inc === 1 || $scope.pace > 1) $scope.pace += inc;
 		};
 	}
 ]);

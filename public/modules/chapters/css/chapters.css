@@ -1,8 +1,11 @@
 sup {
+	/*
 	background-color: gainsboro;
+	border-radius: 15px;
+	*/
 	color: gray;
 	padding: 1px;
 	padding-right: 5px;
 	padding-left: 5px; 
-	border-radius: 15px;
+	
 }

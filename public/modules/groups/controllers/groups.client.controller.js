@@ -5,6 +5,7 @@ angular.module('groups').controller('GroupsController', ['$scope', '$http', '$st
 	function($scope, $http, $stateParams, $location, Authentication, Groups, Chapters, $window) {
 		$scope.authentication = Authentication;
 		$scope.optionsCollapsed = true;
+		$scope.addCollapsed = true;
 		$scope.open = false;
 
 		// Create new Group
@@ -84,7 +85,6 @@ angular.module('groups').controller('GroupsController', ['$scope', '$http', '$st
 			$scope.group = Groups.get({ 
 				groupId: $stateParams.groupId
 			});
-
 		};
 	}
 ]);

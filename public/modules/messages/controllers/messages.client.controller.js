@@ -1,8 +1,8 @@
 'use strict';
 
 // Messages controller
-angular.module('messages').controller('MessagesController', ['$scope', '$stateParams', '$location', 'Authentication', 'Messages',
-	function($scope, $stateParams, $location, Authentication, Messages) {
+angular.module('messages').controller('MessagesController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Messages',
+	function($scope, $http, $stateParams, $location, Authentication, Messages) {
 		$scope.authentication = Authentication;
 
 		// Create new Message
@@ -35,7 +35,7 @@ angular.module('messages').controller('MessagesController', ['$scope', '$statePa
 				}
 			} else {
 				$scope.message.$remove(function() {
-					$location.path('messages');
+					$location.path('/settings/profile');
 				});
 			}
 		};
@@ -53,7 +53,10 @@ angular.module('messages').controller('MessagesController', ['$scope', '$statePa
 
 		// Find a list of Messages
 		$scope.find = function() {
-			$scope.messages = Messages.query();
+			$http.get('/users/messages').success(function(response) {
+				$scope.messages = response;
+			});
+			//$scope.messages = Messages.query();
 		};
 
 		// Find existing Message
@@ -65,11 +68,12 @@ angular.module('messages').controller('MessagesController', ['$scope', '$statePa
 	}
 ]);
 
-angular.module('messages').controller('MessagesModalController', function ($scope, $sce, $modalInstance, Messages, Groups, Authentication, $window, verse) {
-	$scope.groups = Groups.query();
-	$scope.verse = verse;
-
+angular.module('messages').controller('MessagesModalController', function ($scope, $http, $sce, $modalInstance, Messages, Groups, Authentication, $window, verse) {
+	$http.get('/groups').success(function(response) {
+		$scope.groups = response;
+	});
 	
+	$scope.verse = verse;
 
 	$scope.authentication = Authentication;
 	$scope.selected = {
@@ -124,6 +128,7 @@ angular.module('messages').controller('MessagesModalController', function ($scop
 			// Clear form fields
 			group.loading = false;
 			group.resultIcon = 'fa-check';
+			group.disabled = true;
 		}, function(errorResponse) {
 			$scope.error = errorResponse.data.message;
 			group.loading = false;

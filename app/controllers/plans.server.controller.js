@@ -4,6 +4,7 @@
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
+	Reference = require('biblejs').Reference,
 	errorHandler = require('./errors.server.controller'),
 	Plan = mongoose.model('Plan'),
 	Chapter = mongoose.model('Chapter'),
@@ -13,17 +14,39 @@ var mongoose = require('mongoose'),
  * Create a Plan
  */
 exports.create = function(req, res) {
-	var plan = new Plan(req.body);
-	plan.user = req.user;
-	plan.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(plan);
+	try {
+		var plan = new Plan(req.body);
+		plan.user = req.user;	
+
+		// Handle both numerical and string types of chapter input
+		if (typeof req.body.startChapter === 'string' || req.body.startChapter instanceof String) 
+			plan.startChapter = new Reference(req.body.startChapter).toChapterId();
+		if (typeof req.body.endChapter === 'string' || req.body.endChapter instanceof String) 
+			plan.endChapter = new Reference(req.body.endChapter).toChapterId();
+		if (typeof req.body.cursor === 'string' || req.body.cursor instanceof String) 
+			plan.cursor = new Reference(req.body.cursor).toChapterId();
+		
+		//ensure plan parameters are valid
+		if(plan.cursor < plan.startChapter || plan.cursor > plan.endChapter || plan.startChapter > plan.endChapter) {
+			throw new Error('Invalid plan parameters');
 		}
-	});
+
+		var newPlan = new Plan(plan);
+		
+		newPlan.save(function(err, planRes) {
+			if (err) {
+				return res.status(400).send({
+					message: errorHandler.getErrorMessage(err)
+				});
+			} else {
+				res.jsonp(newPlan);
+			}
+		});
+	} catch (err) {
+		return res.status(400).send({
+			message: errorHandler.getErrorMessage(err)
+		});
+	}
 };
 
 /**
@@ -37,25 +60,43 @@ exports.read = function(req, res) {
  * Update a Plan
  */
 exports.update = function(req, res) {
-	var plan = req.plan ;
-		//replace populated chapters with only _ids
-	if (req.body.chapters) {
-		for (var i = 0; i < req.body.chapters.length; i++) {
-			if (req.body.chapters[i]._id) 
-				req.body.chapters[i] = req.body.chapters[i]._id;
+	try {
+		var plan = req.plan;
+		plan = _.extend(plan , req.body);
+
+		// Handle both numerical and string types of chapter input
+		var startChapter, endChapter, cursor;
+		startChapter = req.body.startChapter;
+		endChapter = req.body.endChapter;
+		cursor = req.body.cursor;
+		
+		if (typeof startChapter === 'string' || startChapter instanceof String) 
+			startChapter = new Reference(startChapter).toChapterId();
+		if (typeof endChapter === 'string' || endChapter instanceof String) 
+			endChapter = new Reference(endChapter).toChapterId();
+		if (typeof cursor === 'string' || cursor instanceof String) 
+			cursor = new Reference(cursor).toChapterId();
+
+		//ensure plan parameters are valid
+		if(cursor < startChapter || cursor > endChapter || startChapter > endChapter) {
+			throw new Error('Invalid plan parameters');
 		}
-		plan.chapters = [];
+
+		Plan.findByIdAndUpdate(plan._id, {pace: plan.pace, startChapter: startChapter, endChapter: endChapter,
+			cursor: cursor, active: plan.active, name: plan.name}, function(err, newPlan) {
+			if (err) {
+				return res.status(400).send({
+					message: errorHandler.getErrorMessage(err)
+				});
+			} else {
+				res.jsonp(newPlan);
+			}
+		});
+	} catch (err) {
+		return res.status(400).send({
+			message: errorHandler.getErrorMessage(err)
+		});
 	}
-	plan = _.extend(plan , req.body);
-	plan.save(function(err) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(plan);
-		}
-	});
 };
 
 /**
@@ -83,7 +124,8 @@ exports.list = function(req, res) {
 	var year = d.getFullYear(); 
 	var month = d.getMonth(); // for reference, month is 0-11
 	var date = d.getDate(); // date is the day of month 1-31
-	var params = req.query;
+	var params = {user: req.user.id}; // return only the plans of the signed in user
+	
 	Plan.find(params).sort('-created').populate({
 			path: 'chapters',
 			match:  {created: {'$gte': new Date(year, month, date)}}
@@ -135,7 +177,7 @@ exports.planByID = function(req, res, next, id) {
  * Plan authorization middleware
  */
 exports.hasAuthorization = function(req, res, next) {
-	if (req.plan.user.id !== req.user.id) {
+	if (!req.user || (req.plan.user.id !== req.user.id)) {
 		return res.status(403).send('User is not authorized');
 	}
 	next();

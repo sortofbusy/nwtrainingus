@@ -22,6 +22,9 @@ module.exports = function(app) {
 
 	app.route('/groups/enroll')
 		.post(users.requiresLogin, groups.addUser);
+
+	app.route('/groups/:groupId/unenroll')
+		.post(groups.hasAuthorization, groups.removeUser);
 		
 	// Finish by binding the Group middleware
 	app.param('groupId', groups.groupByID);

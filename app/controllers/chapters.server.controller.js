@@ -126,15 +126,12 @@ exports.listGroupChapters = function(req, res) {
 		}
 	}
 	var params = '{user: { $in: [' + users.join(', ') + ']}}';
-	console.log('[' + users.join(', ') + ']');
 	Chapter.find(params).sort('-created').limit(5).populate('user', 'displayName').exec(function(err, chapters) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
-
-			console.log(chapters);
 			res.jsonp(chapters);
 		}
 	});
@@ -144,12 +141,10 @@ function callRCV (params) {
 	var deferred = q.defer();
 	http.get('https://api.lsm.org/recver.php', {params: params}, function(res) {
 	  res.on('data', function(d) {
-	    console.log(d);
 	    deferred.resolve(d);
 	  });
 
 	}).on('error', function(e) {
-	  console.log(e);
 	  deferred.resolve(e);
 	});
 	/*
@@ -194,12 +189,6 @@ exports.reference = function(req, res) {
 			// code here to split up the chapter into blocks of 30 and return an array
 			res.jsonp(result);
 			// handles user input of a chapter, returns chapterNumber if valid
-		} else if (req.query.chapterInput) {
-			var chapterInput = [];
-			for (var r = 0; r < req.query.chapterInput.length; r++) {
-				chapterInput.push(new Reference(req.query.chapterInput[r]).toChapterId());
-			}
-			res.jsonp(chapterInput);
 		}
 	} catch(err) {
 		console.error(errorHandler.getErrorMessage(err));

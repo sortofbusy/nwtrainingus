@@ -48,7 +48,7 @@ ApplicationConfiguration.registerModule('badges');
 'use strict';
 
 // Use applicaion configuration module to register a new module
-ApplicationConfiguration.registerModule('chapters', ['cgBusy']);
+ApplicationConfiguration.registerModule('chapters', ['angular-loading-bar', 'cgBusy']);
 'use strict';
 
 // Use Applicaion configuration module to register a new module
@@ -57,6 +57,10 @@ ApplicationConfiguration.registerModule('core');
 
 // Use applicaion configuration module to register a new module
 ApplicationConfiguration.registerModule('groups');
+'use strict';
+
+// Use applicaion configuration module to register a new module
+ApplicationConfiguration.registerModule('messages', ['angular-ladda']);
 'use strict';
 
 // Use applicaion configuration module to register a new module
@@ -238,18 +242,66 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		$scope.loadingDefer = $q.defer();
 		$scope.loadingPromise = $scope.loadingDefer.promise;
 		$scope.loaded = false;
+		$scope.optionsCollapsed = true;
 
 		$scope.authentication = Authentication;
-		$scope.user = new Users(Authentication.user);
-		$scope.bibleTextStyle = {'font-size': 100 + ($scope.user.preferences.fontSize * 15) + '%'};
-
+		
 		$scope.completed = false;
 		$scope.plans = null;
 		$scope.plansTabs = [];
+
+		$scope.bibleVersions = [
+			{ language: 'Afrikaans', name: 'Ou Vertaling', code: 'aov' },
+			{ language: 'Albanian', name: 'Albanian', code: 'albanian' },
+			{ language: 'Amharic', name: 'Haile Selassie Amharic Bible', code: 'hsab' },
+			{ language: 'Arabic', name: 'Smith and Van Dyke', code: 'arabicsv' },
+			{ language: 'Chinese', name: 'NCV Traditional', code: 'cnt' },
+			{ language: 'Chinese', name: 'Union Simplified', code: 'cus' },
+			{ language: 'Chinese', name: 'NCV Simplified', code: 'cns' },
+			{ language: 'Chinese', name: 'Union Traditional', code: 'cut' },
+			{ language: 'Croatian', name: 'Croatian', code: 'croatia' },
+			{ language: 'Danish', name: 'Danish', code: 'danish' },
+			{ language: 'Dutch', name: 'Dutch Staten Vertaling', code: 'statenvertaling' },
+			{ language: 'English', name: 'American Standard Version', code: 'asv' },
+			{ language: 'English', name: 'Amplified Version', code: 'amp' },
+			{ language: 'English', name: 'Basic English Bible', code: 'basicenglish' },
+			{ language: 'English', name: 'Darby', code: 'darby' },
+			{ language: 'English', name: 'King James Version', code: 'kjv' },
+			{ language: 'English', name: 'KJV Easy Read', code: 'akjv' },
+			{ language: 'English', name: 'New American Standard', code: 'nasb' },
+			{ language: 'English', name: 'Recovery Version', code: 'rcv' },
+			{ language: 'English', name: 'Young\'s Literal Translation', code: 'ylt' },
+			{ language: 'English', name: 'World English Bible', code: 'web' },
+			{ language: 'English', name: 'Webster\'s Bible', code: 'wb' },
+			{ language: 'Esperanto', name: 'Esperanto', code: 'esperanto' },
+			{ language: 'Estonian', name: 'Estonian', code: 'estonian' },
+			{ language: 'Finnish', name: 'Finnish Bible (1776)', code: 'finnish1776' },
+			{ language: 'French', name: 'Martin (1744)', code: 'martin' },
+			{ language: 'German', name: 'Luther (1912)', code: 'luther1912' },
+			{ language: 'Greek', name: 'Greek Modern', code: 'moderngreek' },
+			{ language: 'Greek', name: 'Textus Receptus', code: 'text' },
+			{ language: 'Hebrew', name: 'Aleppo Codex', code: 'aleppo' },
+			{ language: 'Hungarian', name: 'Hungarian Karoli', code: 'karoli' },
+			{ language: 'Italian', name: 'Giovanni Diodati Bible (1649)', code: 'giovanni' },
+			{ language: 'Korean', name: 'Korean', code: 'korean' },
+			{ language: 'Norwegian', name: 'Bibelselskap (1930)', code: 'bibelselskap' },
+			{ language: 'Portuguese', name: 'Almeida Atualizada', code: 'almeida' },
+			{ language: 'Russian', name: 'Synodal Translation (1876)', code: 'synodal' },
+			{ language: 'Spanish', name: 'Reina Valera (1909)', code: 'valera' },
+			{ language: 'Swahili', name: 'Swahili', code: 'swahili' },
+			{ language: 'Swedish', name: 'Swedish (1917)', code: 'swedish' },
+			{ language: 'Turkish', name: 'Turkish', code: 'turkish' },
+			{ language: 'Vietnamese', name: 'Vietnamese (1934)', code: 'vietnamese' },
+			{ language: 'Xhosa', name: 'Xhosa', code: 'xhosa' }
+		];
 		
 				// Initialize controller
 		$scope.init = function() {
 			if (!$scope.authentication.user) return;
+			
+			$scope.user = new Users(Authentication.user);
+			$scope.bibleTextStyle = {'font-size': 100 + ($scope.user.preferences.fontSize * 15) + '%'};
+			
 			Plans.query({ 
 				user: $scope.authentication.user._id
 			}, function(plans) {
@@ -326,36 +378,6 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			return $scope.textPromise;
 		};
 
-		// Create new range of Chapters
-		$scope.submitChapterRange = function(name) {
-			if(!$scope.range) return;
-
-			var range = $scope.range.split('-');
-			
-			var rangeStart = range[0].trim();
-			var rangeEnd = range[1];
-
-			$scope.alerts = [];
-				// if a range was entered
-			if (rangeEnd) {
-				rangeEnd = rangeEnd.trim();
-				$http.get('/range', {params: { rangeStart: rangeStart, rangeEnd: rangeEnd}})
-					.then(function (response) {
-						var calls = [];
-							for(var i= response.data.rangeStart; i < response.data.rangeEnd; i++) {
-								calls.push($scope.create({absoluteChapter: i}));
-							}
-							$q.all(calls);
-					}, function(err) {
-						$scope.alerts.push({type: 'danger', msg: 'Range entry failed.', icon: 'times'});
-					});
-				// if only one chapter was entered
-			} else {
-				$scope.create({name: rangeStart});
-			}
-			$scope.range='';
-		};
-
 		// Find a list of Chapters
 		$scope.find = function(userId) {
 			if(!userId) userId = $scope.authentication.user._id;
@@ -384,38 +406,36 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		};
 
 		$scope.share = function(input) {
-			var params = {
+			/*var params = {
 				message: input,
 				accessToken: $scope.user.additionalProvidersData.facebook.accessToken,
-			};
+			};*/
 			/*$http.post('https://graph.facebook.com/v2.4/me/feed', params).then(function(response) {
 				console.log(response);
 			});*/
 		};
 
-		$scope.openPlansModal = function (size) {
+		$scope.openMessagesModal = function (inputstring, verse) {
 			var modalInstance = $modal.open({
 			  animation: true,
-			  templateUrl: 'modules/plans/views/plan-modal.html',
-			  controller: 'PlansController',
-			  size: size,
+			  templateUrl: 'modules/messages/views/message-modal.client.view.html',
+			  controller: 'MessagesModalController',
+			  size: 'md',
 			  resolve: {
-			    plans: function () {
-			    	return ReadingPlan.getPlans();
-			    },
-			    authentication: function () {
-			    	return $scope.authentication;
+			    verse: function () {
+			    	verse.inputstring = inputstring;
+			    	return verse;
 			    }
 			  }
 			});
 
-			modalInstance.result.then(function (plans) {
+			/*modalInstance.result.then(function () {
 				ReadingPlan.setPlans(plans);
 				if(plans) 
 					$scope.beginPlanPortion();
 			}, function () {
 
-			});
+			});*/
 		};
 
 		$scope.openBadgesModal = function (size) {
@@ -434,7 +454,15 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 				$scope.user.preferences.fontSize += direction;
 				$scope.bibleTextStyle = {'font-size': 100 + ($scope.user.preferences.fontSize * 15) + '%'};
 				$scope.user.$update();
+			console.log('here');
 			}
+		};
+
+		$scope.updateVersion = function() {
+			$scope.user.$update().then(function() {
+				$scope.init();
+			});
+			
 		};
 	}
 
@@ -1283,21 +1311,24 @@ angular.module('groups').config(['$stateProvider',
 'use strict';
 
 // Groups controller
-angular.module('groups').controller('GroupsController', ['$scope', '$stateParams', '$location', 'Authentication', 'Groups',
-	function($scope, $stateParams, $location, Authentication, Groups) {
+angular.module('groups').controller('GroupsController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Groups', 'Chapters', '$window',
+	function($scope, $http, $stateParams, $location, Authentication, Groups, Chapters, $window) {
 		$scope.authentication = Authentication;
+		$scope.optionsCollapsed = true;
+		$scope.addCollapsed = true;
+		$scope.open = false;
 
 		// Create new Group
 		$scope.create = function() {
 			// Create new Group object
 			var group = new Groups ({
 				name: this.name,
+				open: $scope.open,
 				users: [$scope.authentication.user._id]
 			});
 			
 			// Redirect after save
 			group.$save(function(response) {
-				console.log('here');
 				$location.path('groups/' + response._id);
 
 				// Clear form fields
@@ -1307,17 +1338,28 @@ angular.module('groups').controller('GroupsController', ['$scope', '$stateParams
 			});
 		};
 
-		// Remove existing Group
-		$scope.remove = function(group) {
-			if ( group ) { 
-				group.$remove();
-
-				for (var i in $scope.groups) {
-					if ($scope.groups [i] === group) {
-						$scope.groups.splice(i, 1);
-					}
+		// Enroll in existing Group
+		$scope.enroll = function() {
+			var params = {
+				token: this.token
+			};
+			
+			$http.post('/groups/enroll', params).then(function(success) {
+				if(success.data){
+					$location.path('groups/' + success.data._id);
+					$scope.token = '';
 				}
-			} else {
+			}, function(err) {
+				$scope.error = err.data.message;
+				$scope.token = '';
+			});
+		};
+
+		// Remove existing Group
+		$scope.remove = function() {
+			var areYouSure = $window.confirm('Are you absolutely sure you want to delete this group? All information will be permanently lost.');
+			
+			if (areYouSure) {
 				$scope.group.$remove(function() {
 					$location.path('groups');
 				});
@@ -1327,7 +1369,6 @@ angular.module('groups').controller('GroupsController', ['$scope', '$stateParams
 		// Update existing Group
 		$scope.update = function() {
 			var group = $scope.group;
-
 			group.$update(function() {
 				$location.path('groups/' + group._id);
 			}, function(errorResponse) {
@@ -1337,7 +1378,16 @@ angular.module('groups').controller('GroupsController', ['$scope', '$stateParams
 
 		// Find a list of Groups
 		$scope.find = function() {
-			$scope.groups = Groups.query();
+			Groups.query({users: $scope.authentication.user._id}, function(groups) {
+				var userGroups = [];
+				for (var i = 0; i < groups.length; i++) {
+					for (var u = 0; u < groups[i].users.length; u++) {
+						if (String(groups[i].users[u]) === String($scope.authentication.user._id))
+							userGroups.push(groups[i]);
+					}
+				}
+				$scope.groups = groups;
+			});
 		};
 
 		// Find existing Group
@@ -1345,6 +1395,35 @@ angular.module('groups').controller('GroupsController', ['$scope', '$stateParams
 			$scope.group = Groups.get({ 
 				groupId: $stateParams.groupId
 			});
+
+		};
+	}
+]);
+'use strict';
+
+angular.module('groups').filter('timeago', [
+	function() {
+		return function(input) {
+			var value = null;
+			var unit = 'just now';
+			var created = new Date(input);
+			
+			var diff = (Date.now() - created) / (60*1000); // time in minutes
+			if (Math.floor(diff) > 0 ) {
+				unit = ' minute(s) ago';
+			}
+			if (Math.floor(diff) > 59 ) {
+				unit = ' hour(s) ago';
+				diff /= 60;
+			}
+			if (Math.floor(diff) > 23 ) {
+				unit = ' day(s) ago';
+				diff /= 24;
+			}
+			value = Math.floor(diff);
+			if (value === 0) value = '';
+			
+			return value + unit;
 		};
 	}
 ]);
@@ -1354,6 +1433,178 @@ angular.module('groups').controller('GroupsController', ['$scope', '$stateParams
 angular.module('groups').factory('Groups', ['$resource',
 	function($resource) {
 		return $resource('groups/:groupId', { groupId: '@_id'
+		}, {
+			update: {
+				method: 'PUT'
+			}
+		});
+	}
+]);
+'use strict';
+
+//Setting up route
+angular.module('messages').config(['$stateProvider',
+	function($stateProvider) {
+		// Messages state routing
+		$stateProvider.
+		state('listMessages', {
+			url: '/messages',
+			templateUrl: 'modules/messages/views/list-messages.client.view.html'
+		}).
+		state('createMessage', {
+			url: '/messages/create',
+			templateUrl: 'modules/messages/views/create-message.client.view.html'
+		}).
+		state('viewMessage', {
+			url: '/messages/:messageId',
+			templateUrl: 'modules/messages/views/view-message.client.view.html'
+		}).
+		state('editMessage', {
+			url: '/messages/:messageId/edit',
+			templateUrl: 'modules/messages/views/edit-message.client.view.html'
+		});
+	}
+]);
+'use strict';
+
+// Messages controller
+angular.module('messages').controller('MessagesController', ['$scope', '$stateParams', '$location', 'Authentication', 'Messages',
+	function($scope, $stateParams, $location, Authentication, Messages) {
+		$scope.authentication = Authentication;
+
+		// Create new Message
+		$scope.create = function() {
+			// Create new Message object
+			var message = new Messages ({
+				name: this.name
+			});
+
+			// Redirect after save
+			message.$save(function(response) {
+				$location.path('messages/' + response._id);
+
+				// Clear form fields
+				$scope.name = '';
+			}, function(errorResponse) {
+				$scope.error = errorResponse.data.message;
+			});
+		};
+
+		// Remove existing Message
+		$scope.remove = function(message) {
+			if ( message ) { 
+				message.$remove();
+
+				for (var i in $scope.messages) {
+					if ($scope.messages [i] === message) {
+						$scope.messages.splice(i, 1);
+					}
+				}
+			} else {
+				$scope.message.$remove(function() {
+					$location.path('messages');
+				});
+			}
+		};
+
+		// Update existing Message
+		$scope.update = function() {
+			var message = $scope.message;
+
+			message.$update(function() {
+				$location.path('messages/' + message._id);
+			}, function(errorResponse) {
+				$scope.error = errorResponse.data.message;
+			});
+		};
+
+		// Find a list of Messages
+		$scope.find = function() {
+			$scope.messages = Messages.query();
+		};
+
+		// Find existing Message
+		$scope.findOne = function() {
+			$scope.message = Messages.get({ 
+				messageId: $stateParams.messageId
+			});
+		};
+	}
+]);
+
+angular.module('messages').controller('MessagesModalController', ["$scope", "$sce", "$modalInstance", "Messages", "Groups", "Authentication", "$window", "verse", function ($scope, $sce, $modalInstance, Messages, Groups, Authentication, $window, verse) {
+	$scope.groups = Groups.query();
+	$scope.verse = verse;
+
+	
+
+	$scope.authentication = Authentication;
+	$scope.selected = {
+		item: null
+	};
+	$scope.alerts = [];
+	$scope.updateAlerts = [];
+	$scope.status = {
+	isopen: false
+	};
+
+	$scope.ok = function () {
+		$modalInstance.close($scope.plans);
+	};
+
+	$scope.cancel = function () {
+		$modalInstance.dismiss('cancel');
+	};
+
+	$scope.closeAlert = function(index){
+	    $scope.alerts.splice(index, 1);
+	};
+
+	$scope.closeUpdateAlert = function(index){
+	    $scope.updateAlerts.splice(index, 1);
+	};
+
+	$scope.sceTrust = function(input) {
+		return $sce.trustAsHtml(input);
+	};
+
+	$scope.create = function() {
+		$scope.resultIcon = 'fa-check';
+	};
+
+	// Create new Message
+	$scope.create = function(index) {
+		// Create new Message object
+		var group = $scope.groups[index];
+		var message = new Messages ({
+			text: $scope.comment,
+			verse: $scope.verse,
+			user: $scope.authentication.user._id,
+			group: group._id
+		});
+
+		group.loading = true;
+		// Redirect after save
+		message.$save(function(response) {
+			//$location.path('messages/' + response._id);
+
+			// Clear form fields
+			group.loading = false;
+			group.resultIcon = 'fa-check';
+		}, function(errorResponse) {
+			$scope.error = errorResponse.data.message;
+			group.loading = false;
+			group.resultIcon = 'fa-times';
+		});
+	};
+
+}]);
+'use strict';
+
+//Messages service used to communicate Messages REST endpoints
+angular.module('messages').factory('Messages', ['$resource',
+	function($resource) {
+		return $resource('messages/:messageId', { messageId: '@_id'
 		}, {
 			update: {
 				method: 'PUT'
@@ -1405,6 +1656,14 @@ angular.module('plans').controller('PlansMainController', ['$scope', '$http', 'A
 		$scope.selected = {
 			item: null
 		};
+		$scope.listStartChapter = [];
+		$scope.listEndChapter = [];
+		$scope.listCursor = [];
+		$scope.listPace = [];
+		$scope.listProjected = [];
+
+		$scope.pace = 1;
+
 		$scope.alerts = [];
 		$scope.updateAlerts = [];
 		$scope.items = [
@@ -1443,13 +1702,34 @@ angular.module('plans').controller('PlansMainController', ['$scope', '$http', 'A
 		    $scope.updateAlerts.splice(index, 1);
 		};
 
-		$scope.myCreate = function(passedPlan) {
-			var plan = new Plans(passedPlan);
-			plan.$save(function(response) {
-				$scope.alerts.push({msg: 'Plan saved!', type: 'success'});
-			}, function(errorResponse) {
-				$scope.alerts.push({msg: errorResponse.data.message, type: 'danger'});
+		$scope.myCreate = function(newPlan) {
+			if (!newPlan) {
+				newPlan = {
+					name: this.name,
+					startChapter: this.startChapter,
+					endChapter: this.endChapter,
+					pace: this.pace,
+					cursor: this.startChapter
+				};
+			}
+			var plan = new Plans({
+				name: newPlan.name,
+				startChapter: newPlan.startChapter,
+				endChapter: newPlan.endChapter,
+				pace: newPlan.pace,
+				cursor: newPlan.cursor
 			});
+			
+			plan.$save(function(response) {
+				$location.path('plans');
+			}, function(errorResponse) {
+				$scope.updateAlerts.push({msg: 'Invalid input.', type: 'danger'});
+				$scope.name = '';
+				$scope.startChapter = '';
+				$scope.endChapter = '';
+				$scope.pace = 1;
+			});
+
 		};
 
 		$scope.createMultiple = function(item) {
@@ -1477,6 +1757,7 @@ angular.module('plans').controller('PlansMainController', ['$scope', '$http', 'A
 			$scope.endChapter = BibleRef.chapterNameFromId(usePlan.endChapter);
 			$scope.cursor = BibleRef.chapterNameFromId(usePlan.cursor);
 			$scope.pace = usePlan.pace;
+			$scope.name = usePlan.name;
 
 			var projectedDate = new Date();
 			projectedDate.setDate(projectedDate.getDate() + (usePlan.endChapter - usePlan.cursor) / usePlan.pace);
@@ -1485,53 +1766,35 @@ angular.module('plans').controller('PlansMainController', ['$scope', '$http', 'A
 
 		$scope.updatePlan = function() {
 			
-			$scope.pace = this.pace;
-			$http.get('/reference', {params: {chapterInput: [this.cursor, this.startChapter, this.endChapter]}})
-				.then(function(response) {
-					var cursorId = response.data[0];
-					var startChapterId = response.data[1];
-					var endChapterId = response.data[2];
-					
-						// if the new value is a valid chapter
-					if (angular.isNumber(cursorId) && angular.isNumber(startChapterId) && angular.isNumber(endChapterId) && cursorId >= startChapterId && cursorId <= endChapterId) {
-							// update all fields
-						var plan = $scope.plan;
-						plan.cursor = cursorId;
-						plan.startChapter = startChapterId;
-						plan.endChapter = endChapterId;
-						plan.pace = $scope.pace;
-						
-						plan.$update(function(response) {
-							$scope.plan = response;
-							$scope.setPlan();
-							$scope.updateAlerts.push({msg: 'Plan updated.', type: 'success'});
-						}, function(errorResponse) {
-							$scope.updateAlerts.push({msg: errorResponse.data.message, type: 'danger'});
-						});
-					} else {
-						$scope.updateAlerts.push({msg: 'Invalid input.', type: 'danger'});
-							// reset form data
-						this.cursor = $scope.cursor;
-						this.startChapter = $scope.startChapter;
-						this.endChapter = $scope.endChapter;
-					}
-				}, function(error) {
-					$scope.updateAlerts.push({msg: 'Invalid input.', type: 'danger'});
-				});
+			var plan = $scope.plan;
+			plan.name = this.name;
+			plan.cursor = this.cursor;
+			plan.startChapter = this.startChapter;
+			plan.endChapter = this.endChapter;
+			plan.pace = this.pace;
+			
+			plan.$update(function(response) {
+				$scope.plan = response;
+				$scope.setPlan();
+				$scope.updateAlerts.push({msg: 'Plan updated.', type: 'success'});
+			}, function(errorResponse) {
+				$scope.updateAlerts.push({msg: errorResponse.data.message, type: 'danger'});
+				
+				// reset form data
+				this.name = $scope.name;
+				this.cursor = $scope.cursor;
+				this.startChapter = $scope.startChapter;
+				this.endChapter = $scope.endChapter;
+			});
 		};
 
 		// Remove existing Plan
 		$scope.remove = function(plan) {
 			
 			var areYouSure = $window.confirm('Are you absolutely sure you want to delete this plan? All progress will be permanently lost.');
-			if ( plan && areYouSure) { 
-				plan.$remove();
-
-				for (var i in $scope.plans) {
-					if ($scope.plans [i] === plan) {
-						$scope.plans.splice(i, 1);
-					}
-				}
+			if (areYouSure) { 
+				$scope.plan.$remove();
+				$location.path('plans');
 			}
 		};
 
@@ -1544,8 +1807,20 @@ angular.module('plans').controller('PlansMainController', ['$scope', '$http', 'A
 
 		// Find a list of Plans
 		$scope.find = function() {
-			$scope.plans = Plans.query({ 
+			Plans.query({ 
 				user: $scope.authentication.user._id
+			}, function(plans) {
+				for (var i = 0; i < plans.length; i++) {
+					$scope.listStartChapter[i] = BibleRef.chapterNameFromId(plans[i].startChapter);
+					$scope.listEndChapter[i] = BibleRef.chapterNameFromId(plans[i].endChapter);
+					$scope.listCursor[i] = BibleRef.chapterNameFromId(plans[i].cursor);
+					$scope.listPace[i] = plans[i].pace;
+
+					var projectedDate = new Date();
+					projectedDate.setDate(projectedDate.getDate() + (plans[i].endChapter - plans[i].cursor) / plans[i].pace);
+					$scope.listProjected[i] = projectedDate;
+				}
+				$scope.plans = plans;
 			});
 		};
 
@@ -1556,6 +1831,11 @@ angular.module('plans').controller('PlansMainController', ['$scope', '$http', 'A
 			}, function(response) {
 				$scope.setPlan(response);
 			});
+		};
+
+		// Change pace on create-plan.html
+		$scope.changePace = function(inc) {
+			if(inc === 1 || $scope.pace > 1) $scope.pace += inc;
 		};
 	}
 ]);
@@ -1735,50 +2015,6 @@ angular.module('users').controller('PasswordController', ['$scope', '$stateParam
 angular.module('users').controller('SettingsController', ['$scope', '$http', '$location', 'Users', 'Authentication',
 	function($scope, $http, $location, Users, Authentication) {
 		$scope.user = Authentication.user;
-		$scope.bibleVersions = [
-			{ language: 'Afrikaans', name: 'Ou Vertaling', code: 'aov' },
-			{ language: 'Albanian', name: 'Albanian', code: 'albanian' },
-			{ language: 'Amharic', name: 'Haile Selassie Amharic Bible', code: 'hsab' },
-			{ language: 'Arabic', name: 'Smith and Van Dyke', code: 'arabicsv' },
-			{ language: 'Chinese', name: 'NCV Traditional', code: 'cnt' },
-			{ language: 'Chinese', name: 'Union Simplified', code: 'cus' },
-			{ language: 'Chinese', name: 'NCV Simplified', code: 'cns' },
-			{ language: 'Chinese', name: 'Union Traditional', code: 'cut' },
-			{ language: 'Croatian', name: 'Croatian', code: 'croatia' },
-			{ language: 'Danish', name: 'Danish', code: 'danish' },
-			{ language: 'Dutch', name: 'Dutch Staten Vertaling', code: 'statenvertaling' },
-			{ language: 'English', name: 'American Standard Version', code: 'asv' },
-			{ language: 'English', name: 'Amplified Version', code: 'amp' },
-			{ language: 'English', name: 'Basic English Bible', code: 'basicenglish' },
-			{ language: 'English', name: 'Darby', code: 'darby' },
-			{ language: 'English', name: 'King James Version', code: 'kjv' },
-			{ language: 'English', name: 'KJV Easy Read', code: 'akjv' },
-			{ language: 'English', name: 'New American Standard', code: 'nasb' },
-			{ language: 'English', name: 'Recovery Version', code: 'rcv' },
-			{ language: 'English', name: 'Young\'s Literal Translation', code: 'ylt' },
-			{ language: 'English', name: 'World English Bible', code: 'web' },
-			{ language: 'English', name: 'Webster\'s Bible', code: 'wb' },
-			{ language: 'Esperanto', name: 'Esperanto', code: 'esperanto' },
-			{ language: 'Estonian', name: 'Estonian', code: 'estonian' },
-			{ language: 'Finnish', name: 'Finnish Bible (1776)', code: 'finnish1776' },
-			{ language: 'French', name: 'Martin (1744)', code: 'martin' },
-			{ language: 'German', name: 'Luther (1912)', code: 'luther1912' },
-			{ language: 'Greek', name: 'Greek Modern', code: 'moderngreek' },
-			{ language: 'Greek', name: 'Textus Receptus', code: 'text' },
-			{ language: 'Hebrew', name: 'Aleppo Codex', code: 'aleppo' },
-			{ language: 'Hungarian', name: 'Hungarian Karoli', code: 'karoli' },
-			{ language: 'Italian', name: 'Giovanni Diodati Bible (1649)', code: 'giovanni' },
-			{ language: 'Korean', name: 'Korean', code: 'korean' },
-			{ language: 'Norwegian', name: 'Bibelselskap (1930)', code: 'bibelselskap' },
-			{ language: 'Portuguese', name: 'Almeida Atualizada', code: 'almeida' },
-			{ language: 'Russian', name: 'Synodal Translation (1876)', code: 'synodal' },
-			{ language: 'Spanish', name: 'Reina Valera (1909)', code: 'valera' },
-			{ language: 'Swahili', name: 'Swahili', code: 'swahili' },
-			{ language: 'Swedish', name: 'Swedish (1917)', code: 'swedish' },
-			{ language: 'Turkish', name: 'Turkish', code: 'turkish' },
-			{ language: 'Vietnamese', name: 'Vietnamese (1934)', code: 'vietnamese' },
-			{ language: 'Xhosa', name: 'Xhosa', code: 'xhosa' }
-		];
 
 		// If user is not signed in then redirect back home
 		if (!$scope.user) $location.path('/');

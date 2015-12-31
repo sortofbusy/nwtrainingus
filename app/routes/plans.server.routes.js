@@ -6,14 +6,14 @@ module.exports = function(app) {
 
 	// Plans Routes
 	app.route('/plans')
-		.get(plans.list)
+		.get(users.requiresLogin, plans.list)
 		.post(users.requiresLogin, plans.create);
 
 	app.route('/plans/:planId/today')
-		.get(plans.readToday);
+		.get(users.requiresLogin, plans.hasAuthorization, plans.readToday);
 
 	app.route('/plans/:planId')
-		.get(plans.read)
+		.get(users.requiresLogin, plans.hasAuthorization, plans.read)
 		.put(users.requiresLogin, plans.hasAuthorization, plans.update)
 		.delete(users.requiresLogin, plans.hasAuthorization, plans.delete);
 

@@ -7,7 +7,8 @@ var _ = require('lodash'),
 	errorHandler = require('../errors.server.controller.js'),
 	mongoose = require('mongoose'),
 	passport = require('passport'),
-	User = mongoose.model('User');
+	User = mongoose.model('User'),
+	Message = mongoose.model('Message');
 
 /**
  * Update user details
@@ -16,7 +17,6 @@ exports.update = function(req, res) {
 	// Init Variables
 	var user = req.user;
 	var message = null;
-	console.log(user);
 	// For security measurement we remove the roles from the req.body object
 	delete req.body.roles;
 
@@ -53,4 +53,17 @@ exports.update = function(req, res) {
  */
 exports.me = function(req, res) {
 	res.json(req.user || null);
+};
+
+exports.getMessages = function(req, res) {
+	if(!req.user) return res.status(400).send({	message: 'User is not signed in'});
+	Message.find({user: req.user}).populate('group', 'name').sort('-created').limit(10).exec(function(err, messages) {
+		if (err) {
+			return res.status(400).send({
+				message: errorHandler.getErrorMessage(err)
+			});
+		} else {
+			res.jsonp(messages);
+		}
+	});
 };
