@@ -233,8 +233,8 @@ exports.removeUser = function(req, res) {
  */
 exports.groupByID = function(req, res, next, id) { 
 	Group.findById(id).populate('users', 'displayName').exec(function(err, group) {
-		if (err) return next(err);
-		if (! group) return next(new Error('Failed to load Group ' + id));
+		if (err) return res.status(401).send('User is not authorized'); //return next(err);
+		if (! group) return res.status(401).send('User is not authorized'); //next(new Error('Failed to load Group ' + id));
 		req.group = group ;
 		next();
 	});

@@ -2,6 +2,29 @@
 	<div class="page-header">
 		<a href="/#!/groups"><i class="fa fa-angle-double-left"></i> Back To Groups</a>
 		<br>
+		<div>
+			<a class="pull-right" ng-click="optionsCollapsed = !optionsCollapsed"><i class="fa fa-2x fa-fw fa-chevron-down"></i></a>
+			<div collapse="optionsCollapsed">
+				<div class="well well-lg">
+					<div data-ng-show="!group.open">
+						<h3>Access Token:</h3> <em>{{group.accessToken}}</em><br><br>
+					</div>
+					<div class="" data-ng-show="((authentication.user) && (authentication.user._id == group.creator))">
+						<a class="btn btn-primary" href="/#!/groups/{{group._id}}/edit">
+							<i class="glyphicon glyphicon-edit"></i> Edit
+						</a>
+						<a class="btn btn-danger" data-ng-click="remove();">
+							<i class="glyphicon glyphicon-trash"></i> Delete
+						</a>
+					</div>
+					<div data-ng-show="((authentication.user) && (authentication.user._id !== group.creator))">
+						<a class="btn btn-danger" data-ng-click="remove();">
+							<i class="glyphicon glyphicon-trash"></i> Leave Group
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
 		<span class="h1" data-ng-bind="group.name"></span>
 		<span class="label label-primary" data-ng-show="group.creator === authentication.user._id">CREATOR</span>
 		<!--<span class="label label-success" data-ng-show="(group.users.indexOf(authentication.user._id) > -1)">MEMBER</span>--> 
@@ -37,29 +60,6 @@
 				<li class="h3 list-group-item list-group-item-success"><i class="fa fa-group fa-fw"></i> Members</li>
 				<li class="list-group-item" data-ng-repeat="user in group.users">{{user.displayName}}</li>
 			</ul>
-		</div>
-	</div>
-	<div >
-		<a class="pull-right" ng-click="optionsCollapsed = !optionsCollapsed"><i class="fa fa-2x fa-fw fa-chevron-down"></i></a>
-		<div collapse="optionsCollapsed">
-			<div class="well well-lg">
-				<div data-ng-show="!group.open">
-					<h3>Access Token:</h3> <em>{{group.accessToken}}</em><br><br>
-				</div>
-				<div class="" data-ng-show="((authentication.user) && (authentication.user._id == group.creator))">
-					<a class="btn btn-primary" href="/#!/groups/{{group._id}}/edit">
-						<i class="glyphicon glyphicon-edit"></i> Edit
-					</a>
-					<a class="btn btn-danger" data-ng-click="remove();">
-						<i class="glyphicon glyphicon-trash"></i> Delete
-					</a>
-				</div>
-				<div data-ng-show="((authentication.user) && (authentication.user._id !== group.creator))">
-					<a class="btn btn-danger" data-ng-click="remove();">
-						<i class="glyphicon glyphicon-trash"></i> Leave Group
-					</a>
-				</div>
-			</div>
 		</div>
 	</div>
 </section>

@@ -194,14 +194,6 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 			    }
 			  }
 			});
-
-			/*modalInstance.result.then(function () {
-				ReadingPlan.setPlans(plans);
-				if(plans) 
-					$scope.beginPlanPortion();
-			}, function () {
-
-			});*/
 		};
 
 		$scope.openBadgesModal = function (size) {

@@ -10,6 +10,7 @@ var mongoose = require('mongoose'),
 	request = require('request'),
 	http = require('http'),
 	https = require('https'),
+	request = require('request'),
 	q = require('q'),
 	_ = require('lodash');
 
@@ -138,26 +139,47 @@ exports.listGroupChapters = function(req, res) {
 };
 
 function callRCV (params) {
-	var deferred = q.defer();
-	http.get('https://api.lsm.org/recver.php', {params: params}, function(res) {
-	  res.on('data', function(d) {
-	    deferred.resolve(d);
-	  });
-
-	}).on('error', function(e) {
-	  deferred.resolve(e);
-	});
-	/*
-	request({uri: 'https://api.lsm.org/recver.php', qs: params}, function(error, response, body) {
-		console.log('Header: ' + response);
-		if (!error) {
-			deferred.resolve(body);
-		} else {
-			deferred.resolve(error);
-		}
-	});*/
-	return deferred.promise;	
 	
+
+	var deferred = q.defer();
+	var query = require('querystring').stringify(params);
+	/*
+	https.get('https://api.lsm.org/recver.php?' + query, function(response) {
+		  //console.log(response);
+		  var body = '';
+		  response.on('data', function(d) {
+		    body += d;
+		  });
+		  response.on('uncaughtError', function(e) {
+		    response.end();
+		    console.log(e);
+  			deferred.reject(new Error(e));
+  			
+		  });
+		  response.on('end', function() {
+			
+			var parsed = JSON.parse(body);
+			console.log(parsed);
+	        deferred.resolve(parsed);
+	        
+	      });
+    });
+	*/
+
+	// this triggers [Error: Parse Error] bytesParsed: 0, code: 'HPE_INVALID_CONSTANT' }
+	// apparently, the lsm site is sending out invalid headers
+	/*
+	request.get({url: 'https://api.lsm.org/recver.php?String=john' }, function (e, r, body) {
+      console.log(e);
+      //console.log(r);
+      console.log(body)
+      deferred.resolve(body);
+    })
+*/
+
+
+
+	return deferred.promise;	
 }
 
 exports.reference = function(req, res) {
@@ -174,6 +196,45 @@ exports.reference = function(req, res) {
 			var newRefString = Reference.fromChapterId(newChapterId).toString();
 			var verses = Reference.versesInChapterId(newChapterId);
 			var result = [];
+			// push chunks of 30 verses onto the array
+			for (var i=1; i <= Math.floor(verses/30); i++){
+				result.push(newRefString + ':' + ((i-1)*30+1) + '-' + (i * 30));
+			}	
+
+			// take care of the chunk less than 30
+			if (verses % 30  > 0) {
+				var counter = Math.floor(verses/30) * 30;
+				result.push(newRefString + ':' + (counter + 1) + '-' + (counter + verses % 30));
+			}
+
+			if (result.length < 1) {
+				throw new Error('Invalid input');
+			}
+
+			if(req.query.addNumber) {
+				result = {
+					chapterChunks: result,
+					chapterNumber: newChapterId 
+				};
+			}
+			
+			res.jsonp(result);
+		}
+	} catch(err) {
+		console.error(errorHandler.getErrorMessage(err));
+		return res.status(400).send({
+			message: errorHandler.getErrorMessage(err)
+		});
+	}
+};
+
+exports.readChapter = function(req, res) {
+	try {
+		if (req.body.chapterName) {
+			var newChapterId = new Reference(req.body.chapterName).toChapterId();
+			var newRefString = Reference.fromChapterId(newChapterId).toString();
+			var verses = Reference.versesInChapterId(newChapterId);
+			var result = [];
 			
 			// push chunks of 30 verses onto the array
 			for (var i=1; i <= Math.floor(verses/30); i++){
@@ -185,13 +246,16 @@ exports.reference = function(req, res) {
 				var counter = Math.floor(verses/30) * 30;
 				result.push(newRefString + ':' + (counter + 1) + '-' + (counter + verses % 30));
 			}
-			
-			// code here to split up the chapter into blocks of 30 and return an array
-			res.jsonp(result);
-			// handles user input of a chapter, returns chapterNumber if valid
+			var params = {
+			    'String': 'John 2',
+			    'Out': 'json'
+			};
+
+
+			res.jsonp('yep');
 		}
 	} catch(err) {
-		console.error(errorHandler.getErrorMessage(err));
+		console.log(err);
 		return res.status(400).send({
 			message: errorHandler.getErrorMessage(err)
 		});

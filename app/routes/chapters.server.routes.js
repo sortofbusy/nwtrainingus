@@ -13,8 +13,8 @@ module.exports = function(app) {
 	app.route('/reference')
 		.get(chapters.reference);
 
-	app.route('/chapters/group/:groupId')
-		.get(chapters.listGroupChapters);
+	app.route('/read')
+		.post(chapters.readChapter);
 
 	app.route('/chapters/:chapterId')
 		.get(chapters.read)

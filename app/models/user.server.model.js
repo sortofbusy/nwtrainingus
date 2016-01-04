@@ -44,14 +44,14 @@ var UserSchema = new Schema({
 	email: {
 		type: String,
 		trim: true,
-		default: '',
+		unique: 'This email is already registered',
+		required: 'Please fill in an email',
 		validate: [validateLocalStrategyProperty, 'Please fill in your email'],
 		match: [/.+\@.+\..+/, 'Please fill a valid email address']
 	},
 	username: {
 		type: String,
-		unique: 'testing error message',
-		required: 'Please fill in a username',
+		unique: 'This username is already registered',
 		trim: true
 	},
 	password: {
@@ -122,6 +122,9 @@ UserSchema.pre('save', function(next) {
 	if (this.password && this.password.length > 6) {
 		this.salt = new Buffer(crypto.randomBytes(16).toString('base64'), 'base64');
 		this.password = this.hashPassword(this.password);
+	}
+	if(!this.username || this.username === '') {
+		this.username = this.email;
 	}
 
 	next();

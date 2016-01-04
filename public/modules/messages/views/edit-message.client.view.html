@@ -1,4 +1,4 @@
-<section data-ng-controller="MessagesController" data-ng-init="findOne()">
+<section data-ng-controller="MessagesController" data-ng-init="findOne()" data-ng-show="authentication.user">
     <div class="page-header">
         <a href="/#!/messages/{{message._id}}"><i class="fa fa-angle-double-left"></i> Back To Note</a>
         <br>

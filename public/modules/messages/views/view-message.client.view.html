@@ -1,4 +1,4 @@
-<section data-ng-controller="MessagesController" data-ng-init="findOne()">
+<section data-ng-controller="MessagesController" data-ng-init="findOne()" data-ng-show="authentication.user">
 	<div class="page-header">
 		<h4>Note: {{message.text}}</h4>
 	</div>

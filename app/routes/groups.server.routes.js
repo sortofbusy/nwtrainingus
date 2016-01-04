@@ -9,6 +9,9 @@ module.exports = function(app) {
 		.get(users.requiresLogin, groups.list)
 		.post(users.requiresLogin, groups.create);
 
+	app.route('/groups/enroll')
+		.post(users.requiresLogin, groups.addUser);
+	
 	app.route('/groups/:groupId')
 		.get(groups.hasAuthorization, groups.read, groups.addMessages)
 		.put(users.requiresLogin, groups.creatorAuthorization, groups.update)
@@ -20,8 +23,7 @@ module.exports = function(app) {
 	app.route('/groups/:groupId/messages')
 		.get(groups.hasAuthorization, groups.getMessages);
 
-	app.route('/groups/enroll')
-		.post(users.requiresLogin, groups.addUser);
+	
 
 	app.route('/groups/:groupId/unenroll')
 		.post(groups.hasAuthorization, groups.removeUser);

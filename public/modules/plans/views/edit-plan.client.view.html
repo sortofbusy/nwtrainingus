@@ -2,9 +2,18 @@
     <div class="page-header">
         <a href="/#!/plans"><i class="fa fa-angle-double-left"></i> Back To Plans</a>
         <br>
-        <div class="h1">
-            <i class="fa fa-calendar fa-1x"></i> Edit Plan
-        </div>
+        <div>
+            <a class="pull-right" ng-click="optionsCollapsed = !optionsCollapsed"><i class="fa fa-2x fa-fw fa-chevron-down"></i></a>
+            <div collapse="!optionsCollapsed">
+                <div class="well well-lg">
+                    <a class="btn btn-danger" style="margin-right: 100px;" data-ng-click="remove();">
+                        <i class="glyphicon glyphicon-trash"></i> Delete Plan
+                    </a>
+                </div>
+                </div>
+            </div>
+        </div> 
+        <span class="h1" data-ng-bind="plan.name"></span>
     </div>
     <div class="row">
         <!--<div class="col-10 col-offset-1 text-center">
@@ -58,16 +67,5 @@
             <alert data-ng-repeat="alert in updateAlerts" type="{{alert.type}}" close="closeUpdateAlert($index)" dismiss-on-timeout="3500">{{alert.msg}}</alert>
           
     </div>
-    <div >
-        <a class="pull-right" ng-click="optionsCollapsed = !optionsCollapsed"><i class="fa fa-2x fa-fw fa-chevron-down"></i></a>
-        <div collapse="!optionsCollapsed">
-            <div class="well well-lg">
-                <a class="btn btn-danger" style="margin-right: 100px;" data-ng-click="remove();">
-                    <i class="glyphicon glyphicon-trash"></i> Delete Plan
-                </a>
-            </div>
-            </div>
-        </div>
-    </div> 
 </section>
 

@@ -322,6 +322,20 @@ describe('Chapter CRUD tests', function() {
 		});
 	});
 
+	it.only('should be able to get the text of a chapter from either the name or number', function(done) {
+		request(app).post('/read')
+			.send({chapterName: 'Matt 3'})
+			.expect(200)
+			.end(function(req, res) {
+
+				// Set assertion
+				res.body.should.not.match('hello');
+
+				// Call the assertion callback
+				done();
+			});
+	});
+
 	afterEach(function(done) {
 		User.remove().exec();
 		Chapter.remove().exec();
