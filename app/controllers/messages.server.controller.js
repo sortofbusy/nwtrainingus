@@ -99,7 +99,7 @@ exports.messageByID = function(req, res, next, id) {
  * Message authorization middleware
  */
 exports.hasAuthorization = function(req, res, next) {
-	if (req.message.user.id !== req.user.id) {
+	if (String(req.message.user._id) !== String(req.user.id)) {
 		return res.status(403).send('User is not authorized');
 	}
 	next();

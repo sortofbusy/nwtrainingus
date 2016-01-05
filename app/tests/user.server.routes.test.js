@@ -20,7 +20,7 @@ describe('User route tests', function() {
 	beforeEach(function(done) {
 		// Create user credentials
 		credentials = {
-			username: 'username',
+			username: 'josiahvinson@gmail.com',
 			password: 'password'
 		};
 
@@ -29,7 +29,7 @@ describe('User route tests', function() {
 			firstName: 'Full',
 			lastName: 'Name',
 			displayName: 'Full Name',
-			email: 'test@test.com',
+			email: 'josiahvinson@gmail.com',
 			username: credentials.username,
 			password: credentials.password,
 			provider: 'local'
@@ -116,6 +116,18 @@ describe('User route tests', function() {
 									});
 							});
 					});
+			});
+	});
+
+	it.only('should be able to send a password reset email', function(done) {
+		agent.post('/auth/forgot')
+			.send({username: 'josiahvinson@gmail.com'})
+			.expect(200)
+			.end(function(signinErr, signinRes) {
+				// Handle signin error
+				if (signinErr) done(signinErr);
+
+				done(signinRes);
 			});
 	});
 

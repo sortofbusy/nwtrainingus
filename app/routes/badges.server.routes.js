@@ -6,11 +6,11 @@ module.exports = function(app) {
 
 	// Badges Routes
 	app.route('/badges')
-		.get(badges.list)
+		.get(users.requiresLogin, badges.list)
 		.post(users.requiresLogin, badges.create);
 
 	app.route('/badges/:badgeId')
-		.get(badges.read)
+		.get(users.requiresLogin, badges.read)
 		.put(users.requiresLogin, badges.hasAuthorization, badges.update)
 		.delete(users.requiresLogin, badges.hasAuthorization, badges.delete);
 

@@ -82,9 +82,63 @@ angular.module('groups').controller('GroupsController', ['$scope', '$http', '$st
 
 		// Find existing Group
 		$scope.findOne = function() {
-			$scope.group = Groups.get({ 
+			var listLength = 5;
+			Groups.get({ 
 				groupId: $stateParams.groupId
+			}, function(group) {
+				$http.get('groups/' + group._id + '/reading')
+					.then(function(stats) {
+						group.users = stats.data;
+						$scope.group = group;
+
+						if(group.recentMessages.length > listLength) {
+							$scope.messages = group.recentMessages.slice(0, listLength);
+							$scope.allmessages = group.recentMessages;
+						} else $scope.messages = group.recentMessages;
+
+						if(group.recentChapters.length > listLength) {
+							$scope.chapters = group.recentChapters.slice(0, listLength);
+							$scope.allchapters = group.recentChapters;
+						} else $scope.chapters = group.recentChapters;
+					});
+				
 			});
+		};
+
+		$scope.showAll = function(list) {
+			var all = 'all' + list;
+			$scope[list] = $scope[all];
+			$scope[all] = [];
 		};
 	}
 ]);
+
+
+/*
+// Find existing Group
+		$scope.findOne = function() {
+			var listLength = 5;
+			
+			Groups.get({ 
+				groupId: $stateParams.groupId
+			}, function(group) {
+				$http.get('groups/' + group._id + '/reading')
+					.then(function(stats) {
+						group.users = stats.data;
+						$scope.group = group;
+
+						if(group.recentMessages.length > listLength) {
+							$scope.messages = group.recentMessages.slice(0, listLength);
+							$scope.allmessages = group.recentMessages;
+						} else $scope.messages = group.recentMessages;
+
+						if(group.recentBadges.length > listLength) {
+							$scope.badges = group.recentBadges.slice(0, listLength);
+							$scope.allbadges = group.recentBadges;
+						} else $scope.badges = group.recentBadges;
+					});
+				
+			});
+		};
+
+*/

@@ -322,7 +322,7 @@ describe('Chapter CRUD tests', function() {
 		});
 	});
 
-	it.only('should be able to get the text of a chapter from either the name or number', function(done) {
+	it('should be able to get the text of a chapter from either the name or number', function(done) {
 		request(app).post('/read')
 			.send({chapterName: 'Matt 3'})
 			.expect(200)

@@ -441,6 +441,47 @@ describe('Group detail tests', function() {
 			});
 	});
 
+	it.only('should be able to get reading stats for Users in a Group', function(done) {
+		agent.post('/chapters')
+			.send(new Chapter({
+				name: 'Matthew 5'}))
+			.expect(200)
+			.end(function(anotherchapterErr, anotherchapterRes) {
+				agent.get('/auth/signout')
+					.end(function() {
+						agent.post('/auth/signin')
+							.send(credentials2)
+							.expect(200)
+							.end(function(signinErr, signinRes) {
+								// Handle signin error
+								if (signinErr) done(signinErr);	
+								agent.post('/groups/enroll')
+									.send({ token: group.accessToken })
+									.expect(200)
+									.end(function(err, res) {
+										if (err) done(err);
+										
+										
+
+												agent.get('/groups/' + group._id + '/reading')
+													.end(function(err, res) {
+														if (err) done(err);
+														// Set assertion
+														res.body.should.be.an.Array.with.lengthOf(2);
+														//res.body[0].text.should.match('I enjoyed this.');
+
+														// Call the assertion callback
+														done();
+													});
+											
+									});
+							});
+					});
+		});
+
+
+	});
+
 	it('should be able to add a user to a Group', function(done) {
 		agent.get('/auth/signout')
 			.end(function() {

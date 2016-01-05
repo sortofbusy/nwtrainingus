@@ -10,6 +10,8 @@ var _ = require('lodash'),
 	User = mongoose.model('User'),
 	config = require('../../../config/config'),
 	nodemailer = require('nodemailer'),
+	Mailgun = require('mailgun-js'),
+	request = require('request'),
 	async = require('async'),
 	crypto = require('crypto');
 
@@ -65,13 +67,45 @@ exports.forgot = function(req, res, next) {
 		},
 		// If valid email, send reset email using service
 		function(emailHTML, user, done) {
+			var mailgun = new Mailgun({
+				apiKey: process.env.MAILER_API_KEY, 
+				domain: process.env.MAILER_API_DOMAIN
+			});
 			var smtpTransport = nodemailer.createTransport(config.mailer.options);
 			var mailOptions = {
 				to: user.email,
-				from: config.mailer.from,
+				from: process.env.MAILER_FROM,
 				subject: 'Password Reset',
-				html: emailHTML
+				html: emailHTML,
+				'o:testmode': true
 			};
+			console.log(smtpTransport);
+/*
+			request.post(process.env.MAILER_API_URL, mailOptions, function (error, response, body) {
+			  if (error) {
+			  	console.log(error);
+			  	done(error);
+			  }
+			  if (!error && response.statusCode == 200) {
+			    console.log(body) // Show the HTML for the Google homepage.
+			    res.send({
+					message: 'An email has been sent to ' + user.email + ' with further instructions.'
+				});
+				done();
+			  }
+			})
+
+			mailgun.messages().send(mailOptions, function (err, body) {
+		      // If err console.log so we can debug
+		      if (err) {
+		        done(err);
+		      } else {        
+		        res.send({
+					message: 'An email has been sent to ' + user.email + ' with further instructions.'
+				});
+		      }      
+		    });
+*/
 			smtpTransport.sendMail(mailOptions, function(err) {
 				if (!err) {
 					res.send({

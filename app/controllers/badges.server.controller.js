@@ -73,8 +73,7 @@ exports.delete = function(req, res) {
  * List of Badges
  */
 exports.list = function(req, res) { 
-	var params = req.query;
-	Badge.find(params).sort('-created').populate('user', 'displayName').exec(function(err, badges) {
+	Badge.find({user: req.user._id}).sort('-created').populate('user', 'displayName').exec(function(err, badges) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

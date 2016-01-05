@@ -10,8 +10,6 @@
 			<div class="col-xs-12">
                     <span class="h1 list-group-item-heading" data-ng-bind="group.name"></span>
                     <span class="label label-primary" data-ng-show="group.creator === authentication.user._id">CREATOR</span>
-                    <!--<span class="label label-success" data-ng-show="(group.users.indexOf(authentication.user._id) > -1)">MEMBER</span>--> 
-                    
             </div>
             <br>
             <div class="row list-group-item-text">
@@ -32,10 +30,11 @@
                 <a class="btn btn-info btn-lg" href="/#!/groups/create">
                     New Group
                 </a>
-                <br><br><br>
+                <br>
             </div>
+            <h2>-or-</h2><br>
             <div >
-                <form class="form-horizontal" data-ng-submit="enroll()" novalidate>
+                <form class="form-inline" data-ng-submit="enroll()" novalidate>
                     <fieldset>
                         <div class="form-group">
                             <div class="controls">

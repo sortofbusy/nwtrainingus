@@ -19,7 +19,7 @@
 					</div>
 					<div data-ng-show="((authentication.user) && (authentication.user._id !== group.creator))">
 						<a class="btn btn-danger" data-ng-click="remove();">
-							<i class="glyphicon glyphicon-trash"></i> Leave Group
+							<i class="fa fa-fw fa-times"></i> Leave Group
 						</a>
 					</div>
 				</div>
@@ -33,10 +33,19 @@
 	<div class="row">
 		<div class="col-xs-12 col-md-4">
 			<ul class="list-group">
+				<li class="h3 list-group-item list-group-item-success"><i class="fa fa-group fa-fw"></i> Members</li>
+				<li class="list-group-item" data-ng-repeat="user in group.users">
+					{{user._id.displayName}}
+					<span class="pull-right"><small>Chapters this week</small> {{user.count}}</span>
+				</li>
+			</ul>
+		</div>
+		<div class="col-xs-12 col-md-4">
+			<ul class="list-group">
 				<li class="h3 list-group-item list-group-item-warning"><i class="fa fa-comment fa-fw"></i> Notes</li>
-				<li class="list-group-item" data-ng-repeat="message in group.recentMessages">
+				<li class="list-group-item" data-ng-repeat="message in messages">
 					<a data-ng-click="showVerse[$index]=!showVerse[$index]"><strong>{{message.verse.inputstring + ':' + message.verse.ref}} <span class="caret"></span></strong></a>
-					<span class="pull-right" data-ng-show="message.user.id === authentication.user.id">
+					<span class="pull-right" data-ng-show="message.user._id === authentication.user._id">
 		            	<a data-ng-href="#!/messages/{{message._id}}"><i class="fa fa-edit fa-fw"></i></a> 
 		            </span>
 					<div data-ng-show="showVerse[$index]" class="border"><em>{{message.verse.text}}</em></div>
@@ -47,18 +56,18 @@
 						<small>{{message.user.displayName}}, <em>{{message.created | date : "MMM. d"}}</em></small>
 					</div>
 				</li>
+				<li class="list-group-item text-center" data-ng-click="showAll('messages')" data-ng-show="allmessages.length">
+	        	<a><i class="fa fa-ellipsis-h fa-2x fa-fw"></i></a>
+	        	</li>
 			</ul>
 		</div>
 		<div class="col-xs-12 col-md-4">
 			<ul class="list-group">
 				<li class="h3 list-group-item list-group-item-info"><i class="fa fa-bookmark fa-fw"></i> Recent Chapters</li>
-				<li class="list-group-item" data-ng-repeat="chapter in group.recentChapters">{{chapter.name}} <small class="pull-right">{{chapter.user.displayName}}, <em>{{chapter.created | date : "MMM. d"}}</em></small></li>
-			</ul>
-		</div>
-		<div class="col-xs-12 col-md-4">
-			<ul class="list-group">
-				<li class="h3 list-group-item list-group-item-success"><i class="fa fa-group fa-fw"></i> Members</li>
-				<li class="list-group-item" data-ng-repeat="user in group.users">{{user.displayName}}</li>
+				<li class="list-group-item" data-ng-repeat="chapter in chapters">{{chapter.name}} <small class="pull-right">{{chapter.user.displayName}}, <em>{{chapter.created | date : "MMM. d"}}</em></small></li>
+				<li class="list-group-item text-center" data-ng-click="showAll('chapters')" data-ng-show="allchapters.length">
+	        	<a><i class="fa fa-ellipsis-h fa-2x fa-fw"></i></a>
+	        	</li>
 			</ul>
 		</div>
 	</div>

@@ -164,7 +164,7 @@ describe('Badge CRUD tests', function() {
 			});
 	});
 
-	it('should be able to get a list of Badges if not signed in', function(done) {
+	it('should not be able to get a list of Badges if not signed in', function(done) {
 		// Create new Badge model instance
 		var badgeObj = new Badge(badge);
 
@@ -172,31 +172,25 @@ describe('Badge CRUD tests', function() {
 		badgeObj.save(function() {
 			// Request Badges
 			request(app).get('/badges')
-				.end(function(req, res) {
-					// Set assertion
-					res.body.should.be.an.Array.with.lengthOf(1);
-
-					// Call the assertion callback
-					done();
+				.expect(401)
+				.end(function(err, res) {
+					done(err);
 				});
 
 		});
 	});
 
 
-	it('should be able to get a single Badge if not signed in', function(done) {
+	it('should not be able to get a single Badge if not signed in', function(done) {
 		// Create new Badge model instance
 		var badgeObj = new Badge(badge);
 
 		// Save the Badge
 		badgeObj.save(function() {
 			request(app).get('/badges/' + badgeObj._id)
-				.end(function(req, res) {
-					// Set assertion
-					res.body.should.be.an.Object.with.property('name', badge.name);
-
-					// Call the assertion callback
-					done();
+				.expect(401)
+				.end(function(err, res) {
+					done(err);
 				});
 		});
 	});

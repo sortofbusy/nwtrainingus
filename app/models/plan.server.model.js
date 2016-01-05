@@ -9,6 +9,9 @@ var mongoose = require('mongoose'),
 /**
  * Plan Schema
  */
+
+ // plans.server UPDATES PLAN FIELDS MANUALLY! Schema changes need to be reflected there
+		
 var PlanSchema = new Schema({
 	name: {
 		type: String,

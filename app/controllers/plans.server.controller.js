@@ -81,9 +81,9 @@ exports.update = function(req, res) {
 		if(cursor < startChapter || cursor > endChapter || startChapter > endChapter) {
 			throw new Error('Invalid plan parameters');
 		}
-
+		// UPDATING PLAN FIELDS MANUALLY! Schema changes need to be reflected here
 		Plan.findByIdAndUpdate(plan._id, {pace: plan.pace, startChapter: startChapter, endChapter: endChapter,
-			cursor: cursor, active: plan.active, name: plan.name}, function(err, newPlan) {
+			cursor: cursor, active: plan.active, name: plan.name, chapters: plan.chapters, parent: plan.parent, isParent: plan.isParent}, function(err, newPlan) {
 			if (err) {
 				return res.status(400).send({
 					message: errorHandler.getErrorMessage(err)

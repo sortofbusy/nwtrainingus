@@ -3,12 +3,12 @@
 module.exports = {
 	app: {
 		title: 'Eat The Bible',
-		description: 'Full-Stack JavaScript with MongoDB, Express, AngularJS, and Node.js',
-		keywords: 'MongoDB, Express, AngularJS, Node.js'
+		description: 'Build a daily Bible-reading habit.',
+		keywords: 'Bible, reading, Word'
 	},
 	port: process.env.PORT || 3000,
 	templateEngine: 'swig',
-	sessionSecret: 'MEAN',
+	sessionSecret: process.env.SESSION_SECRET,
 	sessionCollection: 'sessions',
 	assets: {
 		lib: {

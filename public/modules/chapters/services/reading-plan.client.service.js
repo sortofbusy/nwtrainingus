@@ -116,7 +116,6 @@ angular.module('chapters').factory('ReadingPlan', ['$http', '$q', 'BibleText', '
 						var plan = plans[planSegment];
 							// remove the current chapter from list to read
 						chaptersInPortion.shift(); 
-						
 							//check if portion is complete
 						if(chaptersInPortion.length === 0) {
 							var incompletePlan = service.incompletePlan();	
@@ -133,12 +132,7 @@ angular.module('chapters').factory('ReadingPlan', ['$http', '$q', 'BibleText', '
 							} else 
 								planSegment += 1;
 							
-							console.log('done reading ' + plan.name + ' today, going to plan # ' + planSegment);
-							
-							
 							if (incompletePlan === null) {
-
-								console.log('all reading plans finished for today!');
 								///////
 								// Show a 'keep reading' button
 								//////

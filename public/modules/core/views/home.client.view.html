@@ -31,9 +31,9 @@
                 </div>
 				<button type="submit" class="btn btn-default">Read</button>
 			</form>
-			<br><br>
+			<br>
 		</div>
-		<div class="row" data-ng-show="chapterNumber">
+		<div class="col-xs-12" data-ng-show="chapterNumber">
 			<br>
 			<h3>{{chapterText.inputstring}}</h3>
 			<div class="lead text-justify" data-ng-style="bibleTextStyle">
@@ -52,48 +52,44 @@
 		</div>
 	</div>
 	<div data-ng-controller="ChaptersController" data-ng-init="init()" data-ng-show="authentication.user">
-		<div cg-busy="{promise:loadingPromise,message:'Loading ...'}"></div>
 		<div data-ng-show="loaded">
-			<!--<div class="jumbotron text-center">-->
-				<div >
-					<br>
-					<a class="pull-right" ng-click="optionsCollapsed = !optionsCollapsed"><i class="fa fa-2x fa-fw fa-gear"></i></a>
-					<div collapse="optionsCollapsed">
-						<div class="well well-lg">
-							<div class="" data-ng-show="plans">
-							<h4>Reading Plans</h4>
-							<tabset vertical="true" type ="pills">
-								<tab data-ng-repeat="plan in plans" active="plansTabs[$index]" data-ng-click="changePlan($index)" class="bg-info">
-									<tab-heading>
-										{{plan.name}} <span class="badge">{{plan.chapters.length}}/{{plan.pace}}</span>
-									</tab-heading>
-									<!--<b>Progress:</b> {{plan.chapters.length}} / {{plan.pace}} chapters today 
-									<progressbar value="plan.chapters.length" type="success" max="plan.pace"></progressbar>-->
-								</tab>
-							</tabset>
-							</div>
-							<h4>Text Size</h4>
-							<div class="text-center">
-								<button type="button" data-ng-click="textResize(1)"><i class="fa fa-fw fa-plus fa-2x"></i></button>
-								<button type="button" data-ng-click="textResize(-1)"><i class="fa fa-fw fa-minus fa-2x"></i></button>
-							</div>
-							<h4>Choose Translation</h4>
-								<form>
-									<select id="preferences.version" name="preferences.version" class="form-control" data-ng-model="user.preferences.version" data-ng-options="version.code as version.name group by version.language for version in bibleVersions" data-ng-change="updateVersion()">
-									</select>
-								</form>
+			<div >
+				<br>
+				<a class="pull-right" ng-click="optionsCollapsed = !optionsCollapsed"><i class="fa fa-2x fa-fw fa-gear"></i></a>
+				<div collapse="optionsCollapsed">
+					<div class="well well-lg">
+						<h4>Text Size</h4>
+						<div class="text-center">
+							<button type="button" data-ng-click="textResize(1)"><i class="fa fa-fw fa-plus fa-2x"></i></button>
+							<button type="button" data-ng-click="textResize(-1)"><i class="fa fa-fw fa-minus fa-2x"></i></button>
 						</div>
-					</div>
-					
-					<div class="col-md-4 h2 pull-left" data-ng-hide="plans.length">
-						Choose a reading plan to get started! 
-						<a class="btn btn-info btn-lg" href="/#!/plans">
-							View Plans
-						</a>
+						<h4>Choose Translation</h4>
+							<form>
+								<select id="preferences.version" name="preferences.version" class="form-control" data-ng-model="user.preferences.version" data-ng-options="version.code as version.name group by version.language for version in bibleVersions" data-ng-change="updateVersion()">
+								</select>
+							</form>
 					</div>
 				</div>
-			<!--</div>-->	
-			
+				
+				<div class="col-md-4 h2 pull-left" data-ng-hide="plans.length">
+					Choose a reading plan to get started! 
+					<a class="btn btn-info btn-lg" href="/#!/plans">
+						View Plans
+					</a>
+				</div>
+			</div>
+			<div class="" data-ng-show="plans">
+						<h4>Reading Plans</h4>
+						<tabset vertical="true" type ="pills">
+							<tab data-ng-repeat="plan in plans" active="plansTabs[$index]" data-ng-click="changePlan($index)" class="bg-info">
+								<tab-heading>
+									{{plan.name}} <span class="strong badge">{{plan.chapters.length}}/{{plan.pace}}</span>
+								</tab-heading>
+								<!--<b>Progress:</b> {{plan.chapters.length}} / {{plan.pace}} chapters today 
+								<progressbar value="plan.chapters.length" type="success" max="plan.pace"></progressbar>-->
+							</tab>
+						</tabset>
+						</div>
 			<br>
 			<div class="well" data-ng-show="completed">
 				<div class="h2">

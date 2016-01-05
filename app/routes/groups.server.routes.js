@@ -22,8 +22,9 @@ module.exports = function(app) {
 
 	app.route('/groups/:groupId/messages')
 		.get(groups.hasAuthorization, groups.getMessages);
-
 	
+	app.route('/groups/:groupId/reading')
+		.get(groups.hasAuthorization, groups.getReadingStats);
 
 	app.route('/groups/:groupId/unenroll')
 		.post(groups.hasAuthorization, groups.removeUser);

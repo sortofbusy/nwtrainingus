@@ -171,6 +171,52 @@ exports.getMessages = function(req, res) {
 	}
 };
 
+/**
+ * Return the number of chapters each group member has read
+ */
+exports.getReadingStats = function(req, res) {
+	try {
+		// begin query, aggregate Chapters		
+		Chapter.aggregate()
+			.match({ // only find chapters created by users in this Group in the last week
+				user: {$in: req.group.users.map(function(user){ return new mongoose.Types.ObjectId(user._id); })},
+				created: {$gt: new Date(Date.now() - 7*24*60*60*1000)}
+			}) 
+			.group({ // group by user, add the count 
+				_id: '$user', 
+				count: {$sum: 1}
+			})
+			.exec(function(err, chapters) {
+				if (err) throw err;
+				
+				// find users in the Group who have read 0 chapters, add entries for them
+				var foundIds = _.map(_.pluck(chapters, '_id'),function(i){return String(i);} );
+				var groupIds = _.map(_.pluck(req.group.users, '_id'),function(i){return String(i);} );
+				var diff = _.difference(groupIds, foundIds);
+				for(var i=0; i<diff.length; i++) {
+					chapters.push({
+						_id: diff[i],
+						count: 0
+					});
+				}
+
+				// populate the result with displayName
+				User.populate(chapters, {
+					'path': '_id',
+					'select': 'displayName'
+				}, function(e, results) {
+					if (e) throw e;
+					res.jsonp(results);
+				});			
+			});
+	} catch (e) {
+		console.log(e);
+		return res.status(400).send({
+			message: errorHandler.getErrorMessage(e)
+		});
+	}
+};
+
 exports.addUser = function(req, res) {
 	Group.findOne({accessToken: req.body.token}).exec(function(err, group) {
 		if (err) {
