@@ -7,6 +7,9 @@ var _ = require('lodash'),
 	errorHandler = require('../errors.server.controller'),
 	mongoose = require('mongoose'),
 	passport = require('passport'),
+	config = require('../../../config/config'),
+	nodemailer = require('nodemailer'),
+	smtpTransport = require('nodemailer-smtp-transport'),
 	User = mongoose.model('User');
 
 /*var debug = require('debug')('http')
@@ -38,13 +41,32 @@ exports.signup = function(req, res) {
 			user.password = undefined;
 			user.salt = undefined;
 
-			req.login(user, function(err) {
-				if (err) {
-					res.status(400).send(err);
-				} else {
-					res.json(user);
-				}
+			res.render('templates/welcome-email', {
+				name: user.firstName,
+				appName: config.app.title
+			}, function(err2, emailHTML) {
+				if(err2) return res.status(400).send(err2);
+				var smtpTransport = nodemailer.createTransport(config.mailer.options);
+				var mailOptions = {
+					to: user.email,
+					from: config.mailer.from,
+					subject: 'Password Reset',
+					html: emailHTML
+				};
+				smtpTransport.sendMail(mailOptions, function(err3, info) {
+					if (err3) res.status(400).send(err3);
+					else {
+						req.login(user, function(err4) {
+							if (err4) {
+								return res.status(400).send(err4);
+							} else {
+								return res.json(user);
+							}
+						});
+					}
+				});
 			});
+			
 		}
 	});
 };

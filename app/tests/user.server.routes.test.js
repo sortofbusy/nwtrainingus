@@ -119,17 +119,25 @@ describe('User route tests', function() {
 			});
 	});
 
-	it.only('should be able to send a password reset email', function(done) {
+	it('should be able to send a welcome email after signup', function(done) {
+		agent.post('/auth/signup')
+			.send({firstName: 'Josiah', lastName: 'Vinson', email: 'sortofbusy@gmail.com', password: 'password'})
+			.expect(200)
+			.end(function(signinErr, signinRes) {
+				done();
+			});
+	});
+
+	it('should be able to send a password reset email', function(done) {
 		agent.post('/auth/forgot')
 			.send({username: 'josiahvinson@gmail.com'})
 			.expect(200)
 			.end(function(signinErr, signinRes) {
-				// Handle signin error
-				if (signinErr) done(signinErr);
-
-				done(signinRes);
+				done();
 			});
 	});
+
+	
 
 	afterEach(function(done) {
 		User.remove().exec();

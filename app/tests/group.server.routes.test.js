@@ -441,7 +441,7 @@ describe('Group detail tests', function() {
 			});
 	});
 
-	it.only('should be able to get reading stats for Users in a Group', function(done) {
+	it('should be able to get reading stats for Users in a Group', function(done) {
 		agent.post('/chapters')
 			.send(new Chapter({
 				name: 'Matthew 5'}))

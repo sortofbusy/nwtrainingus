@@ -24,8 +24,8 @@ module.exports = {
 		from: process.env.MAILER_FROM || 'MAILER_FROM',
 		options: {
 			//service: process.env.MAILER_SERVICE_PROVIDER || 'MAILER_SERVICE_PROVIDER',
-			host: 'smtp.mailgun.org',
-			port: '465',
+			port: process.env.MAILER_SMTP_PORT,
+			host: process.env.MAILER_SERVICE_PROVIDER || 'MAILER_SERVICE_PROVIDER',
 			secure: true,
 			auth: {
 				user: process.env.MAILER_EMAIL_ID || 'MAILER_EMAIL_ID',
