@@ -14,7 +14,7 @@
 	        <li class="list-group-item" data-ng-repeat="note in notes">
 	            <a data-ng-click="showVerse[$index]=!showVerse[$index]"><strong>{{note.verse.inputstring + ':' + note.verse.ref}} <span class="caret"></span></strong></a>
 	            <span class="pull-right">
-	            	<a data-ng-href="#!/notes/{{note._id}}"><i class="fa fa-edit fa-fw"></i></a> 
+	            	<a data-ng-href="#!/messages/{{note._id}}"><i class="fa fa-edit fa-fw"></i></a> 
 	            </span>
 	            <div data-ng-show="showVerse[$index]" class="border"><em>{{note.verse.text}}</em></div>
 	            <div data-ng-show="note.text">

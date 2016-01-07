@@ -51,7 +51,6 @@ var UserSchema = new Schema({
 	},
 	username: {
 		type: String,
-		unique: 'This username is already registered',
 		trim: true
 	},
 	password: {
@@ -126,7 +125,6 @@ UserSchema.pre('save', function(next) {
 	if(!this.username || this.username === '') {
 		this.username = this.email;
 	}
-
 	next();
 });
 

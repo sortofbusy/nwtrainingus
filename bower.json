@@ -1,13 +1,16 @@
 {
-  "name": "lettheword",
+  "name": "eatthebible",
   "version": "0.0.1",
   "description": "Full-Stack JavaScript with MongoDB, Express, AngularJS, and Node.js",
   "dependencies": {
     "bootstrap": "~3",
     "angular": "~1.3",
+    "angular-animate": "1.3.17",
     "angular-resource": "~1.3",
     "angular-mocks": "~1.3",
     "angular-cookies": "~1.3",
+    "angular-ladda": "0.3.1",
+    "angular-loading-bar": "0.8.0",
     "angular-touch": "~1.3",
     "angular-bootstrap": "~0.13",
     "angular-ui-utils": "~0.1.1",
@@ -15,7 +18,10 @@
     "fontawesome": "~4.1.0",
     "biblejs": "~0.0.8",
     "angular-busy": "~4.1.3",
-    "angular-ladda": "~0.3.1"
+    "angular-ladda": "~0.3.1",
+    "jquery": "2.1.4",
+    "ladda": "0.9.8",
+    "spin.js": "2.0.1"
   },
   "resolutions": {
     "angular": "1.3.17"

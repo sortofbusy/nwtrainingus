@@ -277,7 +277,7 @@ describe('Message CRUD tests', function() {
 		});
 	});
 
-	it.only('should be able to get Messages with no Group or no verse', function(done) {
+	it('should be able to get Messages with no Group or no verse', function(done) {
 		// Create new Message model instance
 		var messageObj = new Message({
 				text: 'Message Name',

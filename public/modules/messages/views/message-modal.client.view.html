@@ -25,7 +25,7 @@
             <button data-ng-repeat="group in groups" ladda="groups[$index].loading" class="btn btn-info" style="margin: 5px;" data-ng-click="create($index)" data-ng-disabled="group.disabled"><i class="fa fa-group"></i> {{group.name}} <i class="fa" data-ng-class="group.resultIcon"></i></button> 
             <br>
             <h3>Personal Note: </h3>
-            <button ladda="personalNote.loading" class="btn btn-success" style="margin: 2px;" data-ng-click="create()" data-ng-disabled="personalNote.disabled"><i class="fa fa-file"></i> Save <i class="fa" data-ng-class="personalNote.resultIcon"></i></button>
+            <button ladda="personalNote.loading" class="btn btn-success" style="margin: 2px;" data-ng-click="create(-1)" data-ng-disabled="personalNote.disabled"><i class="fa fa-file"></i> Save <i class="fa" data-ng-class="personalNote.resultIcon"></i></button>
             <br><br>       
         </form>
     </div>

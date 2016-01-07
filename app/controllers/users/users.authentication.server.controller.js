@@ -45,20 +45,27 @@ exports.signup = function(req, res) {
 				name: user.firstName,
 				appName: config.app.title
 			}, function(err2, emailHTML) {
-				if(err2) return res.status(400).send(err2);
+				if(err2) return res.status(400).send({
+						message: errorHandler.getErrorMessage(err2)
+					});
 				var smtpTransport = nodemailer.createTransport(config.mailer.options);
 				var mailOptions = {
 					to: user.email,
 					from: config.mailer.from,
-					subject: 'Password Reset',
+					subject: 'Welcome to EatTheBible',
 					html: emailHTML
 				};
 				smtpTransport.sendMail(mailOptions, function(err3, info) {
-					if (err3) res.status(400).send(err3);
-					else {
+					if (err3) {
+						return res.status(400).send({
+							message: errorHandler.getErrorMessage(err3)
+						});
+					} else {
 						req.login(user, function(err4) {
 							if (err4) {
-								return res.status(400).send(err4);
+								return res.status(400).send({
+										message: errorHandler.getErrorMessage(err4)
+									});
 							} else {
 								return res.json(user);
 							}

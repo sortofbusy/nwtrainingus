@@ -52,7 +52,6 @@ module.exports = {
 		options: {
 			port: process.env.MAILER_SMTP_PORT,
 			host: process.env.MAILER_SERVICE_PROVIDER || 'MAILER_SERVICE_PROVIDER',
-			secure: true,
 			auth: {
 				user: process.env.MAILER_EMAIL_ID || 'MAILER_EMAIL_ID',
 				pass: process.env.MAILER_PASSWORD || 'MAILER_PASSWORD'

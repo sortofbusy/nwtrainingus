@@ -121,14 +121,14 @@ angular.module('messages').controller('MessagesModalController', function ($scop
 		
 		var group;
 		// if an index is passed, save to a group, otherwise save as a personal note (no group id)
-		if (index) {
+		if (index < 0) {
+			group = $scope.personalNote;
+		}
+		else {
 			group = $scope.groups[index];
 			message.group = group._id;
 		}
-		else group = $scope.personalNote;
 		
-		
-
 		group.loading = true;
 		// Redirect after save
 		message.$save(function(response) {
