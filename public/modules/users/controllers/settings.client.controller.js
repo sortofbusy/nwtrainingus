@@ -92,6 +92,14 @@ angular.module('users').controller('SettingsController', ['$scope', '$http', '$l
 			$http.get('/groups').success(function(response) {
 				$scope.groups = response;
 			});
+			$http.get('/messages?group=null').success(function(response) {
+				if (!response.length) return;
+				
+				if(response.length > listLength) {
+					$scope.notes = response.slice(0, listLength);
+					$scope.allnotes = response;
+				} else $scope.notes = response;
+			});
 		};
 
 		$scope.showAll = function(list) {

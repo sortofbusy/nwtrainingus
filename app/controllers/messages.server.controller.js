@@ -72,9 +72,16 @@ exports.delete = function(req, res) {
  * List of Messages
  */
 exports.list = function(req, res) { 
-	Message.find().sort('-created').populate('user', 'displayName').exec(function(err, messages) {
+	var params = {user: req.user._id};
+	if (req.query.group === 'null') {
+		params = _.extend(params, {group: {$exists: false}});
+	}
+	if (req.query.verse === 'null') {
+		params = _.extend(params, {verse: {$exists: false}});
+	}
+	Message.find(params).sort('-created').populate('user', 'displayName').exec(function(err, messages) {
 		if (err) {
-			return res.status(400).send({
+			return res.status(400).send({	
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {

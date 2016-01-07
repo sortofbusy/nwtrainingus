@@ -74,6 +74,7 @@ angular.module('messages').controller('MessagesModalController', function ($scop
 	});
 	
 	$scope.verse = verse;
+	$scope.personalNote = {};
 
 	$scope.authentication = Authentication;
 	$scope.selected = {
@@ -112,13 +113,21 @@ angular.module('messages').controller('MessagesModalController', function ($scop
 	// Create new Message
 	$scope.create = function(index) {
 		// Create new Message object
-		var group = $scope.groups[index];
 		var message = new Messages ({
 			text: $scope.comment,
 			verse: $scope.verse,
-			user: $scope.authentication.user._id,
-			group: group._id
+			user: $scope.authentication.user._id
 		});
+		
+		var group;
+		// if an index is passed, save to a group, otherwise save as a personal note (no group id)
+		if (index) {
+			group = $scope.groups[index];
+			message.group = group._id;
+		}
+		else group = $scope.personalNote;
+		
+		
 
 		group.loading = true;
 		// Redirect after save

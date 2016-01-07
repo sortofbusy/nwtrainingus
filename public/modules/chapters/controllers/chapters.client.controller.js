@@ -219,6 +219,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		$scope.updateVersion = function() {
 			$scope.user.$update().then(function() {
 				$scope.init();
+				$scope.optionsCollapsed = true;
 			});
 			
 		};

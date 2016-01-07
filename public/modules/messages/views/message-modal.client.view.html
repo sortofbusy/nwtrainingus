@@ -1,6 +1,6 @@
 <div class="modal-body" data-ng-show="authentication.user">
-    <h3 class="modal-title">Share this Verse</h3>
-    <br>
+    <!--<h3 class="modal-title">Share this Verse</h3>
+    <br>-->
     <div class="row">
         <div class="col-xs-2">
         	<i class="fa fa-quote-left fa-2x fa-border"></i>
@@ -15,15 +15,18 @@
     </div>
     <br>
     <div class="col-xs-12">
-        <form class="form-inline" data-ng-submit="updatePlan()" novalidate>
+        <form class="form-inline" data-ng-submit="" novalidate>
             <div class="input-group input-group-lg">
                 <label class="b input-group-addon warning"><i class="fa fa-fw fa-comment"></i></label>
                 <textarea data-ng-model="comment" rows="3" name="comment" class="form-control" style="height:auto;" autofocus></textarea>
             </div>
             <br>
-            <span class="h4">Share: </span>
+            <h3>Share: </h3>
             <button data-ng-repeat="group in groups" ladda="groups[$index].loading" class="btn btn-info" style="margin: 5px;" data-ng-click="create($index)" data-ng-disabled="group.disabled"><i class="fa fa-group"></i> {{group.name}} <i class="fa" data-ng-class="group.resultIcon"></i></button> 
-            
+            <br>
+            <h3>Personal Note: </h3>
+            <button ladda="personalNote.loading" class="btn btn-success" style="margin: 2px;" data-ng-click="create()" data-ng-disabled="personalNote.disabled"><i class="fa fa-file"></i> Save <i class="fa" data-ng-class="personalNote.resultIcon"></i></button>
+            <br><br>       
         </form>
     </div>
     <br>

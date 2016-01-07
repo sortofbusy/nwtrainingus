@@ -23,11 +23,11 @@ var MessageSchema = new Schema({
 		type: Schema.ObjectId,
 		ref: 'User'
 	},
-	group: {
+	group: { // group will be empty if this message is a personal note
 		type: Schema.ObjectId,
 		ref: 'Group'
 	},
-	verse: Schema.Types.Mixed
+	verse: Schema.Types.Mixed // verse will be empty if this message is a group comment
 });
 
 mongoose.model('Message', MessageSchema);

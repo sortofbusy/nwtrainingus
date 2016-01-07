@@ -36,9 +36,10 @@ describe('Message CRUD tests', function() {
 		});
 
 		// Save a user to the test db and create new Message
-		user.save(function() {
+		user.save(function(err, newuser) {
 			message = {
-				text: 'Message Name'
+				text: 'Message Name',
+				user: user._id
 			};
 
 			done();
@@ -273,6 +274,41 @@ describe('Message CRUD tests', function() {
 				done(messageDeleteErr);
 			});
 
+		});
+	});
+
+	it.only('should be able to get Messages with no Group or no verse', function(done) {
+		// Create new Message model instance
+		var messageObj = new Message({
+				text: 'Message Name',
+				user: user._id,
+				group: user._id
+			});
+
+		var messageObj2 = new Message({
+				text: 'Message2 Name2',
+				user: user._id,
+				verse: '2 Corinthians 5:10'
+			});
+
+		agent.post('/auth/signin')
+			.send(credentials)
+			.expect(200)
+			.end(function(signinErr, signinRes) {
+				// Handle signin error
+				if (signinErr) done(signinErr);
+
+				messageObj.save(function() {
+					// Save the Message
+					messageObj2.save(function() {
+					agent.get('/messages?verse=null')
+						.end(function(getErr, res) {
+							res.body.should.be.an.Array.with.lengthOf(1);
+							// Call the assertion callback
+							done();
+						});
+					});
+				});
 		});
 	});
 
