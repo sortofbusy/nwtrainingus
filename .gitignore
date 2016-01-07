@@ -13,3 +13,4 @@ test.*
 lettheword.sublime*
 *.env
 *.xcf
+DeploymentNotes.md
