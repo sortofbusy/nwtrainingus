@@ -68,7 +68,7 @@ angular.module('messages').controller('MessagesController', ['$scope', '$http', 
 	}
 ]);
 
-angular.module('messages').controller('MessagesModalController', function ($scope, $http, $sce, $modalInstance, Messages, Groups, Authentication, $window, verse) {
+angular.module('messages').controller('MessagesModalController', function ($scope, $http, $sce, $uibModalInstance, Messages, Groups, Authentication, $window, verse) {
 	$http.get('/groups').success(function(response) {
 		$scope.groups = response;
 	});
@@ -87,11 +87,11 @@ angular.module('messages').controller('MessagesModalController', function ($scop
 	};
 
 	$scope.ok = function () {
-		$modalInstance.close($scope.plans);
+		$uibModalInstance.close($scope.plans);
 	};
 
 	$scope.cancel = function () {
-		$modalInstance.dismiss('cancel');
+		$uibModalInstance.dismiss('cancel');
 	};
 
 	$scope.closeAlert = function(index){

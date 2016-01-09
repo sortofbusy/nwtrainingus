@@ -3,8 +3,8 @@
 // Some module dependencies in \chapters\chapters.client.module.js
 
 // Chapters controller
-angular.module('chapters').controller('ChaptersController', ['$scope', '$modal', '$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', '$q', 'Plans', 'BibleText', 'ReadingPlan', '$sce', 'BibleRef',
-	function($scope, $modal, $http, $stateParams, $location, Authentication, Chapters, Users, $q, Plans, BibleText, ReadingPlan, $sce, BibleRef) {
+angular.module('chapters').controller('ChaptersController', ['$scope', '$uibModal', '$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', '$q', 'Plans', 'BibleText', 'ReadingPlan', '$sce', 'BibleRef',
+	function($scope, $uibModal, $http, $stateParams, $location, Authentication, Chapters, Users, $q, Plans, BibleText, ReadingPlan, $sce, BibleRef) {
 		$scope.loadingDefer = $q.defer();
 		$scope.loadingPromise = $scope.loadingDefer.promise;
 		$scope.loaded = false;
@@ -182,7 +182,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		};
 
 		$scope.openMessagesModal = function (inputstring, verse) {
-			var modalInstance = $modal.open({
+			var modalInstance = $uibModal.open({
 			  animation: true,
 			  templateUrl: 'modules/messages/views/message-modal.client.view.html',
 			  controller: 'MessagesModalController',
@@ -197,7 +197,7 @@ angular.module('chapters').controller('ChaptersController', ['$scope', '$modal',
 		};
 
 		$scope.openBadgesModal = function (size) {
-			var modalInstance = $modal.open({
+			var modalInstance = $uibModal.open({
 			  animation: true,
 			  templateUrl: 'modules/badges/views/badge-modal.html',
 			  controller: 'BadgesModalController',

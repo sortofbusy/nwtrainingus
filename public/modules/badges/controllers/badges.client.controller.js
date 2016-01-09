@@ -68,8 +68,8 @@ angular.module('badges').controller('BadgesController', ['$scope', '$stateParams
 ]);
 
 // Badges controller
-angular.module('badges').controller('BadgesModalController', ['$scope', '$modalInstance', 'Authentication', 'Badges',
-	function($scope, $modalInstance, Authentication, Badges) {
+angular.module('badges').controller('BadgesModalController', ['$scope', '$uibModalInstance', 'Authentication', 'Badges',
+	function($scope, $uibModalInstance, Authentication, Badges) {
 		$scope.authentication = Authentication;
 		$scope.badges = [];
 
@@ -81,7 +81,7 @@ angular.module('badges').controller('BadgesModalController', ['$scope', '$modalI
 		};
 
 		$scope.ok = function () {
-			$modalInstance.close();
+			$uibModalInstance.close();
 		};
 
 		$scope.find();
