@@ -361,7 +361,8 @@ describe('Group detail tests', function() {
 							agent.post('/messages')
 							.send(new Message({
 								text: 'I enjoyed this.', 
-								group: group._id }))
+								group: group._id
+							}))
 							.expect(200)
 							.end(function(messageErr, messageRes) {
 								done();
@@ -408,6 +409,19 @@ describe('Group detail tests', function() {
 				// Set assertion
 				res.body.should.be.an.Array.with.lengthOf(1);
 				res.body[0].text.should.match('I enjoyed this.');
+
+				// Call the assertion callback
+				done();
+			});
+	});
+
+	it('should be able to get the comments from a single Group', function(done) {
+		agent.get('/groups/' + group._id + '/comments')
+			.end(function(err, res) {
+				if (err) done(err);
+				// Set assertion
+				res.body.should.be.an.Array.with.lengthOf(1);
+				//res.body[0].text.should.match('I enjoyed this.');
 
 				// Call the assertion callback
 				done();

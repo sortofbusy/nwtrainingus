@@ -8,16 +8,14 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 		
 		$scope.read = function(increment) {
 			var chapter = $scope.chapterString;
-			if (this.readChapter) chapter = this.readChapter;
+			if ($scope.readChapter) chapter = $scope.readChapter;
 			$scope.getRCVText(chapter, increment).then(function(response) {
 				$scope.chapterText = response;
 				$scope.chapterString = response.inputstring;
-				if (increment !== 0) {
-					$location.hash('readLocation');
-					$anchorScroll();
-				}
+				$location.hash('readLocation');
+				$anchorScroll();
 			});
-			this.readChapter = '';
+			$scope.readChapter = '';
 		};
 
 		$scope.getRCVText = function(chapterName, increment) {

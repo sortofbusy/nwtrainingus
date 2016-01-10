@@ -4,7 +4,7 @@
 		<br>
 		<div>
 			<a class="pull-right" ng-click="optionsCollapsed = !optionsCollapsed"><i class="fa fa-2x fa-fw fa-chevron-down"></i></a>
-			<div collapse="optionsCollapsed">
+			<div data-uib-collapse="optionsCollapsed">
 				<div class="well well-lg">
 					<div data-ng-show="!group.open">
 						<h3>Access Token:</h3> <em>{{group.accessToken}}</em><br><br>
@@ -70,5 +70,24 @@
 	        	</li>
 			</ul>
 		</div>
+		<div class="col-xs-12 col-md-12">
+	        <form class="form" data-ng-submit="" novalidate>
+	            <h2>Comments</h2>
+	            <div class="form-group input-group">
+	                	<label class="b input-group-addon warning"><i class="fa fa-fw fa-comment"></i></label>
+	                	<textarea data-ng-model="comment" name="comment" rows="3" class="form-control"></textarea>
+	            </div>
+			</form>
+				<ul class="list-group">
+					<li class="list-group-item" data-ng-repeat="comment in comments">{{comment.text}} <small class="pull-right">by {{comment.user.displayName}}, <em>{{comment.created | date : "MMM. d"}}</em></small></li>
+					<li class="list-group-item text-center" data-ng-click="showAll('comments')" data-ng-show="allcomments.length">
+		        	<a><i class="fa fa-ellipsis-h fa-2x fa-fw"></i></a>
+		        	</li>
+				</ul>
+				
+	            <br>    
+	        
+
+	    </div>
 	</div>
 </section>

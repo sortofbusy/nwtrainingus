@@ -57,7 +57,7 @@ exports.read = function(req, res, next) {
  */
 exports.addMessages = function(req, res) {
 	try {
-		var params = {group: req.group._id};
+		var params = {group: req.group._id, verse: {$exists: true}};
 		
 		Message.find(params).sort('-created').limit(10).populate('user', 'displayName').exec(function(err, messages) {
 			if (err) {
@@ -155,6 +155,28 @@ exports.getChapters = function(req, res) {
 exports.getMessages = function(req, res) {
 	try {
 		var params = {group: req.group._id};
+		
+		Message.find(params).sort('-created').limit(10).populate('user', 'displayName').exec(function(err, messages) {
+			if (err) {
+				throw err;
+			} else {
+				console.log(messages);
+				res.jsonp(messages);
+			}
+		});
+	} catch (e) {
+		return res.status(400).send({
+			message: errorHandler.getErrorMessage(e)
+		});
+	}
+};
+
+/**
+ * Adds recent messages
+ */
+exports.getComments = function(req, res) {
+	try {
+		var params = {group: req.group._id, verse: {$exists: false}};
 		
 		Message.find(params).sort('-created').limit(10).populate('user', 'displayName').exec(function(err, messages) {
 			if (err) {

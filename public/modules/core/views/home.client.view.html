@@ -25,9 +25,9 @@
 		<br>
 		<div class="row" id="readLocation" >	
 			<form class="form-inline col-md-4" data-ng-submit="read(0)" novalidate>
-                <div class="input-group">
-                    <div class="input-group-addon warning">Read</div>
-                    <input type="text" data-ng-model="readChapter" name="readChapter" class="form-control" placeholder="Gen 1" autofocus>
+                <div class="input-group">  
+                    <input type="text" data-ng-model="readChapter" name="readChapter" class="form-control" placeholder="Enter a chapter to read" autofocus>
+                    <div class="input-group-addon warning" data-ng-click="read(0)"><i class="fa fa-fw fa-search"></i></div>
                 </div>
 				
 			</form>
@@ -56,7 +56,7 @@
 			<div >
 				<br>
 				<a class="pull-right" ng-click="optionsCollapsed = !optionsCollapsed"><i class="fa fa-2x fa-fw fa-gear"></i></a>
-				<div collapse="optionsCollapsed">
+				<div data-uib-collapse="optionsCollapsed">
 					<div class="well well-lg">
 						<h4>Text Size</h4>
 						<div class="text-center">
@@ -80,15 +80,15 @@
 			</div>
 			<div class="" data-ng-show="plans">
 						<h4>Reading Plans</h4>
-						<tabset vertical="true" type ="pills">
-							<tab data-ng-repeat="plan in plans" active="plansTabs[$index]" data-ng-click="changePlan($index)" class="bg-info">
-								<tab-heading>
+						<uib-tabset vertical="true" type ="pills">
+							<uib-tab data-ng-repeat="plan in plans" active="plansTabs[$index]" data-ng-click="changePlan($index)" class="bg-info">
+								<uib-tab-heading>
 									{{plan.name}} <span class="strong badge">{{plan.chapters.length}}/{{plan.pace}}</span>
-								</tab-heading>
+								</uib-tab-heading>
 								<!--<b>Progress:</b> {{plan.chapters.length}} / {{plan.pace}} chapters today 
 								<progressbar value="plan.chapters.length" type="success" max="plan.pace"></progressbar>-->
-							</tab>
-						</tabset>
+							</uib-tab>
+						</uib-tabset>
 						</div>
 			<br>
 			<div class="well" data-ng-show="completed">

@@ -23,6 +23,9 @@ module.exports = function(app) {
 	app.route('/groups/:groupId/messages')
 		.get(groups.hasAuthorization, groups.getMessages);
 	
+	app.route('/groups/:groupId/comments')
+		.get(groups.hasAuthorization, groups.getComments);
+
 	app.route('/groups/:groupId/reading')
 		.get(groups.hasAuthorization, groups.getReadingStats);
 
