@@ -11,10 +11,10 @@
 					</div>
 					<div class="" data-ng-show="((authentication.user) && (authentication.user._id == group.creator))">
 						<a class="btn btn-primary" href="/#!/groups/{{group._id}}/edit">
-							<i class="glyphicon glyphicon-edit"></i> Edit
+							<i class="fa fa-edit"></i> Edit
 						</a>
 						<a class="btn btn-danger" data-ng-click="remove();">
-							<i class="glyphicon glyphicon-trash"></i> Delete
+							<i class="fa fa-times"></i> Delete
 						</a>
 					</div>
 					<div data-ng-show="((authentication.user) && (authentication.user._id !== group.creator))">

@@ -10,7 +10,7 @@
    <div class="list-group" data-ng-show="plans">
         <a data-ng-repeat="plan in plans" data-ng-href="#!/plans/{{plan._id}}/edit" class="list-group-item">
             <div class="h2 list-group-item-heading">
-                <b>{{plan.name}}</b>
+                {{plan.name}}
             </div>
             <br>
             <div class="row list-group-item-text">

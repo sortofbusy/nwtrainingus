@@ -10,33 +10,33 @@
         <form class="form-inline col-md-12" data-ng-submit="myCreate()" novalidate>
             <br>
             <div class="">
-                <div class="input-group col">
+                <div class="input-group">
                     <label class="b input-group-addon"><b>Plan Name</b>
                     </label>
                     <input type="text" data-ng-model="name" name="name" class="form-control">
                 </div>
-                <br>
-                <div class="input-group col">
+                <br><br>
+                <div class="input-group">
                     <label class="b input-group-addon info"><i class="fa fa-fw fa-step-backward"></i> <b>First</b>
                     </label>
                     <input type="text" data-ng-model="startChapter" name="startChapter" class="form-control" placeholder="Examples: Gen 1, Exodus 14">
                 </div>
-                <br>
+                <br><br>
                 <div class="input-group">
                     <label class="b input-group-addon info"><i class="fa fa-fw fa-step-forward"></i> <b>Last</b>
                     </label>
                     <input type="text" data-ng-model="endChapter" name="endChapter" class="form-control" placeholder="You can abbreviate books">
                 </div>
             </div>
-            <div class="">
+            <div class="col-md-6 col-md-offset-3">
                 <br>
-                <label class="col-xs-4 b"><i class="fa fa-clock-o"></i> Pace</label>
-                <div class="col-xs-5 col-md-2 input-group text-left">
+                <label class="col-xs-6 b">Chapters per day: </label>
+                <div class="col-xs-6 col-md-3 input-group">
                     
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="button" data-ng-click="changePace(-1)"><i class="fa fa-chevron-down"></i></button>
                     </span>
-                    <input type="text" class="form-control" data-ng-model="pace" name="pace" value="1">
+                    <input type="text" class="form-control text-center" data-ng-model="pace" name="pace" value="1">
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="button" data-ng-click="changePace(1)"><i class="fa fa-chevron-up"></i></button>
                     </span>
@@ -46,7 +46,7 @@
             <div>
                 <alert data-ng-repeat="alert in updateAlerts" type="{{alert.type}}" close="closeUpdateAlert($index)" dismiss-on-timeout="3500">{{alert.msg}}</alert>
             </div>
-            <div>
+            <div class="col-md-12">
                 <input type="submit" class="btn btn-success text" value="Save">
             </div>
         </form>
