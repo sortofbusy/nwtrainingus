@@ -71,25 +71,25 @@
 					</div>
 				</div>
 				
-				<div class="col-md-4 h2 pull-left" data-ng-hide="plans.length">
+				<div class="h2 text-center" data-ng-hide="plans.length">
+					<br>
 					Choose a reading plan to get started! 
+					<br><br>
 					<a class="btn btn-info btn-lg" href="/#!/plans">
-						View Plans
+						Choose Plans
 					</a>
 				</div>
 			</div>
-			<div class="" data-ng-show="plans">
-						<h4>Reading Plans</h4>
-						<uib-tabset vertical="true" type ="pills">
-							<uib-tab data-ng-repeat="plan in plans" active="plansTabs[$index]" data-ng-click="changePlan($index)" class="bg-info">
-								<uib-tab-heading>
-									{{plan.name}} <span class="strong badge">{{plan.chapters.length}}/{{plan.pace}}</span>
-								</uib-tab-heading>
-								<!--<b>Progress:</b> {{plan.chapters.length}} / {{plan.pace}} chapters today 
-								<progressbar value="plan.chapters.length" type="success" max="plan.pace"></progressbar>-->
-							</uib-tab>
-						</uib-tabset>
-						</div>
+			<div class="" data-ng-show="plans.length">
+				<h4>Reading Plans</h4>
+				<uib-tabset vertical="true" type ="pills">
+					<uib-tab data-ng-repeat="plan in plans" active="plansTabs[$index]" data-ng-click="changePlan($index)" class="bg-info">
+						<uib-tab-heading>
+							{{plan.name}} <span class="strong badge">{{plan.chapters.length}}/{{plan.pace}}</span> <i class="fa fa-check fa-fw" data-ng-show="(plan.chapters.length >= plan.pace)"></i>
+						</uib-tab-heading>
+					</uib-tab>
+				</uib-tabset>
+			</div>
 			<br>
 			<div class="well" data-ng-show="completed">
 				<div class="h2">

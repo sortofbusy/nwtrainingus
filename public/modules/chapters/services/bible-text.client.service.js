@@ -91,6 +91,7 @@ angular.module('chapters').factory('BibleText', [ '$q', '$http', 'Authentication
 						    	for (i = 0; i < combined.verses.length; i++) {
 						    		combined.verses[i].text = combined.verses[i].text.split('[').join('<i>');
 						    		combined.verses[i].text = combined.verses[i].text.split(']').join('</i>');
+						    		combined.verses[i].text = combined.verses[i].text.split('--').join('&mdash;');
 						    		combined.verses[i].ref = combined.verses[i].ref.split(':')[1];
 						    	}
 						    	

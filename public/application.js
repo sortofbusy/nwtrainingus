@@ -1,7 +1,18 @@
 'use strict';
 
 //Start by defining the main module and adding the module dependencies
-angular.module(ApplicationConfiguration.applicationModuleName, ApplicationConfiguration.applicationModuleVendorDependencies);
+angular.module(ApplicationConfiguration.applicationModuleName, ApplicationConfiguration.applicationModuleVendorDependencies)
+  .run(['$rootScope', '$location', '$window', function($rootScope, $location, $window){
+     $rootScope
+        .$on('$stateChangeSuccess',
+            function(event){
+ 
+                if (!$window.ga)
+                    return;
+ 
+                $window.ga('send', 'pageview', { page: $location.path() });
+        });
+}]);
 
 // Setting HTML5 Location Mode
 angular.module(ApplicationConfiguration.applicationModuleName).config(['$locationProvider',
