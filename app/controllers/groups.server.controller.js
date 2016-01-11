@@ -182,7 +182,6 @@ exports.getComments = function(req, res) {
 			if (err) {
 				throw err;
 			} else {
-				console.log(messages);
 				res.jsonp(messages);
 			}
 		});

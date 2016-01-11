@@ -34,8 +34,13 @@ angular.module('messages').controller('MessagesController', ['$scope', '$http', 
 					}
 				}
 			} else {
+				// if the group is not set, return to user profile. Otherwise, return
+				// to view-group
+				$scope.newPath = '/settings/profile';
+				if ($scope.message.group) $scope.newPath = '/groups/' + $scope.message.group;
+
 				$scope.message.$remove(function() {
-					$location.path('/settings/profile');
+					$location.path($scope.newPath);
 				});
 			}
 		};

@@ -1,8 +1,8 @@
 'use strict';
 
 // Groups controller
-angular.module('groups').controller('GroupsController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Groups', 'Chapters', '$window',
-	function($scope, $http, $stateParams, $location, Authentication, Groups, Chapters, $window) {
+angular.module('groups').controller('GroupsController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Groups', 'Chapters', '$window', 'Messages',
+	function($scope, $http, $stateParams, $location, Authentication, Groups, Chapters, $window, Messages) {
 		$scope.authentication = Authentication;
 		$scope.optionsCollapsed = true;
 		$scope.addCollapsed = true;
@@ -91,6 +91,8 @@ angular.module('groups').controller('GroupsController', ['$scope', '$http', '$st
 						group.users = stats.data;
 						$scope.group = group;
 
+						$scope.getComments();
+
 						if(group.recentMessages.length > listLength) {
 							$scope.messages = group.recentMessages.slice(0, listLength);
 							$scope.allmessages = group.recentMessages;
@@ -105,40 +107,46 @@ angular.module('groups').controller('GroupsController', ['$scope', '$http', '$st
 			});
 		};
 
+		// expands a list to show all
 		$scope.showAll = function(list) {
 			var all = 'all' + list;
 			$scope[list] = $scope[all];
 			$scope[all] = [];
 		};
-	}
-]);
 
-
-/*
-// Find existing Group
-		$scope.findOne = function() {
-			var listLength = 5;
+		$scope.getComments = function() {
+			$http.get('groups/' + $scope.group._id + '/comments')
+					.then(function(response) {
+						var comments = response.data;
+						var listLength = 4;
 			
-			Groups.get({ 
-				groupId: $stateParams.groupId
-			}, function(group) {
-				$http.get('groups/' + group._id + '/reading')
-					.then(function(stats) {
-						group.users = stats.data;
-						$scope.group = group;
-
-						if(group.recentMessages.length > listLength) {
-							$scope.messages = group.recentMessages.slice(0, listLength);
-							$scope.allmessages = group.recentMessages;
-						} else $scope.messages = group.recentMessages;
-
-						if(group.recentBadges.length > listLength) {
-							$scope.badges = group.recentBadges.slice(0, listLength);
-							$scope.allbadges = group.recentBadges;
-						} else $scope.badges = group.recentBadges;
+						if(comments.length > listLength) {
+							$scope.comments = comments.slice(0, listLength);
+							$scope.allcomments = comments;
+						} else $scope.comments = comments;
 					});
-				
-			});
 		};
 
-*/
+		// add a comment
+		$scope.createComment = function() {
+			if (!$scope.comment || $scope.comment === '') {
+				return;
+			}
+			var comment = new Messages({
+				text: $scope.comment,
+				user: $scope.authentication.user._id,
+				group: $scope.group._id
+			});
+
+			// Redirect after save
+			comment.$save(function(response) {
+				$scope.getComments();
+
+				// Clear form fields
+				$scope.comment = '';
+			}, function(errorResponse) {
+				$scope.error = errorResponse.data.message;
+			});
+		};
+	}
+]);
