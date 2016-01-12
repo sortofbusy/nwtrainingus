@@ -4,7 +4,7 @@
         <br>
         <h1>New Group</h1>
     </div>
-    <div class="col-md-12">
+    <div class="col-md-6 col-md-offset-3">
         <form class="form-horizontal" data-ng-submit="create()" novalidate>
             <fieldset>
                 <div class="form-group">
@@ -14,12 +14,10 @@
                     </div>
                     <br>
                     <div>
-                        <label>Require Access Token</label>
-                        <select id="open" name="open" class="form-control" data-ng-model="open">
-                            <option value="false" enabled>Yes</option>
-                            <option value = "true">No</option>
-                        </select>
+                        <label>Don't Show This Group</label><br>
+                        <i class="fa fa-fw fa-2x fa-toggle-{{toggleClass}}" data-ng-click="toggle()"></i>
                     </div>
+                    <br>
                 </div>
                 <div class="form-group">
                     <input type="submit" class="btn btn-default">

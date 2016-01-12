@@ -7,6 +7,8 @@ angular.module('groups').controller('GroupsController', ['$scope', '$http', '$st
 		$scope.optionsCollapsed = true;
 		$scope.addCollapsed = true;
 		$scope.open = false;
+		$scope.toggleHidden = false;
+		$scope.toggleClass = 'off';
 
 		// Create new Group
 		$scope.create = function() {
@@ -147,6 +149,12 @@ angular.module('groups').controller('GroupsController', ['$scope', '$http', '$st
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});
+		};
+
+		$scope.toggle = function() {
+			$scope.toggleHidden = !$scope.toggleHidden;
+			if ($scope.toggleClass === 'on') $scope.toggleClass = 'off';
+			else $scope.toggleClass = 'on';
 		};
 	}
 ]);

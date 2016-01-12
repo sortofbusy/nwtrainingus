@@ -2,20 +2,31 @@
 
 module.exports = {
 	port: 443,
-	db: process.env.MONGOHQ_URL || process.env.MONGOLAB_URI || 'mongodb://localhost/lettheword',
+	db: 'mongodb://localhost/eatthebible' || process.env.MONGOHQ_URL || process.env.MONGOLAB_URI,
 	assets: {
 		lib: {
 			css: [
 				'public/lib/bootstrap/dist/css/bootstrap.min.css',
 				'public/lib/bootstrap/dist/css/bootstrap-theme.min.css',
+				'public/lib/fontawesome/css/font-awesome.min.css',
+				'public/lib/angular-busy/dist/angular-busy.css',
+				'public/lib/angular-loading-bar/build/loading-bar.min.css',
+				'public/lib/ladda/dist/ladda-themeless.min.css'
 			],
 			js: [
 				'public/lib/angular/angular.min.js',
-				'public/lib/angular-resource/angular-resource.min.js',
-				'public/lib/angular-animate/angular-animate.min.js',
+				'public/lib/angular-busy/dist/angular-busy.js',
+				'public/lib/angular-resource/angular-resource.js', 
+				'public/lib/angular-cookies/angular-cookies.js', 
+				'public/lib/angular-touch/angular-touch.js', 
 				'public/lib/angular-ui-router/release/angular-ui-router.min.js',
 				'public/lib/angular-ui-utils/ui-utils.min.js',
-				'public/lib/angular-bootstrap/ui-bootstrap-tpls.min.js'
+				'public/lib/angular-bootstrap/ui-bootstrap-tpls.min.js',
+				'public/lib/biblejs/dist/bible.js',
+				'public/lib/angular-loading-bar/build/loading-bar.min.js',
+				'public/lib/ladda/dist/spin.min.js',
+				'public/lib/ladda/dist/ladda.min.js',
+				'public/lib/angular-ladda/dist/angular-ladda.min.js',
 			]
 		},
 		css: 'public/dist/application.min.css',
@@ -49,7 +60,8 @@ module.exports = {
 	mailer: {
 		from: process.env.MAILER_FROM || 'MAILER_FROM',
 		options: {
-			service: process.env.MAILER_SERVICE_PROVIDER || 'MAILER_SERVICE_PROVIDER',
+			port: process.env.MAILER_SMTP_PORT,
+			host: process.env.MAILER_SERVICE_PROVIDER || 'MAILER_SERVICE_PROVIDER',
 			auth: {
 				user: process.env.MAILER_EMAIL_ID || 'MAILER_EMAIL_ID',
 				pass: process.env.MAILER_PASSWORD || 'MAILER_PASSWORD'
