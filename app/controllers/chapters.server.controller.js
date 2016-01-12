@@ -255,7 +255,6 @@ exports.readChapter = function(req, res) {
 			res.jsonp('yep');
 		}
 	} catch(err) {
-		console.log(err);
 		return res.status(400).send({
 			message: errorHandler.getErrorMessage(err)
 		});

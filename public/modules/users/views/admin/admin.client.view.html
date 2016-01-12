@@ -1,0 +1,48 @@
+<section class="row" data-ng-controller="AdminController" data-ng-init="getActivity()">
+	<div class="col-xs-4 col-md-4 border-solid">
+		<div class="h2 text-center">
+			<i class="fa fa-fw fa-user"></i> {{users.length}}
+		</div>
+	</div>
+	<div class="col-xs-4 col-md-4 border-solid">
+		<div class="h2 text-center">
+			<i class="fa fa-fw fa-group"></i> {{groups.length}}
+		</div>
+	</div>
+	<div class="col-xs-4 col-md-4 border-solid">
+		<div class="h2 text-center">
+			<i class="fa fa-fw fa-book"></i> {{chapters.length}}
+		</div>
+	</div>
+	<div class="col-xs-12 col-md-6">
+	    <ul class="list-group">
+	        <li class="h3 list-group-item list-group-item-info"><i class="fa fa-group fa-fw"></i> All Users <span class="badge">{{users.length}}</span></li>
+	        <li class="list-group-item" data-ng-repeat="user in users">
+	            <span class="h4">{{user.displayName}}</span>
+	            <span class="btn btn-default btn-sm pull-right" data-ng-click="showUserDetails[$index] = !showUserDetails[$index]"><i class="fa fa-ellipsis-h"></i></span>
+	            <br>
+	            Email: {{user.email}}, <em>created: {{user.created | timeago}}</em>
+	            <pre data-ng-show="showUserDetails[$index]">{{user | json}}</pre>
+	        </li>
+	        <li class="list-group-item text-center" data-ng-click="showAll('users')" data-ng-show="allusers.length">
+	        	<a><i class="fa fa-ellipsis-h fa-2x fa-fw"></i></a>
+	        </li>
+	    </ul>
+	</div>
+	<div class="col-xs-12 col-md-6">
+	    <ul class="list-group">
+	        <li class="h3 list-group-item list-group-item"><i class="fa fa-group fa-fw"></i> All Groups <span class="badge">{{groups.length}}</span></li>
+	        <li class="list-group-item" data-ng-repeat="group in groups">
+	            <span class="h4">{{group.name}}</span>
+	            <span class="btn btn-default btn-sm pull-right" data-ng-click="showGroupDetails[$index] = !showGroupDetails[$index]"><i class="fa fa-ellipsis-h"></i></span>
+	            <br>
+	            <strong>{{group.users.length}}</strong> members, <em>created: {{group.created | timeago}}</em>
+	            <pre data-ng-show="showGroupDetails[$index]">{{group | json}}</pre>
+	            
+	        </li>
+	        <li class="list-group-item text-center" data-ng-click="showAll('groups')" data-ng-show="allgroups.length">
+	        	<a><i class="fa fa-ellipsis-h fa-2x fa-fw"></i></a>
+	        </li>
+	    </ul>
+	</div>
+</section>
