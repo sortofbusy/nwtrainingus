@@ -8,6 +8,7 @@ var mongoose = require('mongoose'),
 	errorHandler = require('./errors.server.controller'),
 	Plan = mongoose.model('Plan'),
 	Chapter = mongoose.model('Chapter'),
+	moment = require('moment-timezone'),
 	_ = require('lodash');
 
 /**
@@ -83,7 +84,8 @@ exports.update = function(req, res) {
 		}
 		// UPDATING PLAN FIELDS MANUALLY! Schema changes need to be reflected here
 		Plan.findByIdAndUpdate(plan._id, {pace: plan.pace, startChapter: startChapter, endChapter: endChapter,
-			cursor: cursor, active: plan.active, name: plan.name, chapters: plan.chapters, parent: plan.parent, isParent: plan.isParent}, function(err, newPlan) {
+			cursor: cursor, active: plan.active, name: plan.name, chapters: plan.chapters, 
+			parent: plan.parent, isParent: plan.isParent, readToday: plan.readToday}, function(err, newPlan) {
 			if (err) {
 				return res.status(400).send({
 					message: errorHandler.getErrorMessage(err)
@@ -120,15 +122,16 @@ exports.delete = function(req, res) {
  * List of Plans
  */
 exports.list = function(req, res) { 
-	var d = new Date(Date.now());
-	var year = d.getFullYear(); 
-	var month = d.getMonth(); // for reference, month is 0-11
-	var date = d.getDate(); // date is the day of month 1-31
-	var params = {user: req.user.id}; // return only the plans of the signed in user
+	var timezone = 'America/Los_Angeles';
+	if (req.user.timezone) timezone = req.user.timezone;
 	
+	var params = {user: req.user.id}; // return only the plans of the signed in user
+	/////////////////
+	///////// TODO - change -created to a custom sort field
+	/////////////////
 	Plan.find(params).sort('-created').populate({
 			path: 'chapters',
-			match:  {created: {'$gte': new Date(year, month, date)}}
+			match:  {created: {'$gte': moment.tz(timezone).startOf('day')}}
 		}).exec(function(err, plans) {
 		if (err) {
 			return res.status(400).send({
@@ -144,13 +147,10 @@ exports.list = function(req, res) {
  * List of Chapters read today in this Plan
  */
 exports.readToday = function(req, res) { 
+	var timezone = 'America/Los_Angeles';
+	if (req.user.timezone) timezone = req.user.timezone;
 	
-	var d = new Date(Date.now());
-	var year = d.getFullYear(); 
-	var month = d.getMonth(); // for reference, month is 0-11
-	var date = d.getDate(); // date is the day of month 1-31
-	
-	var chapters = Chapter.find({plan: req.plan._id, created: {'$gte': new Date(year, month, date)}}).sort('-created').exec(function(err, chapters) {
+	var chapters = Chapter.find({plan: req.plan._id, created: {'$gte': moment.tz(timezone).startOf('day')}}).sort('-created').exec(function(err, chapters) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -159,6 +159,44 @@ exports.readToday = function(req, res) {
 			res.jsonp(chapters);
 		}
 	});
+};
+
+/**
+ * Creates the next Chapter in this Plan
+ */
+exports.advance = function(req, res) { 
+	try {
+		// create a new chapter from the current position of the plan
+		var chapter = new Chapter(req.body);
+		chapter.name = Reference.fromChapterId(req.plan.cursor).toString();
+		chapter.user = req.user._id;
+		chapter.plan = req.plan._id
+
+		// save this new chapter
+		chapter.save(function(err, chapterRes) {
+			if (err) {
+				console.log(err);
+				return res.status(400).send({
+					message: errorHandler.getErrorMessage(err)
+				});
+			} else {
+				// increment the plan's cursor
+				Plan.findByIdAndUpdate(req.plan._id, { $inc: {cursor: 1}, $push: {chapters: chapter._id}}, function(planErr, planRes) {
+					if (planErr) {
+						return res.status(400).send({
+							message: errorHandler.getErrorMessage(planErr)
+						});
+					} else {
+						res.jsonp(planRes);
+					}
+				});
+			}
+		});
+	} catch (e) {
+		return res.status(400).send({
+			message: errorHandler.getErrorMessage(e)
+		});
+	}
 };
 
 /**

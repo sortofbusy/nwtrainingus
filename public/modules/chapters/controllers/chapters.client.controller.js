@@ -3,8 +3,13 @@
 // Some module dependencies in \chapters\chapters.client.module.js
 
 // Chapters controller
-angular.module('chapters').controller('ChaptersController', ['$scope', '$uibModal', '$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', '$q', 'Plans', 'BibleText', 'ReadingPlan', '$sce', 'BibleRef',
-	function($scope, $uibModal, $http, $stateParams, $location, Authentication, Chapters, Users, $q, Plans, BibleText, ReadingPlan, $sce, BibleRef) {
+angular.module('chapters').controller('ChaptersController', ['$rootScope', '$scope', '$uibModal', 
+		'$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', 
+		'$q', 'Plans', 'BibleText', 'ReadingPlan', '$sce', 'BibleRef',
+	
+	function($rootScope, $scope, $uibModal, $http, $stateParams, $location, Authentication, 
+		Chapters, Users, $q, Plans, BibleText, ReadingPlan, $sce, BibleRef) {
+		
 		$scope.loadingDefer = $q.defer();
 		$scope.loadingPromise = $scope.loadingDefer.promise;
 		$scope.loaded = false;

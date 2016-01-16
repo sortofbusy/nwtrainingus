@@ -111,6 +111,10 @@ var UserSchema = new Schema({
 			max: 6,
 			default: 0
 		}
+	},
+	timezone: {
+		type: String,
+		default: 'America/Los_Angeles'
 	}
 });
 

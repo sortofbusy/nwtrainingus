@@ -60,6 +60,9 @@ var PlanSchema = new Schema({
 	isParent: {
 		type: Boolean,
 		default: false
+	},
+	readToday: {
+		type: Number
 	}
 });
 

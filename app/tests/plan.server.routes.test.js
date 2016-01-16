@@ -6,6 +6,7 @@ var should = require('should'),
 	mongoose = require('mongoose'),
 	User = mongoose.model('User'),
 	Plan = mongoose.model('Plan'),
+	Chapter = mongoose.model('Chapter'),
 	agent = request.agent(app);
 
 /**
@@ -41,7 +42,7 @@ describe('Plan CRUD tests', function() {
 				name: 'Plan Name',
 				startChapter: 'Matthew 1',
 				endChapter: 'Matthew 9',
-				cursor: 'Matthew 2',
+				cursor: 'Matthew 1',
 				pace: 1,
 				user: newUser.id
 			};
@@ -383,9 +384,60 @@ describe('Plan CRUD tests', function() {
 			});
 	});
 
+	it.only('should be able to add a chapter to a plan', function(done) {
+		agent.post('/auth/signin')
+			.send(credentials)
+			.expect(200)
+			.end(function(signinErr, signinRes) {
+				// Handle signin error
+				if (signinErr) done(signinErr);
+
+				// Get the userId
+				var userId = user.id;
+
+				// Save a new Plan
+				agent.post('/plans')
+					.send(plan)
+					.expect(200)
+					.end(function(planSaveErr, planSaveRes) {
+						// Handle Plan save error
+						if (planSaveErr) done(planSaveErr);
+
+						// Post a chapter
+						agent.post('/plans/' + planSaveRes.body._id + '/advance')
+							.expect(200)
+							.end(function(plansGetErr, plansGetRes) {
+								// Handle Plan save error
+								if (plansGetErr) {
+									done(plansGetErr);
+									return;
+								}
+
+								agent.get('/plans')//' + planSaveRes.body._id + '/today')
+									.expect(200)
+									.end(function(todayErr, todayRes) {
+										if (todayErr) {
+											done(todayErr);
+											return;
+										}
+										var today = todayRes.body;
+										
+										// Set assertions
+										console.log(today);
+										today.should.be.an.Array.with.lengthOf(1);
+
+										// Call the assertion callback
+										done();
+									});
+							});
+					});
+			});
+	});
+
 	afterEach(function(done) {
 		User.remove().exec();
 		Plan.remove().exec();
+		Chapter.remove().exec();
 		done();
 	});
 });

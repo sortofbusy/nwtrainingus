@@ -34,6 +34,9 @@ module.exports = {
 				'public/lib/ladda/dist/spin.min.js',
 				'public/lib/ladda/dist/ladda.min.js',
 				'public/lib/angular-ladda/dist/angular-ladda.min.js',
+				'public/lib/moment/min/moment.min.js',
+				'public/lib/moment-timezone/builds/moment-timezone-with-data-2010-2020.min.js',
+				'public/lib/angular-moment/angular-moment.min.js',
 			]
 		},
 		css: [

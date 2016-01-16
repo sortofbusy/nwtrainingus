@@ -149,7 +149,7 @@ describe('User route tests', function() {
 /**
  * Message routes tests
  */
-describe.only('Admin route tests', function() {
+describe('Admin route tests', function() {
 	beforeEach(function(done) {
 		// Create user credentials
 		credentials = {
@@ -206,7 +206,6 @@ describe.only('Admin route tests', function() {
 						if (messagesGetErr) done(messagesGetErr);
 						// Get Messages list
 						var messages = messagesGetRes.body;
-						console.log(messages);
 						// Set assertions
 						//messages.should.be.an.Array;
 
