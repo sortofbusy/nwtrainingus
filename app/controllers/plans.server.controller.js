@@ -85,7 +85,7 @@ exports.update = function(req, res) {
 		// UPDATING PLAN FIELDS MANUALLY! Schema changes need to be reflected here
 		Plan.findByIdAndUpdate(plan._id, {pace: plan.pace, startChapter: startChapter, endChapter: endChapter,
 			cursor: cursor, active: plan.active, name: plan.name, chapters: plan.chapters, 
-			parent: plan.parent, isParent: plan.isParent, readToday: plan.readToday}, function(err, newPlan) {
+			parent: plan.parent, isParent: plan.isParent}, function(err, newPlan) {
 			if (err) {
 				return res.status(400).send({
 					message: errorHandler.getErrorMessage(err)
@@ -170,7 +170,7 @@ exports.advance = function(req, res) {
 		var chapter = new Chapter(req.body);
 		chapter.name = Reference.fromChapterId(req.plan.cursor).toString();
 		chapter.user = req.user._id;
-		chapter.plan = req.plan._id
+		chapter.plan = req.plan._id;
 
 		// save this new chapter
 		chapter.save(function(err, chapterRes) {

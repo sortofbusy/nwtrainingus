@@ -17,7 +17,7 @@ var credentials, user, plan;
 /**
  * Plan routes tests
  */
-describe('Plan CRUD tests', function() {
+describe.only('Plan CRUD tests', function() {
 	beforeEach(function(done) {
 		// Create user credentials
 		credentials = {
@@ -384,7 +384,7 @@ describe('Plan CRUD tests', function() {
 			});
 	});
 
-	it.only('should be able to add a chapter to a plan', function(done) {
+	it('should be able to add a chapter to a plan', function(done) {
 		agent.post('/auth/signin')
 			.send(credentials)
 			.expect(200)

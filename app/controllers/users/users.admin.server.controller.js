@@ -25,7 +25,7 @@ var adminFindBadges = q.nbind(Badge.find, Badge);
  */
 exports.getAdminView = function(req, res) {
 	q.all([
-		adminFindUsers({}, 'displayName email username provider preferences plans roles created lastName firstName', {sort: {created: -1}}),
+		adminFindUsers({}, 'displayName email username provider preferences timezone plans roles created lastName firstName', {sort: {created: -1}}),
 		adminFindChapters({}, 'user created', {sort: {created: -1}}),
 		adminFindGroups({}, 'name users created', {sort: {created: -1}})
 		])
