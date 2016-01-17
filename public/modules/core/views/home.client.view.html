@@ -26,7 +26,7 @@
 		<div class="row" id="readLocation" >	
 			<form class="form-inline col-md-4" data-ng-submit="read(0)" novalidate>
                 <div class="input-group">  
-                    <input type="text" data-ng-model="readChapter" name="readChapter" class="form-control" placeholder="Enter a chapter to read" autofocus>
+                    <input type="text" data-ng-model="readChapter" uib-typeahead="book for book in books | filter:$viewValue | limitTo:1" name="readChapter" class="form-control" placeholder="Enter a chapter to read" autofocus>
                     <div class="input-group-addon warning" data-ng-click="read(0)"><i class="fa fa-fw fa-search"></i></div>
                 </div>
 				
@@ -91,7 +91,6 @@
 				</uib-tabset>
 			</div>
 			<br>
-			{{currentTimezone}}
 			<div class="well" data-ng-show="completed">
 				<div class="h2 text-center">
 					You've read all your chapters for today!

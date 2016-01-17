@@ -8,7 +8,7 @@ var mongoose = require('mongoose'),
 	errorHandler = require('./errors.server.controller'),
 	Plan = mongoose.model('Plan'),
 	Chapter = mongoose.model('Chapter'),
-	moment = require('moment-timezone'),
+	momentTZ = require('moment-timezone'),
 	_ = require('lodash');
 
 /**
@@ -131,7 +131,7 @@ exports.list = function(req, res) {
 	/////////////////
 	Plan.find(params).sort('-created').populate({
 			path: 'chapters',
-			match:  {created: {'$gte': moment.tz(timezone).startOf('day')}}
+			match:  {created: {'$gte': momentTZ.tz(timezone).startOf('day')}}
 		}).exec(function(err, plans) {
 		if (err) {
 			return res.status(400).send({
@@ -150,7 +150,7 @@ exports.readToday = function(req, res) {
 	var timezone = 'America/Los_Angeles';
 	if (req.user.timezone) timezone = req.user.timezone;
 	
-	var chapters = Chapter.find({plan: req.plan._id, created: {'$gte': moment.tz(timezone).startOf('day')}}).sort('-created').exec(function(err, chapters) {
+	var chapters = Chapter.find({plan: req.plan._id, created: {'$gte': momentTZ.tz(timezone).startOf('day')}}).sort('-created').exec(function(err, chapters) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

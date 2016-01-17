@@ -36,7 +36,7 @@
                 <div class="input-group">
                     <label class="b input-group-addon success"><i class="fa fa-fw fa-bookmark"></i> <b>Next</b>
                     </label>
-                    <input type="text" data-ng-model="cursor" name="cursor" class="form-control">
+                    <input type="text" data-ng-model="cursor" name="cursor" uib-typeahead="book for book in books | filter:$viewValue | limitTo:1" class="form-control">
                 </div>
                 <br><br>
                 <div class="input-group">
@@ -50,13 +50,13 @@
                 <div class="input-group col">
                     <label class="b input-group-addon info"><i class="fa fa-fw fa-step-backward"></i> <b>First</b>
                     </label>
-                    <input type="text" data-ng-model="startChapter" name="startChapter" class="form-control">
+                    <input type="text" data-ng-model="startChapter" name="startChapter" uib-typeahead="book for book in books | filter:$viewValue | limitTo:1" class="form-control">
                 </div>
                 <br><br>
                 <div class="input-group">
                     <label class="b input-group-addon info"><i class="fa fa-fw fa-step-forward"></i> <b>Last</b>
                     </label>
-                    <input type="text" data-ng-model="endChapter" name="endChapter" class="form-control">
+                    <input type="text" data-ng-model="endChapter" name="endChapter" uib-typeahead="book for book in books | filter:$viewValue | limitTo:1" class="form-control">
                 </div>                
                 <br><br>
                 <input type="submit" class="btn btn-success" value="Save">

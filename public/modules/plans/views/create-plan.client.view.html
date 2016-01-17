@@ -19,13 +19,13 @@
                 <div class="input-group">
                     <label class="b input-group-addon info"><i class="fa fa-fw fa-step-backward"></i> <b>First</b>
                     </label>
-                    <input type="text" data-ng-model="startChapter" name="startChapter" class="form-control" placeholder="Examples: Gen 1, Exodus 14">
+                    <input type="text" data-ng-model="startChapter" name="startChapter" class="form-control" uib-typeahead="book for book in books | filter:$viewValue | limitTo:1" placeholder="Examples: Gen 1, Exodus 14">
                 </div>
                 <br><br>
                 <div class="input-group">
                     <label class="b input-group-addon info"><i class="fa fa-fw fa-step-forward"></i> <b>Last</b>
                     </label>
-                    <input type="text" data-ng-model="endChapter" name="endChapter" class="form-control" placeholder="You can abbreviate books">
+                    <input type="text" data-ng-model="endChapter" name="endChapter" class="form-control" uib-typeahead="book for book in books | filter:$viewValue | limitTo:1" placeholder="You can abbreviate books">
                 </div>
             </div>
             <div class="col-md-6 col-md-offset-3">
