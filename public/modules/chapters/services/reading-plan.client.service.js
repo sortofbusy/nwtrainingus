@@ -110,9 +110,9 @@ angular.module('chapters').factory('ReadingPlan', ['$http', '$q', 'BibleText', '
 			return false;
 		};
 
-		service.incrementPlan = function(chapterId) {
-				return $q( function(resolve) {
-					service.addChapter(chapterId).then( function() {
+		service.incrementPlan = function() {
+				return $q( function(resolve, reject) {
+					plans[planSegment].$advance().then( function() {
 						var plan = plans[planSegment];
 							// remove the current chapter from list to read
 						chaptersInPortion.shift(); 
@@ -148,21 +148,11 @@ angular.module('chapters').factory('ReadingPlan', ['$http', '$q', 'BibleText', '
 							}
 						}
 						resolve(service.getChapterText());
+					}, function (err) {
+						reject(err.data.message);
 					});
 				}); 
 			};
-
-		service.addChapter = function(chapterId) {
-			return $q( function(resolve) {
-				var plan = plans[planSegment];
-				plan.cursor += 1;
-				plan.chapters.push(chapterId);
-				plan.$update(function(response) {
-					plans[planSegment] = response;
-					resolve();
-				});
-			});
-		};
 
 		// Public API
 		return service;

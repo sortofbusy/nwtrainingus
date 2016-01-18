@@ -94,9 +94,9 @@ angular.module('chapters').controller('ChaptersController', ['$rootScope', '$sco
 			});
 		};
 
-		$scope.incrementPlan = function(chapterId) {
+		$scope.incrementPlan = function() {
 				// advance the reading plan
-			$scope.textPromise = ReadingPlan.incrementPlan(chapterId).then( function(response) {
+			$scope.textPromise = ReadingPlan.incrementPlan().then( function(response) {
 					// the current plan's daily portion is completed
 				if (response === 'completed') {
 					$scope.completed = true;
@@ -114,6 +114,8 @@ angular.module('chapters').controller('ChaptersController', ['$rootScope', '$sco
 				$scope.chapterText = response;
 				$scope.plansTabs[ReadingPlan.getPlanSegment()] = true;
 				$scope.find();
+			}, function(err) {
+				$scope.alerts.push({type: 'danger', msg: 'Error advancing plan', icon: 'times'});
 			});					
 		};
 
@@ -129,22 +131,10 @@ angular.module('chapters').controller('ChaptersController', ['$rootScope', '$sco
 		// Create new Chapter
 		$scope.create = function(params) {
 			$scope.textPromise = $q(function(resolve) {
-				if(!params) params = {name: ReadingPlan.getCurrentChapter()};
-					// Create new Chapter object
-				var chapter = new Chapters(params);
-				chapter.plan = ReadingPlan.getCurrentPlan()._id;
-				
-				$scope.alerts = [];
-				
-				chapter.$save(function(response) {
-					$scope.incrementPlan(response._id);
 
-					$scope.alerts.push({type: 'success', msg: 'Chapter entered', icon: 'check-square-o'});
-					resolve();
-				}, function(errorResponse) {
-					$scope.alerts.push({type: 'danger', msg: 'Chapter entry failed', icon: 'times'});
-					resolve();
-				});
+				$scope.alerts = [];
+				$scope.incrementPlan();
+
 			});
 			return $scope.textPromise;
 		};
@@ -227,6 +217,10 @@ angular.module('chapters').controller('ChaptersController', ['$rootScope', '$sco
 				$scope.optionsCollapsed = true;
 			});
 			
+		};
+
+		$scope.closeAlert = function(index){
+		    $scope.alerts.splice(index, 1);
 		};
 	}
 

@@ -38,10 +38,10 @@
 			<h3>{{chapterText.inputstring}}</h3>
 			<div class="lead text-justify" data-ng-style="bibleTextStyle">
 				<span data-ng-repeat="verse in chapterText.verses" data-ng-style="bibleTextStyle">
-					<sup>{{verse.ref}}</sup><span data-ng-bind-html="sceTrust(verse.text)"></span>
+					<sup>{{::verse.ref}}</sup><span data-ng-bind-html="sceTrust(verse.text)"></span>
 				</span>
 			</div>
-			<small class="text-muted">{{chapterText.copyright}}</small>
+			<small class="text-muted">{{::chapterText.copyright}}</small>
 			<br><br>
 			<div class="col-md text-center">
 				<a class="btn btn-primary" data-ng-click="read(-1)"><i class="fa fa-chevron-circle-left"></i> Previous</a> 
@@ -85,7 +85,7 @@
 				<uib-tabset vertical="true" type ="pills">
 					<uib-tab data-ng-repeat="plan in plans" active="plansTabs[$index]" data-ng-click="changePlan($index)" class="bg-info">
 						<uib-tab-heading>
-							{{plan.name}} <span class="strong badge">{{plan.chapters.length}}/{{plan.pace}}</span> <i class="fa fa-check fa-fw" data-ng-show="(plan.chapters.length >= plan.pace)"></i>
+							{{::plan.name}} <span class="strong badge">{{plan.chapters.length}}/{{::plan.pace}}</span> <i class="fa fa-check fa-fw" data-ng-show="(plan.chapters.length >= plan.pace)"></i>
 						</uib-tab-heading>
 					</uib-tab>
 				</uib-tabset>
@@ -101,6 +101,9 @@
 				</div>
 			</div>
 			<mydir-show-chapter-text data-ng-show="plans.length && !completed"></mydir-show-chapter-text>
+			<div>
+                <uib-alert data-ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3500">{{::alert.msg}}</alert>
+            </div>
 			<br>
 			<mydir-nav-chapter data-ng-show="plans.length && !completed"></mydir-nav-chapter>
 		</div>

@@ -22,8 +22,6 @@ module.exports = function(app) {
 	app.route('/plans/:planId/today')
 		.get(users.requiresLogin, plans.hasAuthorization, plans.readToday);
 
-	
-
 	// Finish by binding the Plan middleware
 	app.param('planId', plans.planByID);
 };

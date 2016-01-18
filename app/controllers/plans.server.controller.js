@@ -167,15 +167,15 @@ exports.readToday = function(req, res) {
 exports.advance = function(req, res) { 
 	try {
 		// create a new chapter from the current position of the plan
-		var chapter = new Chapter(req.body);
-		chapter.name = Reference.fromChapterId(req.plan.cursor).toString();
-		chapter.user = req.user._id;
-		chapter.plan = req.plan._id;
-
+		var chapter = new Chapter({
+			name: Reference.fromChapterId(req.plan.cursor).toString(),
+			user: req.user._id,
+			plan: req.plan._id,
+		});
+		
 		// save this new chapter
 		chapter.save(function(err, chapterRes) {
 			if (err) {
-				console.log(err);
 				return res.status(400).send({
 					message: errorHandler.getErrorMessage(err)
 				});

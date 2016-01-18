@@ -12,6 +12,10 @@ angular.module('plans').factory('Plans', ['$resource',
 				method: 'GET',
 				url: 'plans/:planId/today',
 				isArray: true
+			},
+			advance: {
+				method: 'POST',
+				url: 'plans/:planId/advance'
 			}
 		});
 	}
