@@ -68,22 +68,13 @@ angular.module('badges').controller('BadgesController', ['$scope', '$stateParams
 ]);
 
 // Badges controller
-angular.module('badges').controller('BadgesModalController', ['$scope', '$uibModalInstance', 'Authentication', 'Badges',
-	function($scope, $uibModalInstance, Authentication, Badges) {
+angular.module('badges').controller('BadgesModalController', ['$scope', '$uibModalInstance', 'Authentication', 'Badges', 'badge',
+	function($scope, $uibModalInstance, Authentication, Badges, badge) {
 		$scope.authentication = Authentication;
-		$scope.badges = [];
-
-		// Find a list of Badges
-		$scope.find = function() {
-			Badges.query({user: $scope.authentication.user._id}, function(result) {
-				$scope.badges.push(result[0]);
-			});
-		};
+		$scope.badge = badge;
 
 		$scope.ok = function () {
 			$uibModalInstance.close();
 		};
-
-		$scope.find();
 	}
 ]);

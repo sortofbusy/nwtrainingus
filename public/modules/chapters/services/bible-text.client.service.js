@@ -127,6 +127,8 @@ angular.module('chapters').factory('BibleText', [ '$q', '$http', 'Authentication
 							try {
 							combined.inputstring = json.book_name + ' ' + json.chapter_nr;
 								for (var i in json.chapter) {
+									json.chapter[i].verse = json.chapter[i].verse.split('--').join('&mdash;');
+									
 									combined.verses.push({ref: json.chapter[i].verse_nr, text: json.chapter[i].verse});
 								}
 							} catch (e) {

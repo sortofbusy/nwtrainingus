@@ -7,9 +7,13 @@ angular.module('chapters').factory('ReadingPlan', ['$http', '$q', 'BibleText', '
 		var plans = [];
 		var planSegment = 0;
 		var chaptersToday = [];
-		var readingPace = 0;
 		var chaptersInPortion = [];
 		var currentChapter= '';
+		var keepReadingFlag = false;
+		
+		service.keepReading = function() {
+			keepReadingFlag = true;
+		};
 
 		service.getCurrentPlan = function() {
 				return plans[planSegment];
@@ -17,7 +21,7 @@ angular.module('chapters').factory('ReadingPlan', ['$http', '$q', 'BibleText', '
 
 		service.setPlans = function(_plans, _planSegment) {
 				plans = _plans;
-				planSegment = (_planSegment) ? _planSegment : 0;
+				planSegment = (_planSegment) ? _planSegment : planSegment;
 			};
 
 		service.getPlans = function() {
@@ -38,7 +42,7 @@ angular.module('chapters').factory('ReadingPlan', ['$http', '$q', 'BibleText', '
 
 		service.getChapterText = function() {
 				return $q( function(resolve) {
-					$http.get('/reference', {params: { chapterNumber: chaptersInPortion[0]}}).then(function(response) {
+					$http.get('/reference', {params: { chapterNumber: plans[planSegment].cursor}}).then(function(response) {
 							currentChapter = response.data;
 							resolve(BibleText.getChapterText(currentChapter, 0));
 						});
@@ -47,42 +51,50 @@ angular.module('chapters').factory('ReadingPlan', ['$http', '$q', 'BibleText', '
 
 		service.beginPlanPortion = function() {
 				return $q( function(resolve) {
+					// return if there are no plans
 					if(!plans.length) {
 						resolve();
-						return;
-					}
-					readingPace = 0;
-					chaptersInPortion = [];
-					
-					var i = planSegment;
-					var planChaptersReadToday = plans[i].chapters ? plans[i].chapters.length : 0;
-					
-						//if less than {pace} chapters have been read today
-					if (planChaptersReadToday < plans[i].pace) {
-						readingPace += plans[i].pace;
-							//fill in the amount of chapters in {pace} minus what's already read
-						for (var p = 0; p < plans[i].pace - planChaptersReadToday; p++) {
-								//if we're not at the end of the plan, add a chapter
-							if (p + plans[i].cursor < plans[i].endChapter) 
-								chaptersInPortion.push(p + plans[i].cursor);
-						}
-
-						// if the plan segment has already been read today, fill chaptersInPortion with all remaining
-						// chapters in the plan
-					} else {
-						for (var k = plans[i].cursor; k <= plans[i].endChapter; k++) {
-							chaptersInPortion.push(k);
-						}
-					}
-						// if we're beginning a portion but it's been completed (manual input)
-					if (chaptersInPortion.length === 0) {
-						
-						resolve('completed');
 						return;
 					}
 					resolve(service.getChapterText());
 				});
 			};
+
+		service.incrementPlan = function() {
+			return $q( function(resolve, reject) {
+				plans[planSegment].$advance().then( function(response) {
+					var plan = response;
+						//check if portion is complete
+					if(plan.chapters.length === plan.pace || plan.cursor >= plan.endChapter) {
+						
+						// check if plan is ended, resolve the plan
+						if(plan.cursor > plan.endChapter) {
+							resolve(plan);
+							return;
+						} 
+						
+						// otherwise, find the next unread plan
+						var incompletePlan = service.incompletePlan();	
+						
+						// if all plans have been completed today
+						if (incompletePlan === null) {
+							// reset the active plan to the beginning, resolve
+							planSegment = 0;
+							resolve('portionRead');
+							return;								
+						} else { //  otherwise, read the next unread plan 
+							if(incompletePlan !== null)
+								planSegment = incompletePlan;
+							resolve(service.beginPlanPortion());
+							return;
+						}
+					}
+					resolve(service.getChapterText());
+				}, function (err) {
+					reject(err.data.message);
+				});
+			}); 
+		};
 
 		service.incompletePlan = function() {
 			for(var i = 0; i < plans.length; i++) {
@@ -93,66 +105,6 @@ angular.module('chapters').factory('ReadingPlan', ['$http', '$q', 'BibleText', '
 			}
 			return null;
 		};
-
-		service.planEnded = function() {
-			var plan = angular.copy(plans[planSegment]);
-			if(plan.cursor >= plan.endChapter) {
-				var badge = new Badges({
-					name: plan.name,
-					created: plan.created,
-					user: plan.user,
-					startChapter: plan.startChapter,
-					endChapter: plan.endChapter
-				});
-				badge.$save();
-				return true;
-			}
-			return false;
-		};
-
-		service.incrementPlan = function() {
-				return $q( function(resolve, reject) {
-					plans[planSegment].$advance().then( function() {
-						var plan = plans[planSegment];
-							// remove the current chapter from list to read
-						chaptersInPortion.shift(); 
-							//check if portion is complete
-						if(chaptersInPortion.length === 0) {
-							var incompletePlan = service.incompletePlan();	
-							
-								// check if plan is ended
-							if(service.planEnded()) {
-								var newPlan = angular.copy(plan);
-								plans.splice(planSegment, 1);
-								planSegment = service.incompletePlan();
-								newPlan.$remove().then(function(newPlan) {
-									resolve(newPlan);
-								});
-								return;
-							} else 
-								planSegment += 1;
-							
-							if (incompletePlan === null) {
-								///////
-								// Show a 'keep reading' button
-								//////
-								
-								planSegment = 0;
-								resolve('completed');
-								return;								
-							} else {
-								if(incompletePlan !== null)
-									planSegment = incompletePlan;
-								resolve(service.beginPlanPortion());
-								return;
-							}
-						}
-						resolve(service.getChapterText());
-					}, function (err) {
-						reject(err.data.message);
-					});
-				}); 
-			};
 
 		// Public API
 		return service;

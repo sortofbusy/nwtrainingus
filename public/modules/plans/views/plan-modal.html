@@ -53,7 +53,7 @@
 			</div>
 			<br>
 			<div class="row">
-				<alert data-ng-repeat="alert in updateAlerts" type="{{alert.type}}" close="closeUpdateAlert($index)" dismiss-on-timeout="3500">{{alert.msg}}</alert>
+				<uib-alert data-ng-repeat="alert in updateAlerts" type="{{alert.type}}" close="closeUpdateAlert($index)" dismiss-on-timeout="3500">{{alert.msg}}</uib-alert>
 			</div>   
 		</accordion-group>
 	</accordion>
@@ -70,7 +70,7 @@
     </div>
     <br>
     <div>
-    	<alert data-ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3500">{{alert.msg}}</alert>
+    	<uib-alert data-ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3500">{{alert.msg}}</uib-alert>
     </div>
 </div>
 <div class="modal-footer">

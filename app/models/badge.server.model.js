@@ -19,7 +19,7 @@ var BadgeSchema = new Schema({
 		type: Date,
 		default: Date.now
 	},
-	completed: {
+	began: {
 		type: Date,
 		default: Date.now
 	},

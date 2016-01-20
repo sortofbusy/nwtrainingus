@@ -61,11 +61,9 @@
                 <br><br>
                 <input type="submit" class="btn btn-success" value="Save">
             </div>
-        </form>
-        <br>
-        
-            <alert data-ng-repeat="alert in updateAlerts" type="{{alert.type}}" close="closeUpdateAlert($index)" dismiss-on-timeout="3500">{{alert.msg}}</alert>
-          
+        </form> 
     </div>
+    <br>
+    <uib-alert data-ng-repeat="alert in updateAlerts" type="{{alert.type}}" close="closeUpdateAlert($index)" dismiss-on-timeout="3500">{{alert.msg}}</uib-alert>
 </section>
 

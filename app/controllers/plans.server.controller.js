@@ -166,6 +166,8 @@ exports.readToday = function(req, res) {
  */
 exports.advance = function(req, res) { 
 	try {
+		
+
 		// create a new chapter from the current position of the plan
 		var chapter = new Chapter({
 			name: Reference.fromChapterId(req.plan.cursor).toString(),
@@ -181,13 +183,20 @@ exports.advance = function(req, res) {
 				});
 			} else {
 				// increment the plan's cursor
-				Plan.findByIdAndUpdate(req.plan._id, { $inc: {cursor: 1}, $push: {chapters: chapter._id}}, function(planErr, planRes) {
+				var timezone = 'America/Los_Angeles';
+				if (req.user.timezone) timezone = req.user.timezone;
+				
+				Plan.findByIdAndUpdate(req.plan._id, { $inc: {cursor: 1}, $push: {chapters: chapter._id}}, { 'new': true})
+					.populate({
+						path: 'chapters',
+						match:  {created: {'$gte': momentTZ.tz(timezone).startOf('day')}}
+					}).exec(function(planErr, plan) {
 					if (planErr) {
 						return res.status(400).send({
 							message: errorHandler.getErrorMessage(planErr)
 						});
 					} else {
-						res.jsonp(planRes);
+						res.jsonp(plan);
 					}
 				});
 			}

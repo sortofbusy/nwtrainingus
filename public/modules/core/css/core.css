@@ -14,6 +14,14 @@
 	border-color: #78FA89;
 }
 
+.sociallink {
+	padding: 10px;
+}
+
+.google {
+	color: #dd4b39;
+}
+
 .footer {
 	background-color: #D5D5D5;
 	height: 50px;

@@ -4,7 +4,7 @@
 </div>
 <div class="modal-body">
     <ul class="list-group">
-		<li class="list-group-item" data-ng-repeat="badge in badges">
+		<li class="list-group-item">
 			<div class="row">
 				<div class="col-xs-4">
 					<span class="fa-stack fa-3x">
@@ -12,9 +12,11 @@
 					  <i class="fa fa-book fa-stack-1x fa-inverse"></i>
 					</span>
 				</div>
-				<div class="col-xs-8 vcenter">
-					<b> {{badge.name}}</b> <br>
-					<i class="small i"> Completed: {{badge.completed | date}}</i>
+				<div class="col-xs-8 vcenter lead">
+					<b> {{badge.name}}</b><br>
+					{{badge.endChapter-badge.startChapter + 1}} chapters read<br>
+					<i class="small i"> Started: {{badge.began | date}}</i><br> 
+					<i class="small i"> Completed: {{badge.created | date}}</i>
 				</div>
 			</div>
 		</li>

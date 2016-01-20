@@ -5,19 +5,18 @@
 // Chapters controller
 angular.module('chapters').controller('ChaptersController', ['$rootScope', '$scope', '$uibModal', 
 		'$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', 
-		'$q', 'Plans', 'BibleText', 'ReadingPlan', '$sce', 'BibleRef',
+		'$q', 'Plans', 'BibleText', 'ReadingPlan', '$sce', 'BibleRef', 'Badges',
 	
 	function($rootScope, $scope, $uibModal, $http, $stateParams, $location, Authentication, 
-		Chapters, Users, $q, Plans, BibleText, ReadingPlan, $sce, BibleRef) {
+		Chapters, Users, $q, Plans, BibleText, ReadingPlan, $sce, BibleRef, Badges) {
 		
-		$scope.loadingDefer = $q.defer();
-		$scope.loadingPromise = $scope.loadingDefer.promise;
 		$scope.loaded = false;
 		$scope.optionsCollapsed = true;
 
 		$scope.authentication = Authentication;
 		
-		$scope.completed = false;
+		$scope.portionRead = false;
+		$scope.keepReading = false;
 		$scope.plans = null;
 		$scope.plansTabs = [];
 
@@ -84,13 +83,12 @@ angular.module('chapters').controller('ChaptersController', ['$rootScope', '$sco
 		};
 
 		$scope.beginPlanPortion = function() {
-			$scope.completed = false;
+			$scope.portionRead = false;
 			$scope.textPromise = ReadingPlan.beginPlanPortion().then( function(response) {
-				if (response === 'completed') {
-					$scope.completed = true;
-				} 
 				$scope.chapterText = response;
 				$scope.find();
+			}, function(err) {
+				$scope.alerts.push({type: 'danger', msg: 'Error reading chapter', icon: 'times'});
 			});
 		};
 
@@ -98,45 +96,51 @@ angular.module('chapters').controller('ChaptersController', ['$rootScope', '$sco
 				// advance the reading plan
 			$scope.textPromise = ReadingPlan.incrementPlan().then( function(response) {
 					// the current plan's daily portion is completed
-				if (response === 'completed') {
-					$scope.completed = true;
+				if (response === 'portionRead') {
+					$scope.portionRead = true;
 				}
 					// a just-finished Plan is returned
 				if (response.created) {
-					$scope.openBadgesModal();
-					for (var i = 0; i < $scope.plans.length; i++) {
-						if ($scope.plans[i]._id === response._id)
-							$scope.plans.splice(i, 1);
-					}
+					
+					// create a new Badge with the information from the finished Plan
+					var badge = new Badges({
+						name: response.name,
+						began: response.created,
+						user: response.user,
+						startChapter: response.startChapter,
+						endChapter: response.endChapter
+					});
+					// after saving the Badge, display it to the user
+					badge.$save(function(newBadge){
+						$scope.openBadgesModal(newBadge);
 
+						// remove the finished plan
+						response.$remove(function() {
+							$scope.init();
+						});
+					});
+				} else { // otherwise, display the text, set the active planTab
+					$scope.chapterText = response;
+					$scope.plansTabs[ReadingPlan.getPlanSegment()] = true;
+					$scope.find();
 				}
-
-				$scope.chapterText = response;
-				$scope.plansTabs[ReadingPlan.getPlanSegment()] = true;
-				$scope.find();
 			}, function(err) {
 				$scope.alerts.push({type: 'danger', msg: 'Error advancing plan', icon: 'times'});
 			});					
 		};
 
+		$scope.keepReading = function() {
+			ReadingPlan.keepReading();
+			$scope.beginPlanPortion();
+		};
+
 		$scope.changePlan = function(index) {
-			$scope.completed = false;
+			$scope.portionRead = false;
 			ReadingPlan.setPlanSegment(index);
 			$scope.plansTabs[index] = true;
 			$scope.textPromise = ReadingPlan.beginPlanPortion().then( function(response) {
 				$scope.chapterText = response;
 			});
-		};
-
-		// Create new Chapter
-		$scope.create = function(params) {
-			$scope.textPromise = $q(function(resolve) {
-
-				$scope.alerts = [];
-				$scope.incrementPlan();
-
-			});
-			return $scope.textPromise;
 		};
 
 		// Find a list of Chapters
@@ -145,21 +149,12 @@ angular.module('chapters').controller('ChaptersController', ['$rootScope', '$sco
 			Plans.query({ 
 				user: userId
 			}, function(plans) {
-				if (!$scope.loaded) 
-					$scope.loadingDefer.resolve();
 				$scope.loaded = true;
 				$scope.plans = plans;
 			}, function(error) {
-				if (!$scope.loaded) 
-					$scope.loadingDefer.resolve();
 				$scope.loaded = true;
 			});
 			
-		};
-
-		$scope.moveChapter = function(increment) {
-			$scope.chapterText = null;
-			$scope.create({name: ReadingPlan.getCurrentChapter()});
 		};
 
 		$scope.sceTrust = function(input) {
@@ -191,12 +186,17 @@ angular.module('chapters').controller('ChaptersController', ['$rootScope', '$sco
 			});
 		};
 
-		$scope.openBadgesModal = function (size) {
+		$scope.openBadgesModal = function (badge) {
 			var modalInstance = $uibModal.open({
 			  animation: true,
 			  templateUrl: 'modules/badges/views/badge-modal.html',
 			  controller: 'BadgesModalController',
 			  size: 'md',
+			  resolve: {
+			    badge: function () {
+			    	return badge;
+			    }
+			  }
 			});
 		};
 
