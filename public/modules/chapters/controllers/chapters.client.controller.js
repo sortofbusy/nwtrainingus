@@ -6,9 +6,10 @@
 angular.module('chapters').controller('ChaptersController', ['$rootScope', '$scope', '$uibModal', 
 		'$http', '$stateParams', '$location', 'Authentication', 'Chapters', 'Users', 
 		'$q', 'Plans', 'BibleText', 'ReadingPlan', '$sce', 'BibleRef', 'Badges',
+		'$anchorScroll',
 	
 	function($rootScope, $scope, $uibModal, $http, $stateParams, $location, Authentication, 
-		Chapters, Users, $q, Plans, BibleText, ReadingPlan, $sce, BibleRef, Badges) {
+		Chapters, Users, $q, Plans, BibleText, ReadingPlan, $sce, BibleRef, Badges, $anchorScroll) {
 		
 		$scope.loaded = false;
 		$scope.optionsCollapsed = true;
@@ -90,6 +91,7 @@ angular.module('chapters').controller('ChaptersController', ['$rootScope', '$sco
 			$scope.textPromise = ReadingPlan.beginPlanPortion().then( function(response) {
 				$scope.chapterText = response;
 				$scope.find();
+				$anchorScroll();
 			}, function(err) {
 				$scope.alerts.push({type: 'danger', msg: 'Error reading chapter', icon: 'times'});
 			});
@@ -126,6 +128,7 @@ angular.module('chapters').controller('ChaptersController', ['$rootScope', '$sco
 					$scope.chapterText = response;
 					$scope.plansTabs[ReadingPlan.getPlanSegment()] = true;
 					$scope.find();
+					$anchorScroll();
 				}
 			}, function(err) {
 				$scope.alerts.push({type: 'danger', msg: 'Error advancing plan', icon: 'times'});
@@ -143,6 +146,7 @@ angular.module('chapters').controller('ChaptersController', ['$rootScope', '$sco
 			$scope.plansTabs[index] = true;
 			$scope.textPromise = ReadingPlan.beginPlanPortion().then( function(response) {
 				$scope.chapterText = response;
+				$anchorScroll();
 			});
 		};
 

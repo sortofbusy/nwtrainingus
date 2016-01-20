@@ -17,7 +17,7 @@ var credentials, user, plan;
 /**
  * Plan routes tests
  */
-describe.only('Plan CRUD tests', function() {
+describe('Plan CRUD tests', function() {
 	beforeEach(function(done) {
 		// Create user credentials
 		credentials = {

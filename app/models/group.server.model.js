@@ -53,4 +53,12 @@ var GroupSchema = new Schema({
 	}]
 });
 
+/**
+ * Hook a pre method to delete the Group's Messages
+ */
+GroupSchema.post('remove', function(doc) {
+	console.log('here');
+	mongoose.Message.remove({group: doc._id, verse: {$exists: true}}).exec();
+});
+
 mongoose.model('Group', GroupSchema);

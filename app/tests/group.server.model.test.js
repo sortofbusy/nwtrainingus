@@ -6,17 +6,18 @@
 var should = require('should'),
 	mongoose = require('mongoose'),
 	User = mongoose.model('User'),
+	Message = mongoose.model('Message'),
 	Group = mongoose.model('Group');
 
 /**
  * Globals
  */
-var user, group;
+var user, group, newGroup;
 
 /**
  * Unit tests
  */
-describe('Group Model Unit Tests:', function() {
+describe.only('Group Model Unit Tests:', function() {
 	beforeEach(function(done) {
 		user = new User({
 			firstName: 'Full',
@@ -53,12 +54,43 @@ describe('Group Model Unit Tests:', function() {
 				done();
 			});
 		});
+
+		it('should be able to cascade delete associated Messages', function(done) {
+			
+			return group.save(function(err, nGroup) {
+				newGroup = nGroup;
+				var msgs = [
+					{
+						text: 'group comment',
+						group: group._id
+					}, 
+					{
+						text: 'group note',
+						group: group._id,
+						verse: '1 Corinthians 5:13'
+					}
+				];
+
+				Message.create(msgs, function(msgErr, result, result2) {
+				    if (msgErr) done(msgErr);
+				    Group.findOneAndRemove({_id: group._id}, function(err3, delGroup) {
+				    	delGroup.remove();
+				    	Message.find({}, function(err4, allMessages) {
+				    		console.log(allMessages);
+				    		done();
+				    	});
+				    });
+				    
+				});
+
+			});
+		});
 	});
 
 	afterEach(function(done) { 
 		Group.remove().exec();
 		User.remove().exec();
-
+		Message.remove().exec();
 		done();
 	});
 });
