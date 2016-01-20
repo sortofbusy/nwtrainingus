@@ -4,6 +4,9 @@
 angular.module('messages').controller('MessagesController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Messages',
 	function($scope, $http, $stateParams, $location, Authentication, Messages) {
 		$scope.authentication = Authentication;
+		
+		// If user is not signed in then redirect back home
+		if (!$scope.authentication.user) $location.path('/');
 
 		// Create new Message
 		$scope.create = function() {

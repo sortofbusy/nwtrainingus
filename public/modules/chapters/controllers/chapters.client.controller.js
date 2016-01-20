@@ -15,6 +15,9 @@ angular.module('chapters').controller('ChaptersController', ['$rootScope', '$sco
 
 		$scope.authentication = Authentication;
 		
+		// If user is not signed in then redirect back home
+		if (!$scope.authentication.user) $location.path('/');
+		
 		$scope.portionRead = false;
 		$scope.keepReading = false;
 		$scope.plans = null;

@@ -5,6 +5,8 @@ angular.module('badges').controller('BadgesController', ['$scope', '$stateParams
 	function($scope, $stateParams, $location, Authentication, Badges) {
 		$scope.authentication = Authentication;
 		
+		// If user is not signed in then redirect back home
+		if (!$scope.authentication.user) $location.path('/');
 
 		// Create new Badge
 		$scope.create = function() {

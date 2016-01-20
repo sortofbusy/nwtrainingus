@@ -4,6 +4,10 @@
 angular.module('groups').controller('GroupsController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Groups', 'Chapters', '$window', 'Messages',
 	function($scope, $http, $stateParams, $location, Authentication, Groups, Chapters, $window, Messages) {
 		$scope.authentication = Authentication;
+		
+		// If user is not signed in then redirect back home
+		if (!$scope.authentication.user) $location.path('/');
+
 		$scope.optionsCollapsed = true;
 		$scope.addCollapsed = true;
 		$scope.open = false;

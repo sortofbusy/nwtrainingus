@@ -3,6 +3,10 @@
 angular.module('plans').controller('PlansMainController', ['$scope', '$http', 'Authentication', 'Plans', '$location', '$window', 'BibleRef', '$stateParams',
 	function($scope, $http, Authentication, Plans, $location, $window, BibleRef, $stateParams) {
 		$scope.authentication = Authentication;
+		
+		// If user is not signed in then redirect back home
+		if (!$scope.authentication.user) $location.path('/');
+
 		$scope.selected = {
 			item: null
 		};
