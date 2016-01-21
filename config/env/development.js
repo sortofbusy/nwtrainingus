@@ -1,9 +1,9 @@
 'use strict';
 
 module.exports = {
-	db: 'mongodb://localhost/lettheword-dev',
+	db: 'mongodb://localhost/nwtraining-dev',
 	app: {
-		title: 'Eat The Bible - Development Environment'
+		title: 'NWTraining - Development Environment'
 	},
 	facebook: {
 		clientID: process.env.FACEBOOK_ID || 'APP_ID',

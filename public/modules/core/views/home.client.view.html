@@ -1,112 +1,39 @@
 <section data-ng-controller="HomeController">
-	
 	<div data-ng-hide="authentication.user">
-		<div class="jumbotron text-center row" data-ng-hide="chapterText">
-			<br>
+		<div class="jumbotron text-center row">
 			<div class="row">
 				<div class="col-xs-10 col-xs-offset-1">
-					<img src="modules/core/img/brand/eatthebible.png" class="img-responsive center-block" alt="Eat the Bible">
+					<h1>Northwest Training</h1>
 				</div>
-				<div class="col-xs-12">
-					<br>
-					<br>
-					<blockquote class="text-left">
-					  <i class="fa fa-quote-left fa-2x fa-pull-left fa-border"></i>Your words were found and <strong>I ate them</strong>, and Your word became to me the gladness and joy of my heart.
-					  <footer class="text-right"><cite title="Reference">Jeremiah 15:16a</cite></footer>
-					</blockquote>
-				</div>
-			</div>
-			<div class="row">
+				<br>
 				<a ui-route="/signup" data-ng-class="{active: $uiRoute}" class="btn btn-warning btn-lg" href="/#!/signup"><i class="fa fa-fw fa-plus"></i> Sign Up</a>
 			
 				<a ui-route="/signin" data-ng-class="{active: $uiRoute}" class="btn btn-primary btn-lg" href="/#!/signin"><i class="fa fa-fw fa-sign-in"></i> Sign In</a>
 			</div>
 		</div>
 		<br>
-		<div class="row" id="readLocation" >	
-			<form class="form-inline col-md-4" data-ng-submit="read(0)" novalidate>
-                <div class="input-group">  
-                    <input type="text" data-ng-model="readChapter" uib-typeahead="book for book in books | filter:$viewValue | limitTo:1" name="readChapter" class="form-control" placeholder="Enter a chapter to read" autofocus>
-                    <div class="input-group-addon warning" data-ng-click="read(0)"><i class="fa fa-fw fa-search"></i></div>
-                </div>
-				
-			</form>
-			<br>
-		</div>
-		<div class="col-xs-12" data-ng-show="chapterNumber">
-			<br>
-			<h3>{{chapterText.inputstring}}</h3>
-			<div class="lead text-justify" data-ng-style="bibleTextStyle">
-				<span data-ng-repeat="verse in chapterText.verses" data-ng-style="bibleTextStyle">
-					<sup>{{verse.ref}}</sup><span data-ng-bind-html="sceTrust(verse.text)"></span>
-				</span>
-			</div>
-			<small class="text-muted">{{chapterText.copyright}}</small>
-			<br><br>
-			<div class="col-md text-center">
-				<a class="btn btn-primary" data-ng-click="read(-1)"><i class="fa fa-chevron-circle-left"></i> Previous</a> 
-				<a class="btn btn-primary" data-ng-click="read(1)">Next Chapter <i class="fa fa-chevron-circle-right"></i></a>
-				<br>
-				<br>
-			</div>
+		<div>
+			<p class="lead">
+				<b>Training Guidelines and Regulations</b>
+				<ul>
+					<li>Attire - A tie and a jacket are the recommended attire for each trainee.</li>
+					<li>Arrival Time - We recommend the trainees to arrive at [location] by [time], to allow time for parking, collection of badges, seating, and exercise of the spirit:</li>
+					<ul>
+						<li>Every trainee is expected to be in their seat no later than 5 minutes before the start time of each session.</li>
+						<li>Doors will be locked at the start time of each session. Those who arrive late should expect that they will not be able to enter until the next session break.</li>
+					</ul>
+					<li>Training Outlines - Duplication of the training material is not permitted. For any absent trainees, only the locality coordinator (or an assigned representative) should pick up training outlines at the registration table.</li>
+					<li>Attendance - All trainees should arrange their schedule so as not to miss any meeting:</li>
+					<ul>
+						<li>For the monthly training sessions, three excused absences per year are permitted with prior approval. Any unexcused absence or more than three excused absences will result in dismissal from the training.</li>
+						<li>Trainees are required to attend 75% of the weekly study groups for the year. The training is one year in length.</li>
+					</ul>
+				</ul>
+			</p>
 		</div>
 	</div>
-	<div data-ng-controller="ChaptersController" data-ng-init="init()" data-ng-show="authentication.user">
-		<div data-ng-show="loaded">
-			<div >
-				<br>
-				<a class="pull-right" ng-click="optionsCollapsed = !optionsCollapsed"><i class="fa fa-2x fa-fw fa-gear"></i></a>
-				<div data-uib-collapse="optionsCollapsed">
-					<div class="well well-lg">
-						<h4>Text Size</h4>
-						<div class="text-center">
-							<button type="button" data-ng-click="textResize(1)"><i class="fa fa-fw fa-plus fa-2x"></i></button>
-							<button type="button" data-ng-click="textResize(-1)"><i class="fa fa-fw fa-minus fa-2x"></i></button>
-						</div>
-						<h4>Choose Translation</h4>
-							<form>
-								<select id="preferences.version" name="preferences.version" class="form-control" data-ng-model="user.preferences.version" data-ng-options="version.code as version.name group by version.language for version in bibleVersions" data-ng-change="updateVersion()">
-								</select>
-							</form>
-					</div>
-				</div>
-				
-				<div class="h2 text-center" data-ng-hide="plans.length">
-					<br>
-					Choose a reading plan to get started! 
-					<br><br>
-					<a class="btn btn-info btn-lg" href="/#!/plans">
-						Choose Plans
-					</a>
-				</div>
-			</div>
-			<div class="" data-ng-show="plans.length">
-				<h4>Reading Plans</h4>
-				<uib-tabset vertical="true" type ="pills">
-					<uib-tab data-ng-repeat="plan in plans" active="plansTabs[$index]" data-ng-click="changePlan($index)" class="bg-info">
-						<uib-tab-heading>
-							{{plan.name}} <span class="strong badge">{{plan.chapters.length}}/{{plan.pace}}</span> <i class="fa fa-check fa-fw" data-ng-show="(plan.chapters.length >= plan.pace)"></i>
-						</uib-tab-heading>
-					</uib-tab>
-				</uib-tabset>
-			</div>
-			<br>
-			<div class="well" data-ng-show="portionRead">
-				<div class="h2 text-center">
-					You've read all your chapters for today!
-					<br><br>
-					<button class="btn btn-info btn-lg" data-ng-click="keepReading()">
-						Keep Reading
-					</button>
-				</div>
-			</div>
-			<mydir-show-chapter-text data-ng-show="plans.length && !portionRead"></mydir-show-chapter-text>
-			<div>
-                <uib-alert data-ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3500">{{::alert.msg}}</alert>
-            </div>
-			<br>
-			<mydir-nav-chapter data-ng-show="plans.length && !portionRead"></mydir-nav-chapter>
-		</div>
+	<div data-ng-show="authentication.user">
+		Hello
 	</div>
 </section>
 <!--<div class="footer container-fluid"> Hey there </div>-->

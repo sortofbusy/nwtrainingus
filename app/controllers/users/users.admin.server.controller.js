@@ -9,16 +9,12 @@ var _ = require('lodash'),
 	mongoose = require('mongoose'),
 	passport = require('passport'),
 	User = mongoose.model('User'),
-	Chapter = mongoose.model('Chapter'),
 	Group = mongoose.model('Group'),
-	Badge = mongoose.model('Badge'),
 	Message = mongoose.model('Message');
 
 var adminFindUsers = q.nbind(User.find, User);
-var adminFindChapters = q.nbind(Chapter.find, Chapter);
 var adminFindGroups = q.nbind(Group.find, Group);
 var adminFindMessages = q.nbind(Message.find, Message);
-var adminFindBadges = q.nbind(Badge.find, Badge);
 
 /**
  * Update user details
@@ -26,7 +22,6 @@ var adminFindBadges = q.nbind(Badge.find, Badge);
 exports.getAdminView = function(req, res) {
 	q.all([
 		adminFindUsers({}, 'displayName email username provider preferences timezone plans roles created lastName firstName', {sort: {created: -1}}),
-		adminFindChapters({}, 'user created', {sort: {created: -1}}),
 		adminFindGroups({}, 'name users created', {sort: {created: -1}})
 		])
 	.then(function(result) {

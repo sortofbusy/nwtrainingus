@@ -2,9 +2,9 @@
 
 module.exports = {
 	app: {
-		title: 'Eat The Bible',
-		description: 'Build a daily Bible-reading habit.',
-		keywords: 'Bible, reading, Word'
+		title: 'Northwest Training',
+		description: '',
+		keywords: ''
 	},
 	port: process.env.PORT || 3000,
 	templateEngine: 'swig',

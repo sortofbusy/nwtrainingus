@@ -49,10 +49,6 @@ var UserSchema = new Schema({
 		validate: [validateLocalStrategyProperty, 'Please fill in your email'],
 		match: [/.+\@.+\..+/, 'Please fill a valid email address']
 	},
-	username: {
-		type: String,
-		trim: true
-	},
 	password: {
 		type: String,
 		default: '',
@@ -70,7 +66,7 @@ var UserSchema = new Schema({
 	roles: {
 		type: [{
 			type: String,
-			enum: ['user', 'admin']
+			enum: ['user', 'reporter', 'approver', 'admin']
 		}],
 		default: ['user']
 	},
@@ -88,28 +84,10 @@ var UserSchema = new Schema({
 	resetPasswordExpires: {
 		type: Date
 	},
-	lastChapter: {
-		type: String
-	},
-	plans: [{
-		type: Schema.ObjectId,
-		ref: 'Plan'
-	}],
 	preferences: {
-		version: {
+		language: {
 			type: String,
-			default: 'rcv'
-		},
-		fontSize: {
-			type: Number,
-			enum: [0, 1, 2],
-			default: 0
-		},
-		tour: {
-			type: Number,
-			min: 0,
-			max: 6,
-			default: 0
+			default: 'English'
 		}
 	},
 	timezone: {
@@ -125,9 +103,6 @@ UserSchema.pre('save', function(next) {
 	if (this.password && this.password.length > 6) {
 		this.salt = new Buffer(crypto.randomBytes(16).toString('base64'), 'base64');
 		this.password = this.hashPassword(this.password);
-	}
-	if(!this.username || this.username === '') {
-		this.username = this.email;
 	}
 	next();
 });

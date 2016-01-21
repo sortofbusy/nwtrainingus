@@ -6,7 +6,6 @@
 var mongoose = require('mongoose'),
 	errorHandler = require('./errors.server.controller'),
 	Group = mongoose.model('Group'),
-	Chapter = mongoose.model('Chapter'),
 	Message = mongoose.model('Message'),
 	User = mongoose.model('User'),
 	_ = require('lodash');
@@ -33,17 +32,10 @@ exports.create = function(req, res) {
 /**
  * Show the current Group
  */
-exports.read = function(req, res, next) {
+exports.read = function(req, res) {
 	try {
 		
-		Chapter.find().where('user').in(req.group.users).sort('-created').limit(10).populate('user', 'displayName').exec(function(err, chapters) {
-			if (err) {
-				throw err;
-			} else {
-				req.group.recentChapters = chapters;
-				next();
-			}
-		});
+		res.jsonp(req.group);
 	} catch (e) {
 		return res.status(400).send({
 			message: errorHandler.getErrorMessage(e)
@@ -51,29 +43,6 @@ exports.read = function(req, res, next) {
 	}
 };
 
-
-/**
- * Adds recent messages
- */
-exports.addMessages = function(req, res) {
-	try {
-		var params = {group: req.group._id, verse: {$exists: true}};
-		
-		Message.find(params).sort('-created').limit(10).populate('user', 'displayName').exec(function(err, messages) {
-			if (err) {
-				console.log(err);
-				throw err;
-			} else {
-				req.group.recentMessages = messages;
-				res.jsonp(req.group);
-			}
-		});
-	} catch (e) {
-		return res.status(400).send({
-			message: errorHandler.getErrorMessage(e)
-		});
-	}
-};
 
 /**
  * Update a Group
@@ -116,7 +85,6 @@ exports.delete = function(req, res) {
  * List of Groups
  */
 exports.list = function(req, res) { 
-	//req.query.users = mongoose.Types.ObjectId(String(req.query.users));
 	Group.find({users: req.user}).sort('-created').exec(function(err, groups) {
 		if (err) {
 			return res.status(400).send({
@@ -126,27 +94,6 @@ exports.list = function(req, res) {
 			res.jsonp(groups);
 		}
 	});
-};
-
-exports.getChapters = function(req, res) {
-	var group = req.group;
-	try {
-		var params = {user: req.group.creator};
-		
-		Chapter.find(params).sort('-created').limit(10).populate('user', 'displayName').exec(function(err, chapters) {
-			if (err) {
-				console.log(err);
-				throw err;
-			} else {
-				res.jsonp(chapters);
-			}
-		});
-	} catch (e) {
-		return res.status(400).send({
-			message: errorHandler.getErrorMessage(e)
-		});
-	}
-
 };
 
 /**
@@ -192,51 +139,6 @@ exports.getComments = function(req, res) {
 	}
 };
 
-/**
- * Return the number of chapters each group member has read
- */
-exports.getReadingStats = function(req, res) {
-	try {
-		// begin query, aggregate Chapters		
-		Chapter.aggregate()
-			.match({ // only find chapters created by users in this Group in the last week
-				user: {$in: req.group.users.map(function(user){ return new mongoose.Types.ObjectId(user._id); })},
-				created: {$gt: new Date(Date.now() - 7*24*60*60*1000)}
-			}) 
-			.group({ // group by user, add the count 
-				_id: '$user', 
-				count: {$sum: 1}
-			})
-			.exec(function(err, chapters) {
-				if (err) throw err;
-				
-				// find users in the Group who have read 0 chapters, add entries for them
-				var foundIds = _.map(_.pluck(chapters, '_id'),function(i){return String(i);} );
-				var groupIds = _.map(_.pluck(req.group.users, '_id'),function(i){return String(i);} );
-				var diff = _.difference(groupIds, foundIds);
-				for(var i=0; i<diff.length; i++) {
-					chapters.push({
-						_id: diff[i],
-						count: 0
-					});
-				}
-
-				// populate the result with displayName
-				User.populate(chapters, {
-					'path': '_id',
-					'select': 'displayName'
-				}, function(e, results) {
-					if (e) throw e;
-					res.jsonp(results);
-				});			
-			});
-	} catch (e) {
-		console.log(e);
-		return res.status(400).send({
-			message: errorHandler.getErrorMessage(e)
-		});
-	}
-};
 
 exports.addUser = function(req, res) {
 	Group.findOne({accessToken: req.body.token}).exec(function(err, group) {

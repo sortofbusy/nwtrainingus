@@ -13,21 +13,15 @@ module.exports = function(app) {
 		.post(users.requiresLogin, groups.addUser);
 	
 	app.route('/groups/:groupId')
-		.get(groups.hasAuthorization, groups.read, groups.addMessages)
+		.get(groups.hasAuthorization, groups.read)
 		.put(users.requiresLogin, groups.creatorAuthorization, groups.update)
 		.delete(users.requiresLogin, groups.creatorAuthorization, groups.delete);
-
-	app.route('/groups/:groupId/chapters')
-		.get(groups.hasAuthorization, groups.getChapters);
 
 	app.route('/groups/:groupId/messages')
 		.get(groups.hasAuthorization, groups.getMessages);
 	
 	app.route('/groups/:groupId/comments')
 		.get(groups.hasAuthorization, groups.getComments);
-
-	app.route('/groups/:groupId/reading')
-		.get(groups.hasAuthorization, groups.getReadingStats);
 
 	app.route('/groups/:groupId/unenroll')
 		.post(groups.hasAuthorization, groups.removeUser);
