@@ -52,7 +52,7 @@ exports.signup = function(req, res) {
 				var mailOptions = {
 					to: user.email,
 					from: config.mailer.from,
-					subject: 'Welcome to EatTheBible',
+					subject: 'Your account at nwtraining.us',
 					html: emailHTML
 				};
 				smtpTransport.sendMail(mailOptions, function(err3, info) {

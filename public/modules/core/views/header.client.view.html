@@ -42,8 +42,11 @@
 				<a href="/#!/plans"><i class="fa fa-fw fa-calendar-o"></i> Plans</a>
 			</li>-->
 			<li>
-				<a href="/#!/settings/profile">
+				<a href="/#!/settings/profile" ng-show="authentication.user.approved">
 					<i class="fa fa-fw fa-user"></i> Profile
+				</a>
+				<a href="/auth/signout" ng-hide="authentication.user.approved">
+					<i class="fa fa-fw fa-sign-out"></i> Sign Out
 				</a>
 			</li>
 			<li data-ng-show="(authentication.user.roles.indexOf('admin') >= 0)">

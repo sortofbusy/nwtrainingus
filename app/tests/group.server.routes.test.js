@@ -6,7 +6,6 @@ var should = require('should'),
 	mongoose = require('mongoose'),
 	User = mongoose.model('User'),
 	Group = mongoose.model('Group'),
-	Chapter = mongoose.model('Chapter'),
 	Message = mongoose.model('Message'),
 	agent = request.agent(app);
 
@@ -290,7 +289,6 @@ describe('Group CRUD tests', function() {
 	afterEach(function(done) {
 		User.remove().exec();
 		Group.remove().exec();
-		Chapter.remove().exec();
 		Message.remove().exec();
 		done();
 	});
@@ -352,13 +350,7 @@ describe('Group detail tests', function() {
 						
 						group = groupRes.body;
 						
-						agent.post('/chapters')
-						.send(new Chapter({
-							name: 'Genesis 5'}))
-						.expect(200)
-						.end(function(chapterErr, chapterRes) {
-						
-							agent.post('/messages')
+						agent.post('/messages')
 							.send(new Message({
 								text: 'I enjoyed this.', 
 								group: group._id
@@ -367,7 +359,6 @@ describe('Group detail tests', function() {
 							.end(function(messageErr, messageRes) {
 								done();
 							});
-						});
 					});
 				});
 			});
@@ -382,20 +373,6 @@ describe('Group detail tests', function() {
 				// Set assertion
 				(res.body.creator).should.equal(user.id);
 				(res.body.name).should.match('Group Name');
-
-				// Call the assertion callback
-				done();
-			});
-	});
-
-	it('should be able to get the chapters from a single Group', function(done) {
-		agent.get('/groups/' + group._id + '/chapters')
-			.end(function(err, res) {
-				if (err) done(err);	
-				
-				// Set assertion
-				res.body.should.be.an.Array.with.lengthOf(1);
-				res.body[0].name.should.match('Genesis 5');
 
 				// Call the assertion callback
 				done();
@@ -453,47 +430,6 @@ describe('Group detail tests', function() {
 							});
 					});
 			});
-	});
-
-	it('should be able to get reading stats for Users in a Group', function(done) {
-		agent.post('/chapters')
-			.send(new Chapter({
-				name: 'Matthew 5'}))
-			.expect(200)
-			.end(function(anotherchapterErr, anotherchapterRes) {
-				agent.get('/auth/signout')
-					.end(function() {
-						agent.post('/auth/signin')
-							.send(credentials2)
-							.expect(200)
-							.end(function(signinErr, signinRes) {
-								// Handle signin error
-								if (signinErr) done(signinErr);	
-								agent.post('/groups/enroll')
-									.send({ token: group.accessToken })
-									.expect(200)
-									.end(function(err, res) {
-										if (err) done(err);
-										
-										
-
-												agent.get('/groups/' + group._id + '/reading')
-													.end(function(err, res) {
-														if (err) done(err);
-														// Set assertion
-														res.body.should.be.an.Array.with.lengthOf(2);
-														//res.body[0].text.should.match('I enjoyed this.');
-
-														// Call the assertion callback
-														done();
-													});
-											
-									});
-							});
-					});
-		});
-
-
 	});
 
 	it('should be able to add a user to a Group', function(done) {
@@ -590,7 +526,6 @@ describe('Group detail tests', function() {
 	afterEach(function(done) {
 		User.remove().exec();
 		Group.remove().exec();
-		Chapter.remove().exec();
 		Message.remove().exec();
 		done();
 	});

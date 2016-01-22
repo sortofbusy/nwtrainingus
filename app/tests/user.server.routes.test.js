@@ -124,7 +124,7 @@ describe('User route tests', function() {
 			.send({firstName: 'Josiah', lastName: 'Vinson', email: 'test@test.com', password: 'password'})
 			.expect(200)
 			.end(function(signinErr, signinRes) {
-				done();
+				done(signinErr);
 			});
 	});
 
@@ -133,7 +133,7 @@ describe('User route tests', function() {
 			.send({username: 'test@test.com'})
 			.expect(200)
 			.end(function(signinErr, signinRes) {
-				done();
+				done(signinErr);
 			});
 	});
 

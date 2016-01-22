@@ -21,7 +21,7 @@ var adminFindMessages = q.nbind(Message.find, Message);
  */
 exports.getAdminView = function(req, res) {
 	q.all([
-		adminFindUsers({}, 'displayName email username provider preferences timezone plans roles created lastName firstName', {sort: {created: -1}}),
+		adminFindUsers({}, '-password -salt -signature', {sort: {created: -1}}),
 		adminFindGroups({}, 'name users created', {sort: {created: -1}})
 		])
 	.then(function(result) {

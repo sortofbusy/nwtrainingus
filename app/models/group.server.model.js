@@ -45,9 +45,6 @@ var GroupSchema = new Schema({
 		type: Boolean,
 		default: false
 	},
-	recentChapters: [{
-		type: Schema.Types.Mixed
-	}],
 	recentMessages: [{
 		type: Schema.Types.Mixed
 	}]
