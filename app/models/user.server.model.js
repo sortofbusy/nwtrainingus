@@ -77,6 +77,15 @@ var UserSchema = new Schema({
 		type: Date,
 		default: Date.now
 	},
+	registered: {
+		type: Date
+	},
+	consecrated: {
+		type: Date
+	},
+	approved: {
+		type: Date
+	},
 	/* For reset password */
 	resetPasswordToken: {
 		type: String
@@ -84,15 +93,31 @@ var UserSchema = new Schema({
 	resetPasswordExpires: {
 		type: Date
 	},
-	preferences: {
-		language: {
-			type: String,
-			default: 'English'
-		}
-	},
 	timezone: {
 		type: String,
 		default: 'America/Los_Angeles'
+	},
+	age: {
+		type: Number,
+	},
+	phone: {
+		type: Number,
+	},
+	locality: {
+		type: String,
+	},
+	occupation: {
+		type: String,
+	},
+	language: {
+		type: String,
+		default: 'English'
+	},
+	serviceAreas: {
+		type: String
+	},
+	signature: {
+		type: String
 	}
 });
 

@@ -13,6 +13,14 @@ angular.module('users').config(['$stateProvider',
 			url: '/admin',
 			templateUrl: 'modules/users/views/admin/admin.client.view.html'
 		}).
+		state('register', {
+			url: '/register',
+			templateUrl: 'modules/users/views/authentication/register.client.view.html'
+		}).
+		state('consecration', {
+			url: '/consecration',
+			templateUrl: 'modules/users/views/authentication/consecration.client.view.html'
+		}).
 		state('password', {
 			url: '/settings/password',
 			templateUrl: 'modules/users/views/settings/change-password.client.view.html'

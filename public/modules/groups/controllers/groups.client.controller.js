@@ -1,8 +1,8 @@
 'use strict';
 
 // Groups controller
-angular.module('groups').controller('GroupsController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Groups', 'Chapters', '$window', 'Messages',
-	function($scope, $http, $stateParams, $location, Authentication, Groups, Chapters, $window, Messages) {
+angular.module('groups').controller('GroupsController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Groups', '$window', 'Messages',
+	function($scope, $http, $stateParams, $location, Authentication, Groups, $window, Messages) {
 		$scope.authentication = Authentication;
 		
 		// If user is not signed in then redirect back home

@@ -4,7 +4,7 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
 	function($scope, $http, $location, Authentication) {
 		$scope.authentication = Authentication;
 		$scope.credentials = {};
-		$scope.credentials.timezone = moment.tz.guess();
+		//$scope.credentials.timezone = moment.tz.guess();
 		
 		// If user is signed in then redirect back home
 		if ($scope.authentication.user) $location.path('/');

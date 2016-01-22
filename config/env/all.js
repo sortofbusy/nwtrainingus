@@ -37,6 +37,9 @@ module.exports = {
 				'public/lib/moment/min/moment.min.js',
 				'public/lib/moment-timezone/builds/moment-timezone-with-data-2010-2020.min.js',
 				'public/lib/angular-moment/angular-moment.min.js',
+				'public/lib/angular-ui-mask/dist/mask.js',
+				'public/lib/signature_pad/signature_pad.js',
+				'public/lib/angular-signature/src/signature.js',
 			]
 		},
 		css: [

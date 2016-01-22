@@ -1,11 +1,61 @@
 'use strict';
 
-angular.module('users').controller('SettingsController', ['$scope', '$http', '$location', 'Users', 'Authentication',
+angular.module('users').controller('SettingsController', ['$scope', '$http', '$location', 'Users', 'Authentication', 
 	function($scope, $http, $location, Users, Authentication) {
 		$scope.user = Authentication.user;
 
 		// If user is not signed in then redirect back home
 		if (!$scope.user) $location.path('/');
+		
+		$scope.localities = [
+			'Bellevue',
+			'Bellingham', 
+			'Everett', 
+			'Olympia',
+			'Portland',
+			'Renton', 
+			'Seattle',
+			'Shoreline', 
+			'Tacoma', 
+			'Vancouver' 
+		];
+
+
+		$scope.register = function() {
+			if(!$scope.user.hasOwnProperty('age') || !$scope.user.hasOwnProperty('phone') || $scope.user.phone === '' || 
+				!$scope.user.hasOwnProperty('locality') || !$scope.user.hasOwnProperty('occupation') || 
+				!$scope.user.hasOwnProperty('serviceAreas')) {
+					$scope.error = 'Please fill every field';
+			}
+			else {
+				$scope.user.registered = Date.now();
+				var user = new Users($scope.user);
+				
+
+				user.$update($scope.user, function(response) {
+					$location.path('/consecration');
+				}, function(errorResponse) {
+					$scope.error = errorResponse.data.message;
+				});
+			}
+		};
+
+		$scope.consecrate = function() {
+			if(!$scope.signature || $scope.signature.isEmpty) {
+				$scope.error = 'Please sign the form to continue';
+			} else {
+				$scope.user.consecrated = Date.now();
+				$scope.user.signature = $scope.signature.dataUrl;
+				var user = new Users($scope.user);
+				
+				user.$update($scope.user, function(response) {
+					$location.path('/');
+				}, function(errorResponse) {
+					$scope.error = errorResponse.data.message;
+				});
+			}
+
+		};
 
 		// Check if there are additional accounts 
 		$scope.hasConnectedAdditionalSocialAccounts = function(provider) {

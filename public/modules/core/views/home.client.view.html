@@ -33,7 +33,9 @@
 		</div>
 	</div>
 	<div data-ng-show="authentication.user">
-		Hello
+		Hello {{authentication.user | json}}
+		<br>
+		<img src="{{authentication.user.signature}}"/>
 	</div>
 </section>
 <!--<div class="footer container-fluid"> Hey there </div>-->

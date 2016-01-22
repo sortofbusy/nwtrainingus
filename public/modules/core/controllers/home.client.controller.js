@@ -5,7 +5,11 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 	function($scope, Authentication, $http, $q, $sce, $location, $anchorScroll) {
 		// This provides Authentication context.
 		$scope.authentication = Authentication;
-		
+		if ($scope.authentication.user) {
+			if (!$scope.authentication.user.registered) $location.path('/register');
+			else if (!$scope.authentication.user.consecrated) $location.path('/consecration');
+		}
+
 		$scope.read = function(increment) {
 			var chapter = $scope.chapterString;
 			if ($scope.readChapter) chapter = $scope.readChapter;
@@ -17,9 +21,6 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 			});
 			$scope.readChapter = '';
 		};
-
-		$scope.books = ['Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy', 'Joshua', 'Judges', 'Ruth', '1 Samuel', '2 Samuel', '1 Kings', '2 Kings', '1 Chronicles', '2 Chronicles', 'Ezra', 'Nehemiah', 'Esther', 'Job', 'Psalms', 'Proverbs', 'Ecclesiastes', 'Song of Songs', 'Isaiah', 'Jeremiah', 'Lamentations', 'Ezekiel', 'Daniel', 'Hosea', 'Joel', 'Amos', 'Obadiah', 'Jonah', 'Micah', 'Nahum', 'Habakkuk', 'Zephaniah', 'Haggai', 'Zechariah', 'Malachi', 'Matthew', 'Mark', 'Luke', 'John', 'Acts', 'Romans', '1 Corinthians', '2 Corinthians', 'Galatians', 'Ephesians', 'Philippians', 'Colossians', '1 Thessalonians', '2 Thessalonians', '1 Timothy', '2 Timothy', 'Titus', 'Philemon', 'Hebrews', 'James', '1 Peter', '2 Peter', '1 John', '2 John', '3 John', 'Jude', 'Revelation'];
-
 
 		$scope.getRCVText = function(chapterName, increment) {
 			return $q(function(resolve) {
