@@ -1,5 +1,5 @@
 <section data-ng-controller="HomeController">
-	<div data-ng-hide="authentication.user">
+	<div data-ng-hide="user.displayName">
 		<div class="jumbotron text-center row">
 			<div class="row">
 				<div class="col-xs-10 col-xs-offset-1">
@@ -33,10 +33,120 @@
 			</p>
 		</div>
 	</div>
-	<div data-ng-show="authentication.user">
-		Hello {{authentication.user | json}}
-		<br>
-		<img src="{{authentication.user.signature}}"/>
+	<!-- /////// REGISTRATION /////// -->
+	<div class="row" data-ng-show="user.displayName && !user.registered">
+		<h3 class="col-md-12 text-center">Personal Information</h3>
+		<div class="col-xs-offset-1 col-xs-10 col-md-offset-4 col-md-4">
+			<uib-progress max="3" title="Progress">
+				<uib-bar value="1" type="primary">Account >></uib-bar>
+				<uib-bar value="1" type="warning">Personal >></uib-bar>
+			</uib-progress>
+			<form name="userForm" data-ng-submit="checkRegistration()" class="signin form-horizontal" autocomplete="off">
+				<fieldset>
+					<div class="form-group">
+						<label for="age">Age</label>
+						<input type="text" required id="age" name="age" class="form-control" data-ng-model="user.age" ui-mask="99" autofocus>
+					</div>
+					<div class="form-group">
+						<label for="phone">Phone</label>
+						<input type="text" id="phone" name="phone" class="form-control" data-ng-model="user.phone" ui-mask="(999) 999-9999">
+					</div>
+					<div class="form-group">
+						<label for="locality">Locality</label>
+						<select id="locality" name="locality" data-ng-model="user.locality" data-ng-options="locality as locality for locality in localities" class="form-control" ></select>
+					</div>
+					<div class="form-group">
+						<label for="occupation">Occupation</label>
+						<input type="text" id="occupation" name="occupation" class="form-control" data-ng-model="user.occupation" placeholder="Occupation">
+					</div>
+					<div class="form-group">
+						<label for="language">Language</label>
+						<select id="language" name = "language" class="form-control" data-ng-model="user.language">
+							<option>English</option>
+							<option>Chinese</option>
+							<option>Spanish</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="serviceAreas">Areas of Service</label>
+						<input type="text" id="serviceAreas" name="serviceAreas" class="form-control" data-ng-model="user.serviceAreas" placeholder="Young people, accounting, etc.">
+					</div>
+					<div class="text-center form-group">
+						
+						<div data-ng-show="error" class="text-center text-danger">
+							<strong data-ng-bind="error"></strong>
+						</div>
+						<br>
+						<button type="submit" class="btn btn-large btn-primary">Continue Registration</button>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+	<!-- /////// CONSECRATION /////// -->
+	<div class="row" data-ng-show="user.registered && !user.consecrated">
+		<h3 class="col-md-12 text-center">Consecration</h3>
+		<div class="col-xs-offset-1 col-xs-10 col-md-offset-4 col-md-4">
+			<uib-progress max="3" title="Progress">
+				<uib-bar value="1" type="primary">Account >></uib-bar>
+				<uib-bar value="1" type="primary">Personal >></uib-bar>
+				<uib-bar value="1" type="warning">Consecration</uib-bar>
+			</uib-progress>
+		</div>
+		<div class="col-xs-12 col-md-offset-3 col-md-6">
+		
+			<form name="newForm" class="signin form-horizontal" autocomplete="off">
+				<fieldset>
+					<div>	
+						Lord Jesus,
+						<br><br>
+						I love You. I love Your church, Your saints, and Your recovery. I am Your purchased slave and do not wish to go free. By Your mercy and grace I will serve You now and forever.
+						<br><br>
+						I join this training not by compulsion but eagerly because I desire to be further perfected in Your hands and for Your use. Help me to be poor in spirit and pure in heart so Your word can have an uninhibited course in me. Free me from all self-pride and personal ambition. Grant me the readiness to receive Your instructions and the obedience to follow them.
+						<br><br>
+						Give me a pursuing spirit so that I will gain what You want me to gain in the training. Supply me with an attitude to learn so that I will be genuinely equipped. Strengthen me to exercise diligence and endurance to meet the demands of the training and to fulfill its requirements. Blend me with my companions as we practice the things which are taught. Save me from individualism and independence.
+						<br><br>
+						I present myself to You afresh and offer my being anew for the service of the church where I am placed. Make me a genuine steward of Your household, dispensing food to Your people at the appointed time. Whether I will be a leading brother or not, constitute me one of the normal, functioning, and coordinated members in Your Body according to the measure of faith which You have allotted to me.
+						<br><br>
+						I entrust to You my whole being, my life, and my future. I trust in Your faithful care and protection of my wife, children, and family during the training period when I will be concentrating on Your interests. I submit to Your sovereign arrangements in all things.
+						<br><br>
+						Bless me and all my co-trainees and the churches for the sake of Your testimony. Lord Jesus, I thank You for affording me this opportunity to be trained for Your purpose.
+						<br><br>
+						Amen.
+						<br><br>
+						<hr>
+						<b>Please sign in the box below using your mouse or finger:</b>
+					</div>
+					<div class="text-center">	
+						<signature-pad signature accept="accept" clear="clear" height="220" width="568" style="border: 2px solid gray;"></signature-pad>
+						<div data-ng-show="error" class="text-center text-danger">
+							<strong data-ng-bind="error"></strong>
+						</div>
+						<br>
+						<button class="btn" ng-click="clear()">Clear signature</button>
+						<button class="btn btn-primary" ng-click="signature = accept(); consecrate()">Sign</button>
+					</div>
+					<br><br>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+	<!-- /////// REGISTRATION /////// -->
+	<div class="row" data-ng-show="user.consecrated && !user.approved">
+		<h2 class="col-md-12 text-center">Application Complete <i class="fa fa-2x fa-check text-success"></i></h2>
+		<div class="col-xs-12 col-md-offset-3 col-md-6">
+			<hr>
+			<p class="lead">Thank you for completing your application. It is now pending approval, and you will receive an email notification when a decision is made.</p>
+		</div>
+	</div>
+	<!-- /////// VIEW APPLICATIONS /////// -->
+	<div class="row" data-ng-init="showApplications()" data-ng-show="(user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1)">
+		<h2 class="col-md-12 text-center">Pending Applications <i class="fa fa-edit text-warning"></i></h2>
+		<hr>
+		<div class="col-xs-12 col-md-offset-1 col-md-10" data-ng-repeat="application in applications">
+			{{application.displayName}}, {{application.email}} <img data-ng-src="{{application.signature}}" height="30px"/>
+			<hr>
+		</div>
 	</div>
 </section>
 <!--<div class="footer container-fluid"> Hey there </div>-->

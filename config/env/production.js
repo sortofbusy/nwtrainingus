@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-	db: process.env.MONGOLAB_URI || 'mongodb://' + (process.env.DB_1_PORT_27017_TCP_ADDR || 'localhost') + '/nwtraining' || process.env.MONGOHQ_URL,
+	db: process.env.MONGOLAB_URI || 'mongodb://' + (process.env.DB_1_PORT_27017_TCP_ADDR || 'localhost') + '/nwtraining',
 	port: process.env.PORT || 80,
 	assets: {
 		lib: {
@@ -27,6 +27,9 @@ module.exports = {
 				'public/lib/ladda/dist/spin.min.js',
 				'public/lib/ladda/dist/ladda.min.js',
 				'public/lib/angular-ladda/dist/angular-ladda.min.js',
+				'public/lib/angular-ui-mask/dist/mask.js',
+				'public/lib/signature_pad/signature_pad.js',
+				'public/lib/angular-signature/src/signature.js',
 			]
 		},
 		css: 'public/dist/application.min.css',
