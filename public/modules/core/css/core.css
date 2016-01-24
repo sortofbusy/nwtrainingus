@@ -22,6 +22,11 @@
 	color: #dd4b39;
 }
 
+.jumbotron {
+background-image: url("../img/brand/banner.jpg");
+background-size: cover;
+}
+
 .footer {
 	background-color: #D5D5D5;
 	height: 50px;
