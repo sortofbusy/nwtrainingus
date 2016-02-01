@@ -10,10 +10,12 @@ var _ = require('lodash'),
 	passport = require('passport'),
 	User = mongoose.model('User'),
 	Group = mongoose.model('Group'),
+	Application = mongoose.model('Application'),
+	Training = mongoose.model('Training'),
 	Message = mongoose.model('Message');
 
 var adminFindUsers = q.nbind(User.find, User);
-var adminFindGroups = q.nbind(Group.find, Group);
+var adminUpdateUsers = q.nbind(User.findByIdAndUpdate, User);
 var adminFindMessages = q.nbind(Message.find, Message);
 
 /**
@@ -21,8 +23,7 @@ var adminFindMessages = q.nbind(Message.find, Message);
  */
 exports.getAdminView = function(req, res) {
 	q.all([
-		adminFindUsers({}, '-password -salt -signature', {sort: {created: -1}}),
-		adminFindGroups({}, 'name users created', {sort: {created: -1}})
+		adminFindUsers({}, '-password -salt -signature', {sort: {created: -1}})
 		])
 	.then(function(result) {
 		res.jsonp(result);
@@ -30,6 +31,135 @@ exports.getAdminView = function(req, res) {
         return res.status(400).send({
 			message: errorHandler.getErrorMessage(e)
 		});
+	});
+};
+
+/**
+ * Remove a user
+ */
+exports.removeUser = function(req, res) {
+	var userId = req.param('userId');
+
+	User.findByIdAndRemove(userId, function(err, user) {
+		if (err) {
+			return res.status(400).send({
+				message: errorHandler.getErrorMessage(err)
+			});
+		} else {
+			res.jsonp(user);
+		}
+	});
+
+	// TODO - handle cascading delete
+};
+
+/**
+ * Edit a user's roles
+ */
+exports.editRoles = function(req, res) {
+	
+	User.findByIdAndUpdate(req.body.userId, {roles: req.body.roles}, {new: true}, function(err, user) {
+		if (err) {
+			return res.status(400).send({
+				message: errorHandler.getErrorMessage(err)
+			});
+		} else {
+			res.jsonp(user);
+		}
+	});
+};
+
+exports.createTraining = function(req, res) {
+	var training = new Training(req.body);
+	training.save(function(err) {
+		if (err) {
+			return res.status(400).send({
+				message: errorHandler.getErrorMessage(err)
+			});
+		} else {
+			res.jsonp(training);
+		}
+	});
+};
+
+exports.listTrainings = function(req, res) {
+	Training.find({}).sort('-created').exec(function(err, trainings) {
+		if (err) {
+			return res.status(400).send({
+				message: errorHandler.getErrorMessage(err)
+			});
+		} else { 
+			res.jsonp(trainings);
+		}
+	});
+};
+
+/**
+ * Mass creates applications for a certain training (converts from old data)
+ * This should only be needed once.
+ */
+exports.createApplications = function(req, res) {
+		// find Users who have signed
+	User.find({signature: {$exists: true}}).exec(function(err, users) {
+		if (err) {
+			return res.status(400).send({
+				message: errorHandler.getErrorMessage(err)
+			});
+		} else {
+			Application.find({training: req.body.trainingId}).exec(function(err2, applied) {
+				if (err2) {
+					return res.status(400).send({
+						message: errorHandler.getErrorMessage(err2)
+					});
+				} else {
+					var applications = [];
+					for (var i = 0; i < users.length; i++) {
+						
+						var appliedAlready = false;
+						for (var j = 0; j < applied.length; j++) {
+								// if this user has already created an application
+							if (applied[j].applicant.equals(users[i].id)) {
+								appliedAlready = true;
+							}
+						}
+							// push a new Application with this user
+						if(!appliedAlready) {
+							applications.push({
+								applicant: users[i].id,
+								training: req.body.trainingId,
+								signature: users[i].signature
+							});
+						}
+					}
+					Application.create(applications, function(err3) {
+						if (err3) {
+							return res.status(400).send({
+								message: errorHandler.getErrorMessage(err3)
+							});
+						} else {
+							var userUpdates = [];
+							if (arguments) {	
+								for (var i = 0; i < arguments.length; i++) {
+									if(arguments[i] !== null) {
+										userUpdates.push(adminUpdateUsers(arguments[i].applicant, {$push: {'applications': arguments[i].id}}));
+									}
+								}
+							}
+								// call all updates
+							q.all(userUpdates)
+							.then(function(result) {
+								res.jsonp(result);
+							}).catch(function(e){
+						        return res.status(400).send({
+									message: errorHandler.getErrorMessage(e)
+								});
+							});
+						}
+					});
+				}
+				
+			});
+		}
 	});
 };
 

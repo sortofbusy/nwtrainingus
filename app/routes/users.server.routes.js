@@ -58,6 +58,11 @@ module.exports = function(app) {
 	app.route('/auth/github/callback').get(users.oauthCallback('github'));
 
 	app.route('/admin').get(users.isAdmin, users.getAdminView);
+	app.route('/admin/users/remove').delete(users.isAdmin, users.removeUser);
+	app.route('/admin/users/roles').post(users.isAdmin, users.editRoles);
+	app.route('/admin/trainings').post(users.isAdmin, users.createTraining);
+	app.route('/admin/createapplications').post(users.isAdmin, users.createApplications);
+	app.route('/trainings').get(users.listTrainings);
 
 	// Finish by binding the user middleware
 	app.param('userId', users.userByID);

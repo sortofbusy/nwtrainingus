@@ -30,6 +30,7 @@ module.exports = {
 				'public/lib/angular-ui-mask/dist/mask.js',
 				'public/lib/signature_pad/signature_pad.js',
 				'public/lib/angular-signature/src/signature.js',
+				'public/lib/checklist-model/checklist-model.js',
 			]
 		},
 		css: 'public/dist/application.min.css',

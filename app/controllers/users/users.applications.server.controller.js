@@ -12,18 +12,19 @@ var _ = require('lodash'),
 	nodemailer = require('nodemailer'),
 	smtpTransport = require('nodemailer-smtp-transport'),
 	User = mongoose.model('User'),
-	Group = mongoose.model('Group'),
-	Message = mongoose.model('Message');
+	Application = mongoose.model('Application');
 
-var adminFindUsers = q.nbind(User.find, User);
-var adminFindGroups = q.nbind(Group.find, Group);
-var adminFindMessages = q.nbind(Message.find, Message);
+var adminFindApplications = q.nbind(Application.find, Application);
 
 /**
- * Update user details
+ * Get list of applications
  */
 exports.getApplications = function(req, res) {
-	adminFindUsers({signature: {$exists: true}, approved: {$exists: false}}, '-password -salt', {sort: {created: -1}})
+	var params = {signature: {$exists: true}};
+	// if the user is not an admin, show only the applications for their locality
+	if(_.indexOf(req.user.roles, 'admin') < 0) params.locality = req.user.locality;
+
+	adminFindApplications(params, '-password -salt -roles', {sort: {created: -1}})
 	.then(function(result) {
 		res.jsonp(result);
 	}).catch(function(e){

@@ -1,10 +1,14 @@
 'use strict';
 
 
-angular.module('core').controller('HomeController', ['$scope', 'Authentication', '$http', '$q', '$sce', '$location', '$anchorScroll', 'Users',
-	function($scope, Authentication, $http, $q, $sce, $location, $anchorScroll, Users) {
+angular.module('core').controller('HomeController', ['$scope', 'Authentication', '$http', '$q', '$sce', '$location', '$anchorScroll', 'Users', '$uibModal', 'Applications',
+	function($scope, Authentication, $http, $q, $sce, $location, $anchorScroll, Users, $uibModal, Applications) {
 		// This provides Authentication context.
 		$scope.user = Authentication.user;
+
+		$http.get('/trainings').success( function(response) {
+			$scope.trainings = response;
+		});
 
 		$scope.localities = [
 			'Bellevue',
@@ -38,21 +42,40 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 		};
 
 		$scope.consecrate = function() {
+			/*
+			var modalInstance = $uibModal.open({
+			  animation: true,
+			  templateUrl: 'modules/core/views/sign-modal.html',
+			  controller: 'SignModalCtrl',
+			  size: 'md'
+			});
+			*/
 			if(!$scope.signature || $scope.signature.isEmpty) {
 				$scope.error = 'Please sign the form to continue';
 			} else {
 				$scope.user.consecrated = Date.now();
-				$scope.user.signature = $scope.signature.dataUrl;
 				var user = new Users($scope.user);
-				
-				user.$update($scope.user, function(response) {
-					$location.path('/');
+				var application = new Applications({
+					training: $scope.trainings[0]._id,
+					signature: $scope.signature.dataUrl	
+				});
+
+				application.$save(function(response) {
+					user.applications.push(response._id);
+					user.$update(user, function(response) {
+						$location.path('/');
+						
+					}, function(errorResponse) {
+						$scope.error = errorResponse.data.message;
+					});
 				}, function(errorResponse) {
 					$scope.error = errorResponse.data.message;
 				});
+				
 			}
-
 		};
+
+
 
 		$scope.showApplications = function() {
 			$http.get('/users/applications').success( function(response) {
@@ -64,4 +87,19 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 	}
 
 
+]);
+
+angular.module('core').controller('SignModalCtrl', [
+  '$scope', '$uibModalInstance',
+  function ($scope, $uibModalInstance) {
+    $scope.done = function () {
+      var signature = $scope.accept();
+
+      if (signature.isEmpty) {
+        $uibModalInstance.dismiss();
+      } else {
+        $uibModalInstance.close(signature.dataUrl);
+      }
+    };
+  }
 ]);

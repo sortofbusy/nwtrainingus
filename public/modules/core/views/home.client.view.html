@@ -7,9 +7,10 @@
 					<h1>Elders and Responsible Brothers Training</h1>
 				</div>
 				<br>
-				<a ui-route="/signup" data-ng-class="{active: $uiRoute}" class="btn btn-warning btn-lg" href="/#!/signup"><i class="fa fa-fw fa-plus"></i> Sign Up</a>
-			
-				<a ui-route="/signin" data-ng-class="{active: $uiRoute}" class="btn btn-primary btn-lg" href="/#!/signin"><i class="fa fa-fw fa-sign-in"></i> Sign In</a>
+				<a ui-route="/signup" data-ng-class="{active: $uiRoute}" class="btn btn-success btn-lg" href="/#!/signup"><i class="fa fa-fw fa-plus"></i> Begin your Application</a>
+				<br>
+				<br>
+				<a ui-route="/signin" data-ng-class="{active: $uiRoute}" class="btn btn-default" href="/#!/signin"><i class="fa fa-fw fa-sign-in"></i> Sign In</a>
 			</div>
 		</div>
 		<br>
@@ -17,8 +18,7 @@
 			<p class="lead">
 				<h3>Dates</h3>
 				<ul>
-					<li>First gathering - Feb 20th</li>
-					<li>Following dates to be announced</li>
+					<li>First gathering and following dates to be announced</li>
 				</ul>
 				<h3>Location</h3>
 				<p>Meeting hall of the church in Renton: <a target="_blank" href="https://www.google.com/maps/place/220+Whitworth+Ave+S,+Renton,+WA+98057/@47.4803446,-122.2139605,17z/data=!3m1!4b1!4m2!3m1!1s0x549042ac427f7601:0x48ae7b2ba456b61d">220 Whitworth Ave. S. Renton, WA 98057</a></p>
@@ -48,11 +48,14 @@
 	<!-- /////// REGISTRATION /////// -->
 	<div class="row" data-ng-show="user.displayName && !user.registered">
 		<h3 class="col-md-12 text-center">Personal Information</h3>
+		<div class="col-xs-offset-2 col-xs-8 col-md-offset-3 col-md-6">
+			<ul class="progress-indicator"> 
+				<li class="completed"> <span class="bubble"></span> Account </li> 
+				<li class="active"> <span class="bubble"></span> Personal Info </li> 
+				<li> <span class="bubble"></span> Consecration </li> 
+			</ul>
+		</div>
 		<div class="col-xs-offset-1 col-xs-10 col-md-offset-4 col-md-4">
-			<uib-progress max="3" title="Progress">
-				<uib-bar value="1" type="primary">Account >></uib-bar>
-				<uib-bar value="1" type="warning">Personal >></uib-bar>
-			</uib-progress>
 			<form name="userForm" data-ng-submit="checkRegistration()" class="signin form-horizontal" autocomplete="off">
 				<fieldset>
 					<div class="form-group">
@@ -98,12 +101,15 @@
 	<!-- /////// CONSECRATION /////// -->
 	<div class="row" data-ng-show="user.registered && !user.consecrated">
 		<h3 class="col-md-12 text-center">Consecration</h3>
+		<div class="col-xs-offset-2 col-xs-8 col-md-offset-3 col-md-6">
+			<ul class="progress-indicator"> 
+				<li class="completed"> <span class="bubble"></span> Account </li> 
+				<li class="completed"> <span class="bubble"></span> Personal Info </li> 
+				<li class="active"> <span class="bubble"></span> Consecration </li> 
+			</ul>
+		</div>
 		<div class="col-xs-offset-1 col-xs-10 col-md-offset-4 col-md-4">
-			<uib-progress max="3" title="Progress">
-				<uib-bar value="1" type="primary">Account >></uib-bar>
-				<uib-bar value="1" type="primary">Personal >></uib-bar>
-				<uib-bar value="1" type="warning">Consecration</uib-bar>
-			</uib-progress>
+			
 		</div>
 		<div class="col-xs-12 col-md-offset-3 col-md-6">
 		
@@ -130,7 +136,10 @@
 						<b>Please sign in the box below using your mouse or finger:</b>
 					</div>
 					<div class="text-center">	
-						<signature-pad signature accept="accept" clear="clear" height="220" width="568" style="border: 2px solid gray;"></signature-pad>
+						<!--large version
+						<signature-pad class="hidden-xs" signature accept="accept" clear="clear" style="border: 2px solid gray;"></signature-pad>-->
+						<!--small version-->
+						<signature-pad class="visible-xs" signature accept="accept" clear="clear" width="290" style="border: 2px solid gray;"></signature-pad>
 						<div data-ng-show="error" class="text-center text-danger">
 							<strong data-ng-bind="error"></strong>
 						</div>
@@ -146,19 +155,23 @@
 	<!-- /////// REGISTRATION /////// -->
 	<div class="row" data-ng-show="user.consecrated && !user.approved">
 		<h2 class="col-md-12 text-center">Application Complete <i class="fa fa-2x fa-check text-success"></i></h2>
+		<div class="col-xs-offset-2 col-xs-8 col-md-offset-3 col-md-6">
+			<ul class="progress-indicator"> 
+				<li class="completed"> <span class="bubble"></span> Account </li> 
+				<li class="completed"> <span class="bubble"></span> Personal Info </li> 
+				<li class="completed"> <span class="bubble"></span> Consecration </li> 
+			</ul>
+		</div>
 		<div class="col-xs-12 col-md-offset-3 col-md-6">
 			<hr>
 			<p class="lead">Thank you for completing your application. It is now pending approval, and you will receive an email notification when a decision is made.</p>
 		</div>
 	</div>
 	<!-- /////// VIEW APPLICATIONS /////// -->
-	<div class="row" data-ng-init="showApplications()" data-ng-show="(user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1)">
-		<h2 class="col-md-12 text-center">Pending Applications <i class="fa fa-edit text-warning"></i></h2>
+	<div class="row text-center" data-ng-show="(user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1)">
 		<hr>
-		<div class="col-xs-12 col-md-offset-1 col-md-10" data-ng-repeat="application in applications">
-			{{application.displayName}}, {{application.email}} <img data-ng-src="{{application.signature}}" height="30px"/>
-			<hr>
-		</div>
+		<p class="lead">To view and respond to applications from your locality, please click here:</p>
+		<a class="btn btn-lg btn-primary" href="/#!/applications">View Applications</a>
 	</div>
 </section>
 <!--<div class="footer container-fluid"> Hey there </div>-->

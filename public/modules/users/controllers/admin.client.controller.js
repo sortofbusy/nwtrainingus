@@ -1,12 +1,20 @@
 'use strict';
 
-angular.module('users').controller('AdminController', ['$scope', '$http', '$location', 'Users', 'Authentication',
-	function($scope, $http, $location, Users, Authentication) {
+angular.module('users').controller('AdminController', ['$scope', '$http', '$window', '$location', 'Users', 'Authentication',
+	function($scope, $http, $window, $location, Users, Authentication) {
 		$scope.user = Authentication.user;
 		//$scope.showGroupDetails = [];
 
 		// If user is not signed in then redirect back home
 		if (!$scope.user) $location.path('/');
+
+		$scope.roles = [ 
+			'user',
+			'trainee',
+			'reporter', 
+			'approver',
+			'admin'
+		];
 
 		// Find a list of User Messages
 		$scope.getActivity = function() {
@@ -22,28 +30,43 @@ angular.module('users').controller('AdminController', ['$scope', '$http', '$loca
 				$scope.chapters = response[1];
 				$scope.groups = response[2];
 			});
+			$scope.listTrainings();
+		};
 
-			/*
-			$http.get('/badges').success(function(response) {
-				if (!response.length) return;
-				
-				if(response.length > listLength) {
-					$scope.badges = response.slice(0, listLength);
-					$scope.allbadges = response;
-				} else $scope.badges = response;
+		$scope.editRoles = function(user) {
+			if ($window.confirm('Are you absolutely sure you want to save these roles?')) {
+				$http.post('/admin/users/roles', {userId: user._id, roles: user.roles}).success(function(response) {
+				});
+			}
+		};
 
+		$scope.removeUser = function(userId) {
+			if ($window.confirm('Are you absolutely sure you want to delete this user?')) {
+				$http.delete('/admin/users/remove', {params: {userId: userId}}).success(function(response) {
+					$scope.getActivity();
+				});
+			}
+		};
+
+		$scope.createTraining = function() {
+			if ($window.confirm('Are you sure you want to create a new training?')) {
+				$http.post('/admin/trainings', $scope.training).success(function(response) {
+					$scope.listTrainings();
+				});
+			}
+		};
+
+		$scope.listTrainings = function() {
+			$http.get('/trainings').success(function(response) {
+				$scope.trainings = response;
 			});
-			$http.get('/groups').success(function(response) {
-				$scope.groups = response;
+		};
+
+		$scope.createApplications = function(trainingId) {
+			var data = {trainingId: trainingId};
+			$http.post('/admin/createapplications', data).success(function(response) {
+				$window.alert(response.length + ' applications created successfully');
 			});
-			$http.get('/messages?group=null').success(function(response) {
-				if (!response.length) return;
-				
-				if(response.length > listLength) {
-					$scope.notes = response.slice(0, listLength);
-					$scope.allnotes = response;
-				} else $scope.notes = response;
-			});*/
 		};
 
 		$scope.showAll = function(list) {

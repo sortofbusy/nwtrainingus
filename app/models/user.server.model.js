@@ -87,8 +87,20 @@ var UserSchema = new Schema({
 	consecrated: {
 		type: Date
 	},
-	approved: {
-		type: Date
+	registration: {
+		status: {
+			type: [{
+				type: String,
+				enum: ['Pending', 'Approved', 'Denied']
+			}]
+		},
+		modifiedBy: {
+			type: Schema.ObjectId,
+			ref: 'User'
+		},
+		changed: {
+			type: Date
+		}
 	},
 	/* For reset password */
 	resetPasswordToken: {
@@ -122,7 +134,11 @@ var UserSchema = new Schema({
 	},
 	signature: {
 		type: String
-	}
+	},
+	applications: [{
+		type: Schema.ObjectId,
+		ref: 'Application'
+	}]
 });
 
 /**

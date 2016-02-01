@@ -6,13 +6,15 @@ var should = require('should'),
 	mongoose = require('mongoose'),
 	User = mongoose.model('User'),
 	Message = mongoose.model('Message'),
+	Training = mongoose.model('Training'),
+	Application = mongoose.model('Application'),
 	Group = mongoose.model('Group'),
 	agent = request.agent(app);
 
 /**
  * Globals
  */
-var credentials, user, message, group;
+var credentials, user, message, group, training, application;
 
 /**
  * Message routes tests
@@ -142,6 +144,9 @@ describe('User route tests', function() {
 	afterEach(function(done) {
 		User.remove().exec();
 		Message.remove().exec();
+		Group.remove().exec();
+		Training.remove().exec();
+		Application.remove().exec();
 		done();
 	});
 });
@@ -149,7 +154,7 @@ describe('User route tests', function() {
 /**
  * Message routes tests
  */
-describe('Admin route tests', function() {
+describe.only('Admin route tests', function() {
 	beforeEach(function(done) {
 		// Create user credentials
 		credentials = {
@@ -166,12 +171,13 @@ describe('Admin route tests', function() {
 			username: credentials.username,
 			password: credentials.password,
 			provider: 'local',
-			roles: ['user', 'admin']
+			roles: ['user', 'admin'],
+			consecrated: Date.now(),
+			signature: 'test'
 		});
 		
-		group = new Group({
-			name: 'My Group',
-			users: [user._id]
+		training = new Training({
+			name: 'My Training'
 		});
 		
 		// Save a user to the test db and create new Message
@@ -180,7 +186,7 @@ describe('Admin route tests', function() {
 				text: 'Message Name',
 				user: user._id
 			};
-			group.save(function() {
+			training.save(function() {
 				done();
 			});
 			
@@ -224,9 +230,34 @@ describe('Admin route tests', function() {
 			});
 	});
 
+	it('should be able to bulk create applications for users with signature', function(done) {
+		agent.post('/auth/signin')
+			.send(credentials)
+			.expect(200)
+			.end(function(signinErr, signinRes) {
+				agent.post('/admin/createapplications')
+					.send({trainingId: training.id})
+					.expect(200)
+					.end(function(err, result) {
+						User.find({}).exec(function(err2, users) {
+							// Set assertions
+							
+							(users[0].applications).should.be.an.Array.with.lengthOf(1);
+							done();
+						});
+						
+						
+					});
+
+			});
+	});
+
 	afterEach(function(done) {
 		User.remove().exec();
 		Message.remove().exec();
+		Group.remove().exec();
+		Training.remove().exec();
+		Application.remove().exec();
 		done();
 	});
 });
