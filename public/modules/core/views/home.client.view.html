@@ -133,19 +133,21 @@
 						Amen.
 						<br><br>
 						<hr>
-						<b>Please sign in the box below using your mouse or finger:</b>
+						
 					</div>
-					<div class="text-center">	
-						<!--large version
-						<signature-pad class="hidden-xs" signature accept="accept" clear="clear" style="border: 2px solid gray;"></signature-pad>-->
-						<!--small version-->
-						<signature-pad class="visible-xs" signature accept="accept" clear="clear" width="290" style="border: 2px solid gray;"></signature-pad>
+					<!--large version-->
+					<div class="text-center hidden-xs">	
+						<b>Please sign in the box below using your mouse or finger:</b>
+						<signature-pad signature accept="accept" clear="clear" style="border: 2px solid gray;"></signature-pad>
 						<div data-ng-show="error" class="text-center text-danger">
 							<strong data-ng-bind="error"></strong>
 						</div>
 						<br>
 						<button class="btn" ng-click="clear()">Clear signature</button>
 						<button class="btn btn-primary" ng-click="signature = accept(); consecrate()">Sign</button>
+					</div>
+					<div class="text-center visible-xs">
+						<button class="btn btn-primary" ng-click="signModal()">Sign</button>
 					</div>
 					<br><br>
 				</fieldset>

@@ -1,11 +1,11 @@
 'use strict';
 
 
-angular.module('core').controller('HomeController', ['$scope', 'Authentication', '$http', '$q', '$sce', '$location', '$anchorScroll', 'Users', '$uibModal', 'Applications',
-	function($scope, Authentication, $http, $q, $sce, $location, $anchorScroll, Users, $uibModal, Applications) {
+angular.module('core').controller('HomeController', ['$scope', '$window', 'Authentication', '$http', '$q', '$sce', '$location', '$anchorScroll', 'Users', '$uibModal', 'Applications',
+	function($scope, $window, Authentication, $http, $q, $sce, $location, $anchorScroll, Users, $uibModal, Applications) {
 		// This provides Authentication context.
 		$scope.user = Authentication.user;
-
+		$scope.windowWidth = $window.innerWidth;
 		$http.get('/trainings').success( function(response) {
 			$scope.trainings = response;
 		});
@@ -35,6 +35,7 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 
 				user.$update($scope.user, function(response) {
 					$location.path('/');
+					$anchorScroll();
 				}, function(errorResponse) {
 					$scope.error = errorResponse.data.message;
 				});
@@ -42,14 +43,7 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 		};
 
 		$scope.consecrate = function() {
-			/*
-			var modalInstance = $uibModal.open({
-			  animation: true,
-			  templateUrl: 'modules/core/views/sign-modal.html',
-			  controller: 'SignModalCtrl',
-			  size: 'md'
-			});
-			*/
+			
 			if(!$scope.signature || $scope.signature.isEmpty) {
 				$scope.error = 'Please sign the form to continue';
 			} else {
@@ -73,6 +67,21 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 				});
 				
 			}
+		};
+
+		$scope.signModal = function() {
+			var modal = $uibModal.open({
+				  animation: true,
+				  templateUrl: 'modules/core/views/sign-modal.html',
+				  controller: 'SignModalCtrl',
+				  size: 'md'
+				});
+			modal.result.then(function(signature) {
+				$scope.signature = {dataUrl: signature};
+				$scope.consecrate();
+			}, function() {
+				$scope.error = 'Please sign the form to continue';
+			});
 		};
 
 
