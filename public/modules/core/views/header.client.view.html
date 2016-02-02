@@ -41,19 +41,20 @@
 			<li data-ng-show="(authentication.user.roles.indexOf('approver') >= 0) || (authentication.user.roles.indexOf('admin') >= 0)">
 				<a href="/#!/applications"><i class="fa fa-fw fa-check"></i> Applications</a>
 			</li>
-			<li>
-				<a href="/#!/settings/profile" ng-show="authentication.user.approved">
-					<i class="fa fa-fw fa-user"></i> Profile
-				</a>
-				<a href="/auth/signout" ng-hide="authentication.user.approved">
-					<i class="fa fa-fw fa-sign-out"></i> Sign Out
-				</a>
-			</li>
 			<li data-ng-show="(authentication.user.roles.indexOf('admin') >= 0)">
 				<a href="/#!/admin">
 					<i class="fa fa-fw fa-key"></i> Admin
 				</a>
 			</li>
+			<li>
+				<a href="/#!/settings/profile" ng-show="authentication.user.approved">
+					<i class="fa fa-fw fa-user"></i> Profile
+				</a>
+				<a href="/auth/signout">
+					<i class="fa fa-fw fa-sign-out"></i> Sign Out
+				</a>
+			</li>
+			
 			<!--<li dropdown>
 				<a href="#" dropdown-toggle>
 					<i class="fa fa-fw fa-user"></i> Profile <b class="caret"></b>
