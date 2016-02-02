@@ -23,7 +23,7 @@
 }
 
 .jumbotron {
-background-image: url("../img/brand/banner.jpg");
+background-image: url("/modules/core/img/brand/banner.jpg");
 background-size: cover;
 }
 

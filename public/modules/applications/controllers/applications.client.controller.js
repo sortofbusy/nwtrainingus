@@ -43,7 +43,8 @@ angular.module('applications').controller('ApplicationsController', ['$scope', '
 		};
 
 		$scope.showApplications = function() {
-			$http.get('/applications').success( function(response) {
+			$scope.textPromise = $http.get('/applications');
+			$scope.textPromise.success( function(response) {
 				var locality = '';
 				if($scope.user.roles.indexOf('admin') < 0) locality = $scope.user.locality;
 

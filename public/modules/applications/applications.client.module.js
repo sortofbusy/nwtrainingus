@@ -1,4 +1,4 @@
 'use strict';
 
 // Use applicaion configuration module to register a new module
-ApplicationConfiguration.registerModule('applications', ['angular-ladda']);
+ApplicationConfiguration.registerModule('applications', ['angular-ladda', 'cfp.loadingBar']);

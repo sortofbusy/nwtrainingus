@@ -46,11 +46,12 @@ exports.removeUser = function(req, res) {
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
-			res.jsonp(user);
+				// cascade delete - delete all of this user's applications
+			Application.remove({applicant: user.id}, function(err){
+				res.jsonp(user);
+			});
 		}
 	});
-
-	// TODO - handle cascading delete
 };
 
 /**
