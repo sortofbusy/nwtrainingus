@@ -1,8 +1,8 @@
 'use strict';
 
 // Groups controller
-angular.module('applications').controller('ApplicationsController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Groups', '$window', 'Messages', '$filter', 'Applications',
-	function($scope, $http, $stateParams, $location, Authentication, Groups, $window, Messages, $filter, Applications) {
+angular.module('applications').controller('ApplicationsController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Groups', '$window', 'Messages', '$filter', 'Applications', 'ngProgressFactory',
+	function($scope, $http, $stateParams, $location, Authentication, Groups, $window, Messages, $filter, Applications, ngProgressFactory) {
 		$scope.user = Authentication.user;
 
 		// If user is not signed in then redirect back home
@@ -13,6 +13,10 @@ angular.module('applications').controller('ApplicationsController', ['$scope', '
 		$scope.open = false;
 		$scope.toggleHidden = false;
 		$scope.toggleClass = 'off';
+
+		$scope.progressbar = ngProgressFactory.createInstance();
+		$scope.progressbar.setColor('#CEF6F5');
+		$scope.progressbar.setHeight('5px');
 
 		// Enroll in existing Group
 		$scope.enroll = function() {
@@ -43,14 +47,23 @@ angular.module('applications').controller('ApplicationsController', ['$scope', '
 		};
 
 		$scope.showApplications = function() {
+			$scope.progressbar.start();
 			$scope.textPromise = $http.get('/applications');
 			$scope.textPromise.success( function(response) {
-				var locality = '';
-				if($scope.user.roles.indexOf('admin') < 0) locality = $scope.user.locality;
+				var locality;
+				if($scope.user.roles.indexOf('admin') < 0) {
+					locality = {};
+						// if the approver is from Oregon or Eastern Washington
+					if ($scope.user.locality.area !== '') locality.area = $scope.user.locality.area;
+					else locality.name = $scope.user.locality.name;
+				}
+					// for display in the template
+				$scope.locality = locality;
 
 				$scope.pendingApplications = $filter('filter')(response, {appStatus: 'Pending', applicant: {locality: locality}});
 				$scope.approvedApplications = $filter('filter')(response, {appStatus: 'Approved'});
 				$scope.deniedApplications = $filter('filter')(response, {appStatus: 'Denied'});
+				$scope.progressbar.complete();
 			});
 		};
 

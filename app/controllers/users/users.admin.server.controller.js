@@ -164,6 +164,17 @@ exports.createApplications = function(req, res) {
 	});
 };
 
+/**
+ * Update locality model
+ */
+exports.updateLocalities = function(req, res) {
+	
+	//db.users.update({}, {$rename: {'locality': 'localit'}}, false, true)
+	//db.users.update({}, {$rename: {'localit': 'locality.name'}}, false, true)
+	//db.users.update({}, {$set: {'locality.area': ''}}, false, true)
+};
+
+
 exports.isAdmin = function(req, res, next) {
 	if(!req.user) return res.status(401).send({	message: 'User is not signed in'});
 	if(_.indexOf(req.user.roles, 'admin') < 0) return res.status(401).send({	message: 'User is not authorized'});

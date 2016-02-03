@@ -1,73 +1,16 @@
 <section class="row" data-ng-controller="SettingsController" data-ng-init="getActivity()">
-	<div class="h4 col-xs-offset-1 col-xs-10">
+	<div class="h4 text-center">
 		<br>
 		<a href="/#!/settings/accounts">Link Accounts</a> 
 		<span data-ng-show="user.provider === 'local'">
 				| <a href="/#!/settings/password">Change Password</a>
 		</span>
-		<div class = "pull-right"><a href="/auth/signout"><i class="fa fa-fw fa-sign-out"></i>Sign Out </a></div>
-		<br>
-	</div>
-	<div class="col-xs-12 col-md-6">
-	    <ul class="list-group">
-	        <li class="h3 list-group-item list-group-item-info"><i class="fa fa-file fa-fw"></i> Recent Notes</li>
-	        <li class="list-group-item" data-ng-repeat="note in notes">
-	            <a data-ng-click="showVerse[$index]=!showVerse[$index]"><strong>{{note.verse.inputstring + ':' + note.verse.ref}} <span class="caret"></span></strong></a>
-	            <span class="pull-right">
-	            	<a data-ng-href="#!/messages/{{note._id}}"><i class="fa fa-edit fa-fw"></i></a> 
-	            </span>
-	            <div data-ng-show="showVerse[$index]" class="border"><em>{{note.verse.text}}</em></div>
-	            <div data-ng-show="note.text">
-	                "{{note.text}}"
-	            </div>
-	            <div class="text-right">
-	                <small>Posted on <em>{{note.created | date : "MMM. d"}}</em></small>
-	            </div>
-	        </li>
-	        <li class="list-group-item text-center" data-ng-click="showAll('notes')" data-ng-show="allnotes.length">
-	        	<a><i class="fa fa-ellipsis-h fa-2x fa-fw"></i></a>
-	        </li>
-	    </ul>
-	</div>
-	<div class="col-xs-12 col-md-6">
-	    <ul class="list-group">
-	        <li class="h3 list-group-item list-group-item-warning"><i class="fa fa-certificate fa-fw"></i> Your Badges</li>
-	        <li class="list-group-item" data-ng-repeat="badge in badges">
-	            {{badge.name}}
-	            <div class="text-right">
-	                <small>Posted on <em>{{badge.created | date : "MMM. d"}}</em></small>
-	            </div>
-	        </li>
-	        <li class="list-group-item text-center" data-ng-click="showAll('badges')" data-ng-show="allbadges.length">
-	        	<a><i class="fa fa-ellipsis-h fa-2x fa-fw"></i></a>
-	        </li>
-	    </ul>
-	</div>
-	<div class="col-xs-12 col-md-6">
-	    <ul class="list-group">
-	        <li class="h3 list-group-item list-group-item-success"><i class="fa fa-group fa-fw"></i> Your Groups</li>
-	        <a class="list-group-item" data-ng-href="#!/groups/{{group._id}}" data-ng-repeat="group in groups">
-	            <div class="col-xs-12">
-	                <span class="h2 list-group-item-heading" data-ng-bind="group.name"></span>
-	                <span class="label label-primary" data-ng-show="group.creator === authentication.user._id">CREATOR</span>
-	            </div>
-	            <br>
-	            <div class="row list-group-item-text">
-	                <div class="col-xs-6"> 
-	                    <em>MEMBERS</em> <span class="h2">{{group.users.length}}</span>
-	                </div>
-	                <div class="col-xs-6"> 
-	                     <em>STARTED</em> <span class="">{{group.created | timeago}}</span>
-	                </div>
-	            </div>
-	        </a>
-	    </ul>
 	</div>
 
 	<div class="col-xs-12 col-md-12">
-		<h2>Profile Details</h2>
+		<h2 class="text-center">Profile Details</h2>
 		<form name="userForm" data-ng-submit="updateUserProfile(userForm.$valid)" class="signin form-horizontal" autocomplete="off">
-			<div class=" col-xs-offset-1 col-xs-10 col-md-offset-1 col-md-4">
+			<div class=" col-xs-offset-1 col-xs-10 col-md-offset-4 col-md-4 text-left">
 				<fieldset>
 					<div class="form-group">
 						<label for="firstName">First Name</label>
@@ -79,11 +22,35 @@
 					</div>
 					<div class="form-group">
 						<label for="email">Email</label>
-						<input type="email" id="email" name="email" class="form-control" data-ng-model="user.email" placeholder="Email">
+						<input type="email" id="email" name="email" class="form-control" data-ng-model="user.email" placeholder="Email" disabled>
 					</div>
 					<div class="form-group">
-						<label for="username">Username</label>
-						<input type="text" id="username" name="username" class="form-control" data-ng-model="user.username" placeholder="Username">
+						<label for="age">Age</label>
+						<input type="text" required id="age" name="age" class="form-control" data-ng-model="user.age" ui-mask="99" autofocus>
+					</div>
+					<div class="form-group">
+						<label for="phone">Phone</label>
+						<input type="text" id="phone" name="phone" class="form-control" data-ng-model="user.phone" ui-mask="(999) 999-9999">
+					</div>
+					<div class="form-group">
+						<label for="locality">Locality</label>
+						<select id="locality" name="locality" data-ng-model="user.locality" data-ng-options="locality.name as locality.name group by locality.area for locality in localities" class="form-control" ></select>
+					</div>
+					<div class="form-group">
+						<label for="occupation">Occupation</label>
+						<input type="text" id="occupation" name="occupation" class="form-control" data-ng-model="user.occupation" placeholder="Occupation">
+					</div>
+					<div class="form-group">
+						<label for="language">Language</label>
+						<select id="language" name = "language" class="form-control" data-ng-model="user.language">
+							<option>English</option>
+							<option>Chinese</option>
+							<option>Spanish</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="serviceAreas">Areas of Service</label>
+						<input type="text" id="serviceAreas" name="serviceAreas" class="form-control" data-ng-model="user.serviceAreas" placeholder="Young people, accounting, etc.">
 					</div>
 				</fieldset>
 				<div class="form-group">

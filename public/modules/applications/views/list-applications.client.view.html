@@ -1,8 +1,8 @@
-<section data-ng-controller="ApplicationsController" data-ng-init="showApplications()" data-ng-show="(user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1)">
+<section id="top" data-ng-controller="ApplicationsController" data-ng-init="showApplications()" data-ng-show="(user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1)">
     <div class="page-header">
         <div class="h1">
             <i class="fa fa-check-circle fa-1x"></i>
-             Applications
+             <span data-ng-show="locality">{{locality.area}}</span> Applications
         </div>
     </div>
     <div class="">
@@ -16,18 +16,18 @@
                 <button class="btn btn-default btn-sm pull-right" data-ng-click="showUserDetails[$index] = !showUserDetails[$index]">
                     <i class="fa fa-ellipsis-v fa-fw fa-2x"></i> <span class="hidden-xs h4">Show Details</span>
                 </button>
-                <!--<button class="btn btn-success btn-sm pull-right" data-ng-click="approveApplication(application)">
+                <button class="btn btn-success btn-sm pull-right" data-ng-click="approveApplication(application)" disabled>
                     <i class="fa fa-check fa-fw fa-2x"></i> <span class="hidden-xs h4">Approve Application</span>
                 </button>
-                <button class="btn btn-danger btn-sm pull-right" data-ng-click="denyApplication(application)">
+                <button class="btn btn-danger btn-sm pull-right" data-ng-click="denyApplication(application)" disabled>
                     <i class="fa fa-times fa-fw fa-2x"></i> <span class="hidden-xs h4">Deny Application</span>
-                </button>-->
+                </button>
                 <br><br>
                 <div data-ng-show="showUserDetails[$index]" class="well well-sm h4">
                     <b>Email:</b> {{application.applicant.email}}<br><br>
                     <b>Phone:</b> {{application.applicant.phone}}<br><br>
                     <b>Age:</b> {{application.applicant.age}}<br><br>
-                    <b>Locality:</b> {{application.applicant.locality}}<br><br>
+                    <b>Locality:</b> {{application.applicant.locality.name}}<br><br>
                     <b>Language:</b> {{application.applicant.language}}<br><br>
                     <b>Occupation:</b> {{application.applicant.occupation}}<br><br>
                     <b>Service Areas:</b> {{application.applicant.serviceAreas}}<br><br>
@@ -45,15 +45,15 @@
                 <button class="btn btn-default btn-sm pull-right" data-ng-click="showUserDetails[$index] = !showUserDetails[$index]">
                     <i class="fa fa-ellipsis-v fa-fw fa-2x"></i> <span class="hidden-xs h4">Show Details</span>
                 </button>
-                <!--<button class="btn btn-warning btn-sm pull-right" data-ng-click="resetApplication(application)">
+                <button class="btn btn-warning btn-sm pull-right" data-ng-click="resetApplication(application)" disabled>
                     <i class="fa fa-circle-o fa-fw fa-2x"></i> <span class="hidden-xs h4">Return to Pending</span>
-                </button>-->
+                </button>
                 <br><br>
                 <div data-ng-show="showUserDetails[$index]" class="well well-sm h4">
                     <b>Email:</b> {{application.applicant.email}}<br><br>
                     <b>Phone:</b> {{application.applicant.phone}}<br><br>
                     <b>Age:</b> {{application.applicant.age}}<br><br>
-                    <b>Locality:</b> {{application.applicant.locality}}<br><br>
+                    <b>Locality:</b> {{application.applicant.locality.name}}<br><br>
                     <b>Language:</b> {{application.applicant.language}}<br><br>
                     <b>Occupation:</b> {{application.applicant.occupation}}<br><br>
                     <b>Service Areas:</b> {{application.applicant.serviceAreas}}<br><br>
@@ -71,15 +71,15 @@
                 <button class="btn btn-default btn-sm pull-right" data-ng-click="showUserDetails[$index] = !showUserDetails[$index]">
                     <i class="fa fa-ellipsis-v fa-fw fa-2x"></i> <span class="hidden-xs h4">Show Details</span>
                 </button>
-                <!--<button class="btn btn-warning btn-sm pull-right" data-ng-click="resetApplication(application)">
+                <button class="btn btn-warning btn-sm pull-right" data-ng-click="resetApplication(application)" disabled>
                     <i class="fa fa-circle-o fa-fw fa-2x"></i> <span class="hidden-xs h4">Return to Pending</span>
-                </button>-->
+                </button>
                 <br><br>
                 <div data-ng-show="showUserDetails[$index]" class="well well-sm h4">
                     <b>Email:</b> {{application.applicant.email}}<br><br>
                     <b>Phone:</b> {{application.applicant.phone}}<br><br>
                     <b>Age:</b> {{application.applicant.age}}<br><br>
-                    <b>Locality:</b> {{application.applicant.locality}}<br><br>
+                    <b>Locality:</b> {{application.applicant.locality.name}}<br><br>
                     <b>Language:</b> {{application.applicant.language}}<br><br>
                     <b>Occupation:</b> {{application.applicant.occupation}}<br><br>
                     <b>Service Areas:</b> {{application.applicant.serviceAreas}}<br><br>

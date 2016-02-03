@@ -7,6 +7,32 @@ angular.module('users').controller('SettingsController', ['$scope', '$http', '$l
 		// If user is not signed in then redirect back home
 		if (!$scope.user.displayName) $location.path('/');
 
+		$scope.localities = [
+			{ name: 'Bellevue', area: '' },
+			{ name: 'Bellingham',  area: '' },
+			{ name: 'Everett', area: '' },
+			{ name: 'Olympia', area: '' },
+			{ name: 'Renton', area: '' },
+			{ name: 'Seattle', area: '' },
+			{ name: 'Shoreline', area: '' },
+			{ name: 'Tacoma', area: '' },
+			{ name: 'Eugene', area: 'Oregon Area' },
+			{ name: 'Corvallis',  area: 'Oregon Area' },
+			{ name: 'Medford', area: 'Oregon Area' },
+			{ name: 'Portland', area: 'Oregon Area' },
+			{ name: 'Roseburg', area: 'Oregon Area' },
+			{ name: 'Salem', area: 'Oregon Area' },
+			{ name: 'Vancouver, WA', area: 'Oregon Area' },
+			{ name: 'Other (Oregon)', area: 'Oregon Area' },
+			{ name: 'Cheney', area: 'Eastern Washington' },
+			{ name: 'Ephrata', area: 'Eastern Washington' },
+			{ name: 'Prosser', area: 'Eastern Washington' },
+			{ name: 'Pullman', area: 'Eastern Washington' },
+			{ name: 'Spokane', area: 'Eastern Washington' },
+			{ name: 'West Richland', area: 'Eastern Washington' },
+			{ name: 'Other (Eastern WA)', area: 'Eastern Washington' }
+		];
+		
 		// Check if there are additional accounts 
 		$scope.hasConnectedAdditionalSocialAccounts = function(provider) {
 			for (var i in $scope.user.additionalProvidersData) {
@@ -66,46 +92,6 @@ angular.module('users').controller('SettingsController', ['$scope', '$http', '$l
 			}).error(function(response) {
 				$scope.error = response.message;
 			});
-		};
-
-		// Find a list of User Messages
-		$scope.getActivity = function() {
-			var listLength = 3;
-			$http.get('/users/messages').success(function(response) {
-				if (!response.length) return;
-				
-				if(response.length > listLength) {
-					$scope.messages = response.slice(0, listLength);
-					$scope.allmessages = response;
-				} else $scope.messages = response;
-
-			});
-			$http.get('/badges').success(function(response) {
-				if (!response.length) return;
-				
-				if(response.length > listLength) {
-					$scope.badges = response.slice(0, listLength);
-					$scope.allbadges = response;
-				} else $scope.badges = response;
-
-			});
-			$http.get('/groups').success(function(response) {
-				$scope.groups = response;
-			});
-			$http.get('/messages?group=null').success(function(response) {
-				if (!response.length) return;
-				
-				if(response.length > listLength) {
-					$scope.notes = response.slice(0, listLength);
-					$scope.allnotes = response;
-				} else $scope.notes = response;
-			});
-		};
-
-		$scope.showAll = function(list) {
-			var all = 'all' + list;
-			$scope[list] = $scope[all];
-			$scope[all] = [];
 		};
 	}
 ]);

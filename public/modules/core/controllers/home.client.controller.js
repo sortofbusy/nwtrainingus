@@ -11,16 +11,29 @@ angular.module('core').controller('HomeController', ['$scope', '$window', 'Authe
 		});
 
 		$scope.localities = [
-			'Bellevue',
-			'Bellingham', 
-			'Everett', 
-			'Olympia',
-			'Portland',
-			'Renton', 
-			'Seattle',
-			'Shoreline', 
-			'Tacoma', 
-			'Vancouver' 
+			{ name: 'Bellevue', area: '' },
+			{ name: 'Bellingham',  area: '' },
+			{ name: 'Everett', area: '' },
+			{ name: 'Olympia', area: '' },
+			{ name: 'Renton', area: '' },
+			{ name: 'Seattle', area: '' },
+			{ name: 'Shoreline', area: '' },
+			{ name: 'Tacoma', area: '' },
+			{ name: 'Eugene', area: 'Oregon Area' },
+			{ name: 'Corvallis',  area: 'Oregon Area' },
+			{ name: 'Medford', area: 'Oregon Area' },
+			{ name: 'Portland', area: 'Oregon Area' },
+			{ name: 'Roseburg', area: 'Oregon Area' },
+			{ name: 'Salem', area: 'Oregon Area' },
+			{ name: 'Vancouver, WA', area: 'Oregon Area' },
+			{ name: 'Other (Oregon)', area: 'Oregon Area' },
+			{ name: 'Cheney', area: 'Eastern Washington' },
+			{ name: 'Ephrata', area: 'Eastern Washington' },
+			{ name: 'Prosser', area: 'Eastern Washington' },
+			{ name: 'Pullman', area: 'Eastern Washington' },
+			{ name: 'Spokane', area: 'Eastern Washington' },
+			{ name: 'West Richland', area: 'Eastern Washington' },
+			{ name: 'Other (Eastern WA)', area: 'Eastern Washington' }
 		];
 
 		$scope.checkRegistration = function() {
@@ -32,7 +45,7 @@ angular.module('core').controller('HomeController', ['$scope', '$window', 'Authe
 			else {
 				$scope.user.registered = Date.now();
 				var user = new Users($scope.user);
-
+				
 				user.$update($scope.user, function(response) {
 					$location.path('/');
 					$anchorScroll();

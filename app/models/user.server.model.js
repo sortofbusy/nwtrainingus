@@ -120,7 +120,12 @@ var UserSchema = new Schema({
 		type: Number,
 	},
 	locality: {
-		type: String,
+		name: {
+			type: String
+		},
+		area: {
+			type: String
+		}
 	},
 	occupation: {
 		type: String,

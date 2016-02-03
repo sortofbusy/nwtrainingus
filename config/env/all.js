@@ -18,7 +18,8 @@ module.exports = {
 				'public/lib/fontawesome/css/font-awesome.min.css',
 				'public/lib/angular-busy/dist/angular-busy.css',
 				'public/lib/angular-loading-bar/build/loading-bar.min.css',
-				'public/lib/ladda/dist/ladda-themeless.min.css'
+				'public/lib/ladda/dist/ladda-themeless.min.css',
+				'public/lib/ngprogress/ngprogress.css',
 			],
 			js: [
 				'public/lib/angular/angular.js',
@@ -41,6 +42,7 @@ module.exports = {
 				'public/lib/signature_pad/signature_pad.js',
 				'public/lib/angular-signature/src/signature.js',
 				'public/lib/checklist-model/checklist-model.js',
+				'public/lib/ngprogress/build/ngprogress.js',
 			]
 		},
 		css: [
