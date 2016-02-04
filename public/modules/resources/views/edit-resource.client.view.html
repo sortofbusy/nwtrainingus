@@ -1,0 +1,57 @@
+<section data-ng-controller="ResourcesController" data-ng-init="findOne(); listTrainings()">
+    <div class="page-header">
+        <h1>Edit Resource</h1>
+    </div>
+    <div class="col-md-12">
+        <form class="form-horizontal" data-ng-submit="update()" novalidate>
+            <fieldset>
+                <div class="form-group">
+                    <label class="control-label" for="Link">Link</label>
+                    <div class="controls">
+                        <input type="text" data-ng-model="resource.url" id="url" class="form-control" placeholder="http://..." required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="language">Language</label>
+                    <select id="language" name = "language" class="form-control" data-ng-model="resource.language">
+                        <option>English</option>
+                        <option>Chinese</option>
+                        <option>Spanish</option>
+                        <option>All</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="fileType">Type</label>
+                    <select id="fileType" name = "fileType" class="form-control" data-ng-model="resource.fileType">
+                        <option>Audio</option>
+                        <option>Video</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="training">Training</label>
+                    <select id="training" name = "training" class="form-control" data-ng-options="training._id as training.name for training in trainings" data-ng-model="resource.training">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="session">Session</label>
+                    <select id="session" name = "session" class="form-control" data-ng-options="session as session for session in sessions" data-ng-model="resource.session">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="subsession">Subsession</label>
+                    <select id="subsession" name = "subsession" class="form-control" data-ng-model="resource.subsession">
+                        <option>A</option>
+                        <option>B</option>
+                        <option>C</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Update" class="btn btn-default">
+                </div>
+				<div data-ng-show="error" class="text-danger">
+					<strong data-ng-bind="error"></strong>
+				</div>
+            </fieldset>
+        </form>
+    </div>
+</section>

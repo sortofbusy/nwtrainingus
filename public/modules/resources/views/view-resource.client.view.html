@@ -1,0 +1,28 @@
+<section data-ng-controller="ResourcesController" data-ng-init="findOne()">
+	<div class="page-header">
+		<h1 data-ng-bind="resource.name"></h1>
+	</div>
+	<div class="pull-right" data-ng-show="(authentication.user.roles.indexOf('admin') > -1)">
+		<a class="btn btn-primary" href="/#!/resources/{{resource._id}}/edit">
+			<i class="glyphicon glyphicon-edit"></i>
+		</a>
+		<a class="btn btn-danger" data-ng-click="remove();">
+			<i class="glyphicon glyphicon-trash"></i>
+		</a>
+	</div>
+	<div>
+		<p class="lead">{{resource.training.name}}, Session {{resource.session}} ({{resource.language}})</p>
+		<em class="text-muted">
+			Posted on
+			<span data-ng-bind="resource.created | date:'mediumDate'"></span>
+		</em><br>
+		Link: <a href="{{trustedUrl}}" target = "_blank">{{resource.url}}</a><br>
+   		<br>
+   		<!--Audio Player -->
+		<audio controls data-ng-src="{{trustedUrl}}" data-ng-show="resource.fileType==='Audio'"></audio>
+   		<!--Large Video Player -->
+   		<video controls data-ng-src="{{trustedUrl}}" data-ng-show="resource.fileType==='Video'" class="hidden-xs"></video>
+   		<!--Mobile Video Player -->
+		<video controls width="100%" data-ng-src="{{trustedUrl}}" data-ng-show="resource.fileType==='Video'" class="visible-xs"></video>
+	</div>
+</section>

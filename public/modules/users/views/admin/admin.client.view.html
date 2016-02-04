@@ -33,7 +33,6 @@
 	        <li class="list-group-item" data-ng-repeat="training in trainings">
 	            <span class="h4">{{training.name}}</span>
 	            <span class="btn btn-default btn-sm pull-right" data-ng-click="showTrainingDetails[$index] = !showTrainingDetails[$index]"><i class="fa fa-ellipsis-h"></i></span>
-	            <span class="btn btn-sm btn-default pull-right" data-ng-click="createApplications(training._id)">Create Applications</span>
 	            <br><br>
 	            <div data-ng-show="showTrainingDetails[$index]">
 	            	<pre>{{training | json}}</pre>
