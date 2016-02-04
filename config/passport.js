@@ -19,11 +19,20 @@ module.exports = function() {
 
 	// Deserialize sessions
 	passport.deserializeUser(function(id, done) {
-		User.findOne({
-			_id: id
-		}, '-salt -password', function(err, user) {
-			done(err, user);
-		});
+		User.findOne({_id: id})
+			.populate('applications', 'appStatus training')
+			.populate('applications.training', 'name')
+			.select('-salt -password')
+			.exec(function(err, user) {
+				User.populate(user, {
+					path: 'applications.training',
+					model: 'Training',
+					select: 'name'
+				}, function(err, user) {
+					done(err, user);
+				});
+				
+			});
 	});
 
 	// Initialize strategies
