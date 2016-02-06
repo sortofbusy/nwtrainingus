@@ -58,6 +58,13 @@ exports.update = function(req, res) {
 	delete req.body.approved;
 
 	if (user) {
+			//depopulate applications
+		if (user.applications[0]) {
+			for (var i = 0; i < user.applications.length; i++) {
+				user.applications[i] = user.applications[i]._id;
+			}
+		}
+
 		// Merge existing user
 		user = _.extend(user, req.body);
 		user.updated = Date.now();

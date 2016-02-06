@@ -61,15 +61,15 @@
 				<fieldset>
 					<div class="form-group">
 						<label for="age">Age</label>
-						<input type="text" required id="age" name="age" class="form-control" data-ng-model="user.age" ui-mask="99" autofocus>
+						<input type="tel" required id="age" name="age" class="form-control" data-ng-model="user.age" ui-mask="99" autofocus>
 					</div>
 					<div class="form-group">
 						<label for="phone">Phone</label>
-						<input type="text" id="phone" name="phone" class="form-control" data-ng-model="user.phone" ui-mask="(999) 999-9999">
+						<input type="tel" id="phone" name="phone" class="form-control" data-ng-model="user.phone" ui-mask="(999) 999-9999">
 					</div>
 					<div class="form-group">
-						<label for="locality">Locality</label>
-						<select id="locality" name="locality" data-ng-model="user.locality" data-ng-options="locality.name as locality.name group by locality.area for locality in localities" class="form-control" ></select>
+						<label for="locality">Locality</label> {{user.locality}}
+						<select id="locality" name="locality" data-ng-model="user.locality" data-ng-options="locality.name group by locality.area for locality in localities track by locality.name" class="form-control" ></select>
 					</div>
 					<div class="form-group">
 						<label for="occupation">Occupation</label>

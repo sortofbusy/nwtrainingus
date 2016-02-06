@@ -6,10 +6,9 @@
 				| <a href="/#!/settings/password">Change Password</a>
 		</span>
 	</div>
-
 	<div class="col-xs-12 col-md-12">
 		<h2 class="text-center">Profile Details</h2>
-		<form name="userForm" data-ng-submit="updateUserProfile(userForm.$valid)" class="signin form-horizontal" autocomplete="off">
+		<form name="userForm" data-ng-submit="updateUserProfile(userForm.$valid)" class="signin form-horizontal" novalidate autocomplete="off">
 			<div class=" col-xs-offset-1 col-xs-10 col-md-offset-4 col-md-4 text-left">
 				<fieldset>
 					<div class="form-group">
@@ -26,15 +25,15 @@
 					</div>
 					<div class="form-group">
 						<label for="age">Age</label>
-						<input type="text" required id="age" name="age" class="form-control" data-ng-model="user.age" ui-mask="99" autofocus>
+						<input type="tel" required id="age" name="age" class="form-control" data-ng-model="user.age" ui-mask="99" autofocus>
 					</div>
 					<div class="form-group">
 						<label for="phone">Phone</label>
-						<input type="text" id="phone" name="phone" class="form-control" data-ng-model="user.phone" ui-mask="(999) 999-9999">
+						<input type="tel" id="phone" name="phone" class="form-control" data-ng-model="user.phone" ui-mask="(999) 999-9999">
 					</div>
 					<div class="form-group">
-						<label for="locality">Locality</label>
-						<select id="locality" name="locality" data-ng-model="user.locality" data-ng-options="locality.name as locality.name group by locality.area for locality in localities" class="form-control" ></select>
+						<label for="locality">Locality</label>{{user.locality}}
+						<select id="locality" name="locality" data-ng-model="user.locality" data-ng-options="locality.name group by locality.area for locality in localities track by locality.name" class="form-control" ></select>
 					</div>
 					<div class="form-group">
 						<label for="occupation">Occupation</label>
@@ -54,7 +53,7 @@
 					</div>
 				</fieldset>
 				<div class="form-group">
-					<button type="submit" class="btn btn-large btn-primary">Save</button>
+					<button type="submit" ladda="laddaButton.loading" data-ng-disabled="laddaButton.disabled" class="btn btn-large btn-primary">Save <i class="fa" data-ng-class="laddaButton.resultIcon"></i></button>
 				</div>
 			</div>
 			<!--<div class="col-xs-offset-2 col-xs-8 col-md-offset-1 col-md-4">

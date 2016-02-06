@@ -34,15 +34,16 @@
 				</div>
 				<div class="form-group">
 					<label for="email">Email</label>
-					<input type="email" id="email" name="email" class="form-control" data-ng-model="credentials.email" placeholder="Email">
+					<input type="email" id="email" name="email" class="form-control" data-ng-model="credentials.email" autocapitalize="off" placeholder="Email">
 				</div>
 				<div class="form-group">
 					<label for="password">Password <small>(at least 6 characters)</small></label>
 					<input type="password" id="password" name="password" class="form-control" data-ng-model="credentials.password" placeholder="Password">
 				</div>
 				<div class="text-center form-group">
-					<button type="submit" class="btn btn-large btn-primary">Sign up</button>&nbsp; or&nbsp;
-					<a href="/#!/signin" class="show-signup">Sign in</a>
+					<button type="submit" class="btn btn-large btn-primary">Sign up</button>
+					<br><br>
+					Already have an account? <a href="/#!/signin" class="show-signup">Sign in</a>
 				</div>
 				<div data-ng-show="error" class="text-center text-danger">
 					<strong data-ng-bind="error"></strong>

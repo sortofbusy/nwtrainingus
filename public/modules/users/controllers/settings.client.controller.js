@@ -7,6 +7,9 @@ angular.module('users').controller('SettingsController', ['$scope', '$http', '$l
 		// If user is not signed in then redirect back home
 		if (!$scope.user.displayName) $location.path('/');
 
+		// object to update ladda button
+		$scope.laddaButton = {};
+
 		$scope.localities = [
 			{ name: 'Bellevue', area: '' },
 			{ name: 'Bellingham',  area: '' },
@@ -70,11 +73,21 @@ angular.module('users').controller('SettingsController', ['$scope', '$http', '$l
 				$scope.success = $scope.error = null;
 				var user = new Users($scope.user);
 
+				// start ladda button
+				$scope.laddaButton.loading = true;
 				user.$update(function(response) {
 					$scope.success = true;
-					Authentication.user = response;
+					$scope.user = response;
+
+					// resolve ladda button
+					$scope.laddaButton.loading = false;
+					$scope.laddaButton.resultIcon = 'fa-check';
 				}, function(response) {
 					$scope.error = response.data.message;
+
+					// resolve ladda button
+					$scope.laddaButton.loading = false;
+					$scope.laddaButton.resultIcon = 'fa-times';
 				});
 			} else {
 				$scope.submitted = true;
