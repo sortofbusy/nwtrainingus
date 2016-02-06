@@ -9,6 +9,7 @@ angular.module('core').controller('HomeController', ['$scope', '$window', 'Authe
 		$http.get('/trainings').success( function(response) {
 			$scope.trainings = response;
 		});
+		$scope.t = 0;
 
 		$scope.localities = [
 			{ name: 'Bellevue', area: '' },
@@ -103,6 +104,10 @@ angular.module('core').controller('HomeController', ['$scope', '$window', 'Authe
 			$http.get('/users/applications').success( function(response) {
 				$scope.applications = response;
 			});
+		};
+
+		$scope.guidelinesHtml = function(input) {
+			return $sce.trustAsHtml(input);
 		};
 
 		

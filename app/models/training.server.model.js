@@ -29,6 +29,24 @@ var TrainingSchema = new Schema({
 	},
 	end: {
 		type: Date
+	},
+	location: {
+		type: String
+	},
+	locationAddress: {
+		type: String
+	},
+	locationUrl: {
+		type: String
+	},
+	time: {
+		type: String
+	},
+	donation: {
+		type: String
+	},
+	guidelines: {
+		type: String
 	}
 });
 

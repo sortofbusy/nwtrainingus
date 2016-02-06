@@ -31,7 +31,7 @@
 		<ul class="list-group">
 	        <li class="h3 list-group-item list-group-item-info"><i class="fa fa-calendar fa-fw"></i> Trainings</li>
 	        <li class="list-group-item" data-ng-repeat="training in trainings">
-	            <span class="h4">{{training.name}}</span>
+	            <a class="h4" href="/#!/trainings/{{training._id}}">{{training.name}}</a>
 	            <span class="btn btn-default btn-sm pull-right" data-ng-click="showTrainingDetails[$index] = !showTrainingDetails[$index]"><i class="fa fa-ellipsis-h"></i></span>
 	            <br><br>
 	            <div data-ng-show="showTrainingDetails[$index]">
@@ -40,7 +40,6 @@
 	            </div>
 	        </li>
 	    </ul>
-	    <input type="text" data-ng-model="training.name" placeholder="Name">
-	    <button class="btn" data-ng-click="createTraining()">Create Training</button>
+	    <a class="btn btn-default" href="/#!/trainings/create">Create Training</a>
 	</div>
 </section>

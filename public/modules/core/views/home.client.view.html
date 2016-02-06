@@ -19,29 +19,17 @@
 			<p class="lead">
 				<h3>Dates</h3>
 				<ul>
-					<li>First gathering and following dates to be announced</li>
+					<li>First gathering: {{trainings[t].begin | date :'longDate'}}, tentatively every third Saturday following</li>
 				</ul>
 				<h3>Location</h3>
-				<p>Meeting hall of the church in Renton: <a target="_blank" href="https://www.google.com/maps/place/220+Whitworth+Ave+S,+Renton,+WA+98057/@47.4803446,-122.2139605,17z/data=!3m1!4b1!4m2!3m1!1s0x549042ac427f7601:0x48ae7b2ba456b61d">220 Whitworth Ave. S. Renton, WA 98057</a></p>
+				<p>{{trainings[t].location}}: <a target="_blank" href="{{trainings[t].locationUrl}}">{{trainings[t].locationAddress}}</a></p>
 				<h3>Time</h3>
-				<p>Saturdays, 9am - 1pm</p>
+				<p>{{trainings[t].time}}</p>
 				<h3>Donation</h3>
-				<p>$60, to be collected by a designated person in your locality<p>
+				<p>{{trainings[t].donation}}<p>
 				<h3>Training Guidelines and Regulations</h3>
-				<ul>
-					<li><b>Attire:</b> A tie and a jacket are the recommended attire for each trainee.</li>
-					<li><b>Arrival Time:</b> We recommend the trainees to arrive by 8:30am, to allow time for parking, collection of badges, seating, and exercise of the spirit:</li>
-					<ul>
-						<li>Every trainee is expected to be in their seat no later than 5 minutes before the start time of each session.</li>
-						<li>Doors will be locked at the start time of each session. Those who arrive late should expect that they will not be able to enter until the next session break.</li>
-					</ul>
-					<li><b>Training Outlines:</b> Duplication of the training material is not permitted. For any absent trainees, only the locality coordinator (or an assigned representative) should pick up training outlines at the registration table.</li>
-					<li><b>Attendance:</b> All trainees should arrange their schedule so as not to miss any meeting:</li>
-					<ul>
-						<li>For the monthly training sessions, three excused absences per year are permitted with prior approval. Any unexcused absence or more than three excused absences will result in dismissal from the training.</li>
-						<li>Trainees are required to attend 75% of the weekly study groups for the year. The training is one year in length.</li>
-					</ul>
-				</ul>
+				<div data-ng-bind-html="(guidelinesHtml(trainings[t].guidelines))">
+				</div>
 			</p>
 			<br><br>
 		</div>

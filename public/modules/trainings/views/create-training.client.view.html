@@ -1,0 +1,68 @@
+<section data-ng-controller="TrainingsController">
+    <div class="page-header">
+        <a href="/#!/admin">Back to Admin</a>
+        <h1>New Training</h1>
+    </div>
+    <div class="col-md-6 col-md-offset-3">
+        <form class="form-horizontal" data-ng-submit="create()" novalidate>
+            <fieldset>
+                <div class="form-group">
+                    <label class="control-label" for="name">Name</label>
+                    <div class="controls">
+                        <input type="text" data-ng-model="name" id="name" class="form-control" placeholder="Name" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="control-label" for="location">Location</label>
+                    <div class="controls">
+                        <input type="text" data-ng-model="location" id="location" class="form-control" placeholder="Location" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="locationAddress">Location Address</label>
+                    <div class="controls">
+                        <input type="text" data-ng-model="locationAddress" id="locationAddress" class="form-control" placeholder="Address" >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="locationUrl">Location Url</label>
+                    <div class="controls">
+                        <input type="text" data-ng-model="locationUrl" id="locationUrl" class="form-control" placeholder="http://...">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="time">Time</label>
+                    <div class="controls">
+                        <input type="text" data-ng-model="time" id="time" class="form-control" placeholder="Time">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="donation">Donation</label>
+                    <div class="controls">
+                        <input type="text" data-ng-model="donation" id="donation" class="form-control" placeholder="Donation">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="guidelines">Guidelines (enter HTML)</label>
+                    <div class="controls">
+                        <textarea style="height:auto;" rows="6" data-ng-model="guidelines" id="guidelines" class="form-control" placeholder="<ul> ... </ul>">
+                        </textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="begin">Begin Date</label>
+                    <div style=" min-height:270px;">
+                        <uib-datepicker data-ng-model="begin" show-weeks="false" class=""></uib-datepicker>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="submit" class="btn btn-default">
+                </div>
+				<div data-ng-show="error" class="text-danger">
+					<strong data-ng-bind="error"></strong>
+				</div>
+            </fieldset>
+        </form>
+    </div>
+</section>
