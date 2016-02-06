@@ -2,19 +2,36 @@
     <div class="page-header">
         <h1>Resources</h1>
     </div>
+    <div>
+    <label for="session">Session: </label>
+    <select data-ng-model="session" class="">
+        <option value="">All</option>
+        <option data-ng-repeat="session in sessions">{{session}}</option>
+    </select>
+    <label for="fileType">File Type: </label>
+    <select data-ng-model="fileType" class="">
+        <option value = "">All</option>
+        <option>Audio</option>
+        <option>Video</option>
+    </select>
+    <label for="language">File Type: </label>
+    <select data-ng-model="authentication.user.language" class="">
+        <option value = "">All</option>
+        <option>English</option>
+        <option>Chinese</option>
+        <option>Spanish</option>
+    </select>
+    </div>
+    <br>
     <div class="list-group">
-        <a data-ng-repeat="resource in resources" data-ng-href="#!/resources/{{resource._id}}" class="list-group-item">
+        <a data-ng-repeat="resource in resources | filter: {fileType: fileType, session: session, language: authentication.user.language}" data-ng-href="#!/resources/{{resource._id}}" class="list-group-item">
 			<p class="lead">
                 <i class="fa fa-fw fa-video-camera" data-ng-show="resource.fileType==='Video'"></i>
                 <i class="fa fa-fw fa-volume-up" data-ng-show="resource.fileType==='Audio'"></i>
                 {{resource.training.name}}, Session {{resource.session}}{{resource.subsession}} <small>({{resource.language}})<small>
             </p>
-            <small class="list-group-item-text">
-				Posted on
-				<span data-ng-bind="resource.created | date:'medium'"></span>
-			</small>
         </a>
     </div>
-    <a class="btn btn-primary" href="/#!/resources/create"><i class="fa fa-plus"></i> Create a resource</a>
+    <a class="btn btn-primary" data-ng-show="authentication.user.roles.indexOf('admin') > -1" href="/#!/resources/create"><i class="fa fa-plus"></i> Create a resource</a>
     
 </section>

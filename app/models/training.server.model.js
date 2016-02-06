@@ -27,6 +27,9 @@ var TrainingSchema = new Schema({
 	begin: {
 		type: Date
 	},
+	registrationDeadline: {
+		type: Date
+	},
 	end: {
 		type: Date
 	},
@@ -46,6 +49,9 @@ var TrainingSchema = new Schema({
 		type: String
 	},
 	guidelines: {
+		type: String
+	},
+	consecration: {
 		type: String
 	}
 });

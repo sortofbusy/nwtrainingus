@@ -5,6 +5,8 @@ angular.module('resources').controller('ResourcesController', ['$scope', '$http'
 	function($scope, $http, $window, $sce, $stateParams, $location, Authentication, Resources) {
 		$scope.authentication = Authentication;
 
+		//$scope.fileType;
+
 		$scope.sessions = [1,2,3,4,5,6,7,8,9,10,11,12];
 		// Create new Resource
 		$scope.create = function() {

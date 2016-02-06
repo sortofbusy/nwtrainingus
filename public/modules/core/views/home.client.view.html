@@ -20,7 +20,10 @@
 				<h3>Dates</h3>
 				<ul>
 					<li>First gathering: {{trainings[t].begin | date :'longDate'}}, tentatively every third Saturday following</li>
+					<li>The training will include 36 lessons over the course of one year.</li>
 				</ul>
+				<h3>Registration Deadline</h3>
+				<p>Registration must be completed by {{trainings[t].registrationDeadline | date:'longDate'}}
 				<h3>Location</h3>
 				<p>{{trainings[t].location}}: <a target="_blank" href="{{trainings[t].locationUrl}}">{{trainings[t].locationAddress}}</a></p>
 				<h3>Time</h3>
@@ -28,7 +31,7 @@
 				<h3>Donation</h3>
 				<p>{{trainings[t].donation}}<p>
 				<h3>Training Guidelines and Regulations</h3>
-				<div data-ng-bind-html="(guidelinesHtml(trainings[t].guidelines))">
+				<div data-ng-bind-html="trustHtml(trainings[t].guidelines)">
 				</div>
 			</p>
 			<br><br>
@@ -104,26 +107,9 @@
 		
 			<form name="newForm" class="signin form-horizontal" autocomplete="off">
 				<fieldset>
-					<div>	
-						Lord Jesus,
-						<br><br>
-						I love You. I love Your church, Your saints, and Your recovery. I am Your purchased slave and do not wish to go free. By Your mercy and grace I will serve You now and forever.
-						<br><br>
-						I join this training not by compulsion but eagerly because I desire to be further perfected in Your hands and for Your use. Help me to be poor in spirit and pure in heart so Your word can have an uninhibited course in me. Free me from all self-pride and personal ambition. Grant me the readiness to receive Your instructions and the obedience to follow them.
-						<br><br>
-						Give me a pursuing spirit so that I will gain what You want me to gain in the training. Supply me with an attitude to learn so that I will be genuinely equipped. Strengthen me to exercise diligence and endurance to meet the demands of the training and to fulfill its requirements. Blend me with my companions as we practice the things which are taught. Save me from individualism and independence.
-						<br><br>
-						I present myself to You afresh and offer my being anew for the service of the church where I am placed. Make me a genuine steward of Your household, dispensing food to Your people at the appointed time. Whether I will be a leading brother or not, constitute me one of the normal, functioning, and coordinated members in Your Body according to the measure of faith which You have allotted to me.
-						<br><br>
-						I entrust to You my whole being, my life, and my future. I trust in Your faithful care and protection of my wife, children, and family during the training period when I will be concentrating on Your interests. I submit to Your sovereign arrangements in all things.
-						<br><br>
-						Bless me and all my co-trainees and the churches for the sake of Your testimony. Lord Jesus, I thank You for affording me this opportunity to be trained for Your purpose.
-						<br><br>
-						Amen.
-						<br><br>
-						<hr>
-						
+					<div data-ng-bind-html="trustHtml(trainings[t].consecration)">
 					</div>
+					<hr>
 					<!--large version-->
 					<div class="text-center hidden-xs">	
 						<b>Please sign in the box below using your mouse or finger:</b>
@@ -143,8 +129,8 @@
 			</form>
 		</div>
 	</div>
-	<!-- /////// REGISTRATION /////// -->
-	<div class="row" data-ng-show="user.consecrated && !user.approved">
+	<!-- /////// LOGGED IN /////// -->
+	<div class="row" data-ng-show="user.applications[0].appStatus === 'Pending'">
 		<h2 class="col-md-12 text-center">Application Complete <i class="fa fa-2x fa-check text-success"></i></h2>
 		<div class="col-xs-offset-2 col-xs-8 col-md-offset-3 col-md-6">
 			<ul class="progress-indicator"> 
@@ -157,6 +143,10 @@
 			<hr>
 			<p class="lead">Thank you for completing your application. It is now pending approval, and you will receive an email notification when a decision is made.</p>
 		</div>
+	</div>
+	<div class="row text-center" data-ng-show="user.applications[0].appStatus === 'Approved'">
+		<h2 class="col-md-12 text-center">Training Resources for {{user.applications[0].training.name}}</h2>
+		<a href="/#!/resources" class="btn btn-info btn-lg">View Resources</a>
 	</div>
 	<!-- /////// VIEW APPLICATIONS /////// -->
 	<div class="row text-center" data-ng-show="(user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1)">

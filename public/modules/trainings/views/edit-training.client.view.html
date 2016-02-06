@@ -50,9 +50,22 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="control-label" for="consecration">Consecration (enter HTML)</label>
+                    <div class="controls">
+                        <textarea style="height:auto;" rows="6" data-ng-model="training.consecration" id="consecration" class="form-control" placeholder="<ul> ... </ul>">
+                        </textarea>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label for="begin">Begin Date</label>
                     <div style=" min-height:270px;">
                         <uib-datepicker data-ng-model="training.begin" show-weeks="false" class=""></uib-datepicker>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="registrationDeadline">Registration Deadline</label>
+                    <div style=" min-height:270px;">
+                        <uib-datepicker data-ng-model="training.registrationDeadline" show-weeks="false" class=""></uib-datepicker>
                     </div>
                 </div>
                 <div class="form-group">

@@ -106,7 +106,7 @@ angular.module('core').controller('HomeController', ['$scope', '$window', 'Authe
 			});
 		};
 
-		$scope.guidelinesHtml = function(input) {
+		$scope.trustHtml = function(input) {
 			return $sce.trustAsHtml(input);
 		};
 
