@@ -1,55 +1,39 @@
-<section data-ng-controller="GroupsController" data-ng-init="find()" data-ng-show="authentication.user">
+<section data-ng-controller="GroupsController" data-ng-init="find()">
     <div class="page-header">
-        <div class="h1">
-            <i class="fa fa-group fa-1x"></i>
-             Groups
-        </div>
+        <h1>Study Groups</h1>
     </div>
-    <div class="list-group">
-        <a data-ng-repeat="group in groups" data-ng-href="#!/groups/{{group._id}}" class="list-group-item">
-			<div class="col-xs-12">
-                    <span class="h1 list-group-item-heading" data-ng-bind="group.name"></span>
-                    <span class="label label-primary" data-ng-show="group.creator === authentication.user._id">CREATOR</span>
-            </div>
-            <br>
-            <div class="row list-group-item-text">
-                <div class="col-xs-6"> 
-                    <em>MEMBERS</em> <span class="h2">{{group.users.length}}</span>
-                </div>
-                <div class="col-xs-6"> 
-                     <em>STARTED</em> <span class="">{{group.created | timeago}}</span>
-                </div>
-            </div>
-        </a>
-    </div>
-    <div >
-        <a class="pull-right" data-ng-click="addCollapsed = !addCollapsed"><i class="fa fa-3x fa-fw fa-plus"></i></a>
-        <div class="well" data-uib-collapse="addCollapsed">
-    
-            <div class=""> 
-                <a class="btn btn-info btn-lg" href="/#!/groups/create">
-                    New Group
-                </a>
+    <div class="list-group col-md-6">
+        <div data-ng-repeat="group in groups"  class="list-group-item">
+			<h4 class="list-group-item-heading">{{group.locality.name}} {{group.language}} Study Group {{$index + 1}}</h4>
+            <span class="pull-right" data-ng-show="user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1"><a data-ng-href="#!/groups/{{group._id}}/edit"><i class="fa fa-edit fa-2x"></i></a>
+            </span>
+            <p>
+                <b>Where:</b> {{group.meeting.place}} 
                 <br>
-            </div>
-            <h2>-or-</h2><br>
-            <div >
-                <form class="form-inline" data-ng-submit="enroll()" novalidate>
-                    <fieldset>
-                        <div class="form-group">
-                            <div class="controls">
-                                <input type="text" data-ng-model="token" id="token" class="form-control" placeholder="Token" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <input type="submit" value="Join Group" class="btn btn-lg btn-default">
-                        </div>
-                        <div data-ng-show="error" class="text-danger">
-                            <strong data-ng-bind="error"></strong>
-                        </div>
-                    </fieldset>
-                </form>
+                <b>When:</b> {{getWeekday(group.meeting.day)}}, {{group.meeting.time | date:'shortTime'}}
+            </p>
+            <b>Users:</b>
+            <div class="dragContainer" ui-on-Drop="onDrop($event,$data,group.users)">
+                <button class="btn" ui-draggable="true" drag="asUser" 
+                on-drop-success="dropSuccessHandler($event,$index,group.users)"
+                ng-repeat="asUser in group.users track by $index">
+                    {{asUser.displayName}}
+                </button>
             </div>
         </div>
+        <br><br>
+        <a class="btn btn-info" data-ng-show="user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1" href="/#!/groups/create">Create Study Group</a>
+    </div>
+    <div class="col-md-6 container">
+        <h2>Unassigned in {{user.locality.name}}</h2>
+        <h4>(drag to group to assign)</h4>
+        <div class="dragContainer" ui-on-Drop="onDrop($event,$data,unassigned)">
+            <button class="btn" ui-draggable="true" drag="unUser" 
+                on-drop-success="dropSuccessHandler($event,$index,unassigned)"
+                ng-repeat="unUser in unassigned track by $index">
+                {{unUser.displayName}}
+            </button> 
+        </div>
+        <button class="btn btn-primary" data-ng-click="updateAll()" ladda="laddaButton.loading">Save Changes <i class="fa" data-ng-class="laddaButton.resultIcon"></i></button>
     </div>
 </section>

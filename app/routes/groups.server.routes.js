@@ -6,26 +6,17 @@ module.exports = function(app) {
 
 	// Groups Routes
 	app.route('/groups')
-		.get(users.requiresLogin, groups.list)
-		.post(users.requiresLogin, groups.create);
+		.get(users.isApprover, groups.list)
+		.post(users.isApprover, groups.create);
 
-	app.route('/groups/enroll')
-		.post(users.requiresLogin, groups.addUser);
-	
+	app.route('/groups/unassigned')
+		.get(users.isApprover, groups.unassigned);
+
 	app.route('/groups/:groupId')
-		.get(groups.hasAuthorization, groups.read)
-		.put(users.requiresLogin, groups.creatorAuthorization, groups.update)
-		.delete(users.requiresLogin, groups.creatorAuthorization, groups.delete);
+		.get(groups.read)
+		.put(users.isApprover, groups.update)
+		.delete(users.isApprover, groups.delete);
 
-	app.route('/groups/:groupId/messages')
-		.get(groups.hasAuthorization, groups.getMessages);
-	
-	app.route('/groups/:groupId/comments')
-		.get(groups.hasAuthorization, groups.getComments);
-
-	app.route('/groups/:groupId/unenroll')
-		.post(groups.hasAuthorization, groups.removeUser);
-		
 	// Finish by binding the Group middleware
 	app.param('groupId', groups.groupByID);
 };

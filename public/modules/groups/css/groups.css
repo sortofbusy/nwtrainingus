@@ -1,0 +1,8 @@
+.dragContainer {
+	min-height: 100px;
+	border: 1px solid gray;
+}
+
+.btn {
+	margin: 5px;
+}

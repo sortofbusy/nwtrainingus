@@ -33,6 +33,7 @@ module.exports = {
 				'public/lib/angular-signature/src/signature.js',
 				'public/lib/checklist-model/checklist-model.js',
 				'public/lib/ngprogress/build/ngprogress.min.js',
+				'public/lib/angular-native-dragdrop/draganddrop.js',
 			]
 		},
 		css: 'public/dist/application.min.css',

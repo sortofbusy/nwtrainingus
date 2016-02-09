@@ -1,23 +1,49 @@
 <section data-ng-controller="GroupsController" data-ng-init="findOne()">
     <div class="page-header">
-        <a href="/#!/groups/{{group._id}}"><i class="fa fa-angle-double-left"></i> Back To Group</a>
-        <br>
+        <a href="/#!/groups">Back to Groups</a>
         <h1>Edit Group</h1>
     </div>
     <div class="col-md-12">
         <form class="form-horizontal" data-ng-submit="update()" novalidate>
             <fieldset>
                 <div class="form-group">
-                    <label class="control-label" for="name">Name</label>
+                    <label class="control-label" for="locality">Locality</label>
                     <div class="controls">
-                        <input type="text" data-ng-model="group.name" id="name" class="form-control" placeholder="Name" required>
+                        <input type="text" data-ng-model="group.locality.name" id="locality" class="form-control" disabled>
                     </div>
-                    <div>
-                        <label>Require Access Token</label>
-                        <select id="open" name="open" class="form-control" data-ng-model="group.open">
-                            <option value="false">Yes</option>
-                            <option value = "true">No</option>
+                </div>
+                <div class="form-group">
+                    <label for="language">Language</label>
+                    <select id="language" name = "language" class="form-control" data-ng-model="group.language">
+                        <option>English</option>
+                        <option>Chinese</option>
+                        <option>Spanish</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="meeting.place">Meeting Place</label>
+                    <div class="controls">
+                        <input type="text" data-ng-model="group.meeting.place" id="meeting.place" class="form-control" placeholder="Meeting Place" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="meeting.day">Meeting Day</label>
+                    <div class="controls">
+                        <select id="meeting.day" class="form-control" name = "meeting.day" data-ng-model="group.meeting.day">
+                            <option value="0">Lord's Day</option>
+                            <option value="1">Monday</option>
+                            <option value="2">Tuesday</option>
+                            <option value="3">Wednesday</option>
+                            <option value="4">Thursday</option>
+                            <option value="5">Friday</option>
+                            <option value="6">Saturday</option>
                         </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="meeting.time">Meeting Time</label>
+                    <div class="controls">
+                        <uib-timepicker data-ng-model="group.meeting.time" data-minute-step="15"></uib-timepicker>
                     </div>
                 </div>
                 <div class="form-group">

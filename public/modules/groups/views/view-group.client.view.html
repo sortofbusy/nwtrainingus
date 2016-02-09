@@ -1,102 +1,24 @@
 <section data-ng-controller="GroupsController" data-ng-init="findOne()">
 	<div class="page-header">
-		<a href="/#!/groups"><i class="fa fa-angle-double-left"></i> Back To Groups</a>
-		<br>
-		<div>
-			<a class="pull-right" ng-click="optionsCollapsed = !optionsCollapsed"><i class="fa fa-2x fa-fw fa-chevron-down"></i></a>
-			<div data-uib-collapse="optionsCollapsed">
-				<div class="well well-lg">
-					<div data-ng-show="!group.open">
-						<h3>Access Token:</h3> <em>{{group.accessToken}}</em><br><br>
-					</div>
-					<div class="" data-ng-show="((authentication.user) && (authentication.user._id == group.creator))">
-						<a class="btn btn-primary" href="/#!/groups/{{group._id}}/edit">
-							<i class="fa fa-edit"></i> Edit
-						</a>
-						<a class="btn btn-danger" data-ng-click="remove();">
-							<i class="fa fa-times"></i> Delete
-						</a>
-					</div>
-					<div data-ng-show="((authentication.user) && (authentication.user._id !== group.creator))">
-						<a class="btn btn-danger" data-ng-click="remove();">
-							<i class="fa fa-fw fa-times"></i> Leave Group
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
-		<span class="h1" data-ng-bind="group.name"></span>
-		<span class="label label-primary" data-ng-show="group.creator === authentication.user._id">CREATOR</span>
-		<!--<span class="label label-success" data-ng-show="(group.users.indexOf(authentication.user._id) > -1)">MEMBER</span>--> 
-        
+		<h2 class="list-group-item-heading">{{group.locality.name}} {{group.language}} Study Group</h2>
 	</div>
-	<div class="row">
-		<div class="col-xs-12 col-md-4">
-			<ul class="list-group">
-				<li class="h3 list-group-item list-group-item-success"><i class="fa fa-group fa-fw"></i> Members</li>
-				<li class="list-group-item" data-ng-repeat="user in group.users">
-					{{user._id.displayName}}
-					<span class="pull-right"><small>Chapters this week</small> {{user.count}}</span>
-				</li>
-			</ul>
-		</div>
-		<div class="col-xs-12 col-md-4">
-			<ul class="list-group">
-				<li class="h3 list-group-item list-group-item-warning"><i class="fa fa-comment fa-fw"></i> Notes</li>
-				<li class="list-group-item" data-ng-repeat="message in messages">
-					<a data-ng-click="showVerse[$index]=!showVerse[$index]"><strong>{{message.verse.inputstring + ':' + message.verse.ref}} <span class="caret"></span></strong></a>
-					<span class="pull-right" data-ng-show="message.user._id === authentication.user._id">
-		            	<a data-ng-href="#!/messages/{{message._id}}"><i class="fa fa-edit fa-fw"></i></a> 
-		            </span>
-					<div data-ng-show="showVerse[$index]" class="border"><em>{{message.verse.text}}</em></div>
-					<div data-ng-show="message.text">
-						"{{message.text}}"
-					</div>
-					<div class="text-right">
-						<small>{{message.user.displayName}}, <em>{{message.created | date : timeago}}</em></small>
-					</div>
-				</li>
-				<li class="list-group-item text-center" data-ng-click="showAll('messages')" data-ng-show="allmessages.length">
-	        	<a><i class="fa fa-ellipsis-h fa-2x fa-fw"></i></a>
-	        	</li>
-			</ul>
-		</div>
-		<div class="col-xs-12 col-md-4">
-			<ul class="list-group">
-				<li class="h3 list-group-item list-group-item-info"><i class="fa fa-bookmark fa-fw"></i> Recent Chapters</li>
-				<li class="list-group-item" data-ng-repeat="chapter in chapters">{{chapter.name}} <small class="pull-right">{{chapter.user.displayName}}, <em>{{chapter.created | timeago}}</em></small></li>
-				<li class="list-group-item text-center" data-ng-click="showAll('chapters')" data-ng-show="allchapters.length">
-	        	<a><i class="fa fa-ellipsis-h fa-2x fa-fw"></i></a>
-	        	</li>
-			</ul>
-		</div>
-		<div class="col-xs-12 col-md-8 col-md-offset-2">
-	        <form class="form" data-ng-submit="createComment()" novalidate>
-	            <h2>Comments</h2>
-	            <div class="form-group input-group input-group-lg">
-	                	<input type="text" data-ng-model="comment" name="comment" class="form-control"></input>
-	                	<label class="b input-group-addon warning" data-ng-click="createComment()"><i class="fa fa-fw fa-comment"></i></label>
-	            </div>
-			</form>
-			<ul class="list-group">
-				<li class="list-group-item" data-ng-repeat="comment in comments">
-					<em>{{comment.user.displayName}}:</em>
-					<span class="pull-right" data-ng-show="comment.user._id === authentication.user._id">
-		            	<a data-ng-href="#!/messages/{{comment._id}}"><i class="fa fa-edit fa-fw"></i></a> 
-		            </span>
-					<br>
-					<div class="text-center">
-						<p class="lead">{{comment.text}}</p>
-					</div> 
-					<small class="pull-right"><em>{{comment.created | timeago}}</em></small>
-					<br>
-				</li>
-				<li class="list-group-item text-center" data-ng-click="showAll('comments')" data-ng-show="allcomments.length">
-	        	<a><i class="fa fa-ellipsis-h fa-2x fa-fw"></i></a>
-	        	</li>
-			</ul>
-				
-	            <br>
-	    </div>
+	<div class="pull-right" data-ng-show="((user))">
+		<a class="btn btn-primary" href="/#!/groups/{{group._id}}/edit">
+			<i class="glyphicon glyphicon-edit"></i>
+		</a>
+		<a class="btn btn-primary" data-ng-click="remove();">
+			<i class="glyphicon glyphicon-trash"></i>
+		</a>
 	</div>
+    <p class="lead">
+        <b>Where:</b> {{group.meeting.place}} 
+        <br>
+        <b>When:</b> {{getWeekday(group.meeting.day)}}, {{group.meeting.time | date:'shortTime'}}
+        <h3>Members:</h3>
+	    <ul>
+	        <li class="lead" data-ng-repeat="user in group.users">
+	        	{{user.displayName}}
+	        </li>
+	    </ul>
+    </p>
 </section>

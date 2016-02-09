@@ -10,6 +10,9 @@ angular.module('core').controller('HomeController', ['$scope', '$window', 'Authe
 			$scope.trainings = response;
 		});
 		$scope.t = 0;
+		$scope.regDisabled = false;
+		$scope.conDisabled = false;
+				
 
 		$scope.localities = [
 			{ name: 'Bellevue', area: '' },
@@ -44,6 +47,7 @@ angular.module('core').controller('HomeController', ['$scope', '$window', 'Authe
 					$scope.error = 'Please fill every field';
 			}
 			else {
+				$scope.regDisabled = true;
 				$scope.user.registered = Date.now();
 				var user = new Users($scope.user);
 				
@@ -51,6 +55,7 @@ angular.module('core').controller('HomeController', ['$scope', '$window', 'Authe
 					$location.path('/');
 					$anchorScroll();
 				}, function(errorResponse) {
+					$scope.regDisabled = false;
 					$scope.error = errorResponse.data.message;
 				});
 			}
@@ -61,6 +66,7 @@ angular.module('core').controller('HomeController', ['$scope', '$window', 'Authe
 			if(!$scope.signature || $scope.signature.isEmpty) {
 				$scope.error = 'Please sign the form to continue';
 			} else {
+				$scope.conDisabled = true;
 				$scope.user.consecrated = Date.now();
 				var user = new Users($scope.user);
 				var application = new Applications({
@@ -71,12 +77,14 @@ angular.module('core').controller('HomeController', ['$scope', '$window', 'Authe
 				application.$save(function(response) {
 					user.applications.push(response._id);
 					user.$update(user, function(response) {
-						$location.path('/');
+						$location.reload();
 						
 					}, function(errorResponse) {
+						$scope.conDisabled = false;
 						$scope.error = errorResponse.data.message;
 					});
 				}, function(errorResponse) {
+					$scope.conDisabled = false;
 					$scope.error = errorResponse.data.message;
 				});
 				

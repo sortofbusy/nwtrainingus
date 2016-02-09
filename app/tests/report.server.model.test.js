@@ -6,17 +6,17 @@
 var should = require('should'),
 	mongoose = require('mongoose'),
 	User = mongoose.model('User'),
-	Group = mongoose.model('Group');
+	Report = mongoose.model('Report');
 
 /**
  * Globals
  */
-var user, group;
+var user, report;
 
 /**
  * Unit tests
  */
-describe('Group Model Unit Tests:', function() {
+describe('Report Model Unit Tests:', function() {
 	beforeEach(function(done) {
 		user = new User({
 			firstName: 'Full',
@@ -28,8 +28,8 @@ describe('Group Model Unit Tests:', function() {
 		});
 
 		user.save(function() { 
-			group = new Group({
-				name: 'Group Name',
+			report = new Report({
+				name: 'Report Name',
 				user: user
 			});
 
@@ -39,16 +39,16 @@ describe('Group Model Unit Tests:', function() {
 
 	describe('Method Save', function() {
 		it('should be able to save without problems', function(done) {
-			return group.save(function(err) {
+			return report.save(function(err) {
 				should.not.exist(err);
 				done();
 			});
 		});
 
 		it('should be able to show an error when try to save without name', function(done) { 
-			group.name = '';
+			report.name = '';
 
-			return group.save(function(err) {
+			return report.save(function(err) {
 				should.exist(err);
 				done();
 			});
@@ -56,7 +56,7 @@ describe('Group Model Unit Tests:', function() {
 	});
 
 	afterEach(function(done) { 
-		Group.remove().exec();
+		Report.remove().exec();
 		User.remove().exec();
 
 		done();
