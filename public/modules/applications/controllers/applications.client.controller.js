@@ -7,7 +7,8 @@ angular.module('applications').controller('ApplicationsController', ['$scope', '
 
 		// If user is not signed in then redirect back home
 		if (!$scope.user) $location.path('/');
-
+		$scope.loading = false;
+			
 		$scope.optionsCollapsed = true;
 		$scope.addCollapsed = true;
 		$scope.open = false;
@@ -47,6 +48,7 @@ angular.module('applications').controller('ApplicationsController', ['$scope', '
 		};
 
 		$scope.showApplications = function() {
+			$scope.loading = true;
 			$scope.progressbar.start();
 			$scope.textPromise = $http.get('/applications');
 			$scope.textPromise.success( function(response) {
@@ -63,6 +65,7 @@ angular.module('applications').controller('ApplicationsController', ['$scope', '
 				$scope.pendingApplications = $filter('filter')(response, {appStatus: 'Pending', applicant: {locality: locality}});
 				$scope.approvedApplications = $filter('filter')(response, {appStatus: 'Approved'});
 				$scope.deniedApplications = $filter('filter')(response, {appStatus: 'Denied'});
+				//$scope.loading = false;
 				$scope.progressbar.complete();
 			});
 		};
