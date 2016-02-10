@@ -65,7 +65,7 @@ angular.module('applications').controller('ApplicationsController', ['$scope', '
 				$scope.pendingApplications = $filter('filter')(response, {appStatus: 'Pending', applicant: {locality: locality}});
 				$scope.approvedApplications = $filter('filter')(response, {appStatus: 'Approved'});
 				$scope.deniedApplications = $filter('filter')(response, {appStatus: 'Denied'});
-				//$scope.loading = false;
+				$scope.loading = false;
 				$scope.progressbar.complete();
 			});
 		};
