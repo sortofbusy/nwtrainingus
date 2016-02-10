@@ -22,7 +22,7 @@ var adminFindApplications = q.nbind(Application.find, Application);
 exports.getApplications = function(req, res) {
 	var params = {signature: {$exists: true}};
 	// if the user is not an admin, show only the applications for their locality
-	if(_.indexOf(req.user.roles, 'admin') < 0) params.locality = req.user.locality;
+	// if(_.indexOf(req.user.roles, 'admin') < 0) params.locality = req.user.locality;
 
 	adminFindApplications(params, '-password -salt -roles', {sort: {created: -1}})
 	.then(function(result) {

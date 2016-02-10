@@ -11,6 +11,7 @@ var _ = require('lodash'),
 	nodemailer = require('nodemailer'),
 	smtpTransport = require('nodemailer-smtp-transport'),
 	User = mongoose.model('User'),
+	Group = mongoose.model('Group'),
 	Message = mongoose.model('Message');
 
 /**
@@ -39,7 +40,6 @@ var sendEmail = function(user, res, emailInfo) {
 exports.update = function(req, res) {
 	// Init Variables
 	var user = req.user;
-	var message = null;
 	var emailInfo = {};
 
 	// if the user is completing the registration
@@ -76,9 +76,9 @@ exports.update = function(req, res) {
 					message: errorHandler.getErrorMessage(err)
 				});
 			} else {
-				if(emailInfo.view) {
-					sendEmail(user, res, emailInfo);
-				}
+				/*if(emailInfo.view) {
+					//sendEmail(user, res, emailInfo); THIS IS HANDELD IN APPLICATION CONTROLLER
+				}*/
 				req.login(user, function(err) {
 					if (err) {
 						res.status(400).send(err);
@@ -100,6 +100,18 @@ exports.update = function(req, res) {
  */
 exports.me = function(req, res) {
 	res.json(req.user || null);
+};
+
+exports.myGroups = function(req, res) {
+	Group.find({users: req.user._id}).exec(function(err, group) {
+		if (err) {
+			return res.status(400).send({
+				message: errorHandler.getErrorMessage(err)
+			});
+		} else {
+			res.jsonp(group);
+		}
+	});
 };
 
 exports.getMessages = function(req, res) {

@@ -9,10 +9,12 @@ angular.module('core').controller('HomeController', ['$scope', '$window', 'Authe
 		$http.get('/trainings').success( function(response) {
 			$scope.trainings = response;
 		});
+		$http.get('/users/groups').success( function(response) {
+			$scope.myGroups = response;
+		});
 		$scope.t = 0;
 		$scope.regDisabled = false;
-		$scope.conDisabled = false;
-				
+		$scope.conDisabled = false;		
 
 		$scope.localities = [
 			{ name: 'Bellevue', area: '' },
@@ -105,8 +107,6 @@ angular.module('core').controller('HomeController', ['$scope', '$window', 'Authe
 				$scope.error = 'Please sign the form to continue';
 			});
 		};
-
-
 
 		$scope.showApplications = function() {
 			$http.get('/users/applications').success( function(response) {

@@ -1,9 +1,36 @@
 'use strict';
 
 // Groups controller
-angular.module('groups').controller('GroupsController', ['$scope', '$window', '$http', '$q', '$stateParams', '$location', 'Authentication', 'Groups',
-	function($scope, $window, $http, $q, $stateParams, $location, Authentication, Groups) {
+angular.module('groups').controller('GroupsController', ['$scope', '$window', '$http', '$filter', '$q', '$stateParams', '$location', 'Authentication', 'Groups',
+	function($scope, $window, $http, $filter, $q, $stateParams, $location, Authentication, Groups) {
 		$scope.user = Authentication.user;
+
+		if ($scope.user.locality.area === 'Oregon Area') {
+			$scope.newLocality = $scope.user.locality;
+			$scope.localities = [
+				{ name: 'Eugene', area: 'Oregon Area' },
+				{ name: 'Corvallis',  area: 'Oregon Area' },
+				{ name: 'Medford', area: 'Oregon Area' },
+				{ name: 'Portland', area: 'Oregon Area' },
+				{ name: 'Roseburg', area: 'Oregon Area' },
+				{ name: 'Salem', area: 'Oregon Area' },
+				{ name: 'Vancouver, WA', area: 'Oregon Area' },
+				{ name: 'Other (Oregon)', area: 'Oregon Area' }
+			];
+		}
+
+		if ($scope.user.locality.area === 'Eastern Washington') {
+			$scope.newLocality = $scope.user.locality;
+			$scope.localities = [
+				{ name: 'Cheney', area: 'Eastern Washington' },
+				{ name: 'Ephrata', area: 'Eastern Washington' },
+				{ name: 'Prosser', area: 'Eastern Washington' },
+				{ name: 'Pullman', area: 'Eastern Washington' },
+				{ name: 'Spokane', area: 'Eastern Washington' },
+				{ name: 'West Richland', area: 'Eastern Washington' },
+				{ name: 'Other (Eastern WA)', area: 'Eastern Washington' }
+			];
+		}
 
 		$scope.newTime = new Date('October 1, 2016 18:00:00');
 
@@ -19,7 +46,7 @@ angular.module('groups').controller('GroupsController', ['$scope', '$window', '$
 				return;
 			}
 			group.meeting.time = $scope.newTime;
-			group.locality = $scope.user.locality;
+			group.locality = $scope.newLocality;
 
 			// Redirect after save
 			group.$save(function(response) {
@@ -83,7 +110,26 @@ angular.module('groups').controller('GroupsController', ['$scope', '$window', '$
 
 		// Find a list of Groups
 		$scope.find = function() {
-			$scope.groups = Groups.query();
+			Groups.query().$promise.then( function(response) {
+				var locality;
+				if($scope.user.roles.indexOf('admin') < 0) {
+					locality = {};
+						// if the approver is from Oregon or Eastern Washington
+					if ($scope.user.locality.area !== '') {
+						locality.area = $scope.user.locality.area;
+						$scope.localityId = locality.area;
+					}
+					else {
+						locality.name = $scope.user.locality.name;
+						$scope.localityId = locality.name;
+					}
+				}
+					// for display in the template
+				$scope.locality = locality;
+
+				$scope.groups = $filter('filter')(response, {locality: locality});
+
+			});
 			$http.get('/groups/unassigned').success( function(response) {
 				$scope.unassigned = response;
 			});

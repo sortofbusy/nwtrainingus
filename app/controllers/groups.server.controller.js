@@ -7,6 +7,7 @@ var mongoose = require('mongoose'),
 	errorHandler = require('./errors.server.controller'),
 	Group = mongoose.model('Group'),
 	User = mongoose.model('User'),
+	Application = mongoose.model('Application'),
 	_ = require('lodash');
 
 /**
@@ -74,7 +75,7 @@ exports.delete = function(req, res) {
  * List of Groups
  */
 exports.list = function(req, res) { 
-	Group.find({'locality.name': req.user.locality.name}).sort('created').populate('users', 'displayName').exec(function(err, groups) {
+	Group.find().sort('created').populate('users', 'displayName locality').exec(function(err, groups) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -97,8 +98,13 @@ exports.compareUsers = function(arrVal, othVal) {
  */
 exports.unassigned = function(req, res) { 
 	var assignedUsers = [];
+	var params = {};
+	// if the approver is from Oregon or Eastern Washington, search the area
+	if (req.user.locality.area !== '') params = {'locality.area': req.user.locality.area};
+	else params = {'locality.name': req.user.locality.name};
+
 	// get all Users from req.user's locality that are in a study group
-	Group.find({'locality.name': req.user.locality.name}).populate('users', 'displayName').exec(function(err, groups) {
+	Group.find(params).populate('users', 'displayName').exec(function(err, groups) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -108,7 +114,7 @@ exports.unassigned = function(req, res) {
 				assignedUsers = _.union(assignedUsers, groups[i].users);
 			}
 				// find all users from that locality
-			User.find({'locality.name': req.user.locality.name}).select('displayName').exec(function(err, users) {
+			Application.find({appStatus: 'Approved'}).populate('applicant', 'displayName locality').select('-signature').exec(function(err, users) {
 				if (err) {
 					return res.status(400).send({
 						message: errorHandler.getErrorMessage(err)
@@ -120,9 +126,9 @@ exports.unassigned = function(req, res) {
 					for (var u = 0; u < users.length; u++) {
 						isAssigned = false;
 						for (var a = 0; a < assignedUsers.length; a++) {
-							if (_.isEqual(users[u]._id, assignedUsers[a]._id)) isAssigned = true;
+							if (_.isEqual(users[u].applicant._id, assignedUsers[a]._id)) isAssigned = true;
 						}
-						if (!isAssigned) unassignedUsers.push(users[u]);
+						if (!isAssigned) unassignedUsers.push(users[u].applicant);
 					}
 					res.jsonp(unassignedUsers);
 				}

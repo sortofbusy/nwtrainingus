@@ -144,10 +144,15 @@
 			<p class="lead">Thank you for completing your application. It is now pending approval, and you will receive an email notification when a decision is made.</p>
 		</div>
 	</div>
+	<div class="row text-center" data-ng-show="user.applications[0].appStatus === 'Denied'">
+		<h3 class="col-md-12 text-center">You will be contacted soon regarding your application.</h3>
+	</div>
 	<div class="row text-center" data-ng-show="user.applications[0].appStatus === 'Approved'">
 		<h2 class="col-md-12 text-center">Training Resources for {{user.applications[0].training.name}}</h2>
 		<a href="/#!/resources" class="btn btn-info btn-lg">View Resources</a>
+		<a data-ng-href="/#!/groups/{{myGroups[0]._id}}" class="btn btn-info btn-lg">Study Group</a>
 	</div>
+
 	<!-- /////// VIEW APPLICATIONS /////// -->
 	<div class="row text-center" data-ng-show="(user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1)">
 		<hr>

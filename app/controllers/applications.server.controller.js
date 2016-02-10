@@ -5,9 +5,32 @@
  */
 var mongoose = require('mongoose'),
 	errorHandler = require('./errors.server.controller'),
+	config = require('../../config/config'),
+	nodemailer = require('nodemailer'),
+	smtpTransport = require('nodemailer-smtp-transport'),
 	Application = mongoose.model('Application'),
 	User = mongoose.model('User'),
 	_ = require('lodash');
+
+/**
+ * Send an email to users at different steps of the registration process
+ */
+var sendEmail = function(user, res, emailInfo) {
+	res.render('templates/' + emailInfo.view, {
+		name: user.firstName,
+		appName: config.app.title
+	}, function(err, emailHTML) {
+		if (err) return;
+		var smtpTransport = nodemailer.createTransport(config.mailer.options);
+		var mailOptions = {
+			to: user.email,
+			from: config.mailer.from,
+			subject: emailInfo.subject,
+			html: emailHTML
+		};
+		smtpTransport.sendMail(mailOptions);
+	});
+};
 
 /**
  * Create an application
@@ -22,6 +45,13 @@ exports.create = function(req, res) {
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
+				// send email
+			var emailInfo = {
+				view: 'applied',
+				subject: 'Application Completed'
+			};
+			sendEmail(req.user, res, emailInfo);
+
 			res.jsonp(application);
 		}
 	});
@@ -64,6 +94,17 @@ exports.update = function(req, res) {
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
+			if(newapplication.appStatus === 'Approved') {
+					// send approval email
+				var emailInfo = {
+					view: 'approved',
+					subject: 'Application Approved'
+				};
+				User.findById(newapplication.applicant).exec(function(err, applicant) {
+					if (!err) sendEmail(applicant, res, emailInfo);
+				});
+			}
+			
 			res.jsonp(newapplication);
 		}
 	});
