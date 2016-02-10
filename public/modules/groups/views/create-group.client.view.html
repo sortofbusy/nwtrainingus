@@ -9,7 +9,7 @@
                 <div class="form-group">
                     <label class="control-label" for="locality">Locality</label>
                     <div class="controls" data-ng-show="user.locality.area === ''">
-                        <input type="text" data-ng-model="user.locality.name" id="locality" class="form-control">
+                        <input type="text" data-ng-model="user.locality.name" id="locality" disabled class="form-control">
                     </div>
                     <select id="locality" name="locality" data-ng-show="user.locality.area !== ''" data-ng-model="newLocality" data-ng-options="locality.name group by locality.area for locality in localities track by locality.name" class="form-control" ></select>
                 </div>
