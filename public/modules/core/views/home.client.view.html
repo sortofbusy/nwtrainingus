@@ -150,7 +150,7 @@
 	<div class="row text-center" data-ng-show="user.applications[0].appStatus === 'Approved'">
 		<h2 class="col-md-12 text-center">Training Resources for {{user.applications[0].training.name}}</h2>
 		<a href="/#!/resources" class="btn btn-info btn-lg">View Resources</a>
-		<a data-ng-href="/#!/groups/{{myGroups[0]._id}}" class="btn btn-info btn-lg">Study Group</a>
+		<a data-ng-show="myGroups[0]" data-ng-href="/#!/groups/{{myGroups[0]._id}}" class="btn btn-info btn-lg">Study Group</a>
 	</div>
 
 	<!-- /////// VIEW APPLICATIONS /////// -->

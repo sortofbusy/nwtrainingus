@@ -123,7 +123,7 @@ angular.module('groups').controller('GroupsController', ['$scope', '$window', '$
 						locality.name = $scope.user.locality.name;
 						$scope.localityId = locality.name;
 					}
-				}
+				} else $scope.localityId = 'All';
 					// for display in the template
 				$scope.locality = locality;
 
