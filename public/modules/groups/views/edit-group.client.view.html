@@ -1,4 +1,4 @@
-<section data-ng-controller="GroupsController" data-ng-init="findOne()">
+<section data-ng-controller="GroupsController" data-ng-init="findOne()" data-ng-show="user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1">
     <div class="page-header">
         <a href="/#!/groups">Back to Groups</a>
         <h1>Edit Group</h1>
@@ -46,12 +46,18 @@
                         <uib-timepicker data-ng-model="group.meeting.time" data-minute-step="15"></uib-timepicker>
                     </div>
                 </div>
+                <div data-ng-show="error" class="text-danger">
+                    <strong data-ng-bind="error"></strong>
+                </div>
                 <div class="form-group">
                     <input type="submit" value="Update" class="btn btn-default">
                 </div>
-				<div data-ng-show="error" class="text-danger">
-					<strong data-ng-bind="error"></strong>
-				</div>
+				
+                <div class="pull-right">
+                    <a class="btn btn-danger" data-ng-click="remove();">
+                        <i class="glyphicon glyphicon-trash"></i> Delete
+                    </a>
+                </div>
             </fieldset>
         </form>
     </div>

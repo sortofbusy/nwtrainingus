@@ -17,7 +17,10 @@ module.exports = function() {
 		function(req, username, password, done) {
 			User.findOne({
 				$or: [ { username: username }, { email: username } ]
-			}, function(err, user) {
+			})
+			.populate('applications', 'appStatus training')
+			.populate('applications.training', 'name')
+			.exec(function(err, user) {
 				if (err) {
 					return done(err);
 				}

@@ -2,12 +2,9 @@
 	<div class="page-header">
 		<h2 class="list-group-item-heading">{{group.locality.name}} {{group.language}} Study Group</h2>
 	</div>
-	<div class="pull-right" data-ng-show="((user))">
+	<div class="pull-right" data-ng-show="user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1">
 		<a class="btn btn-primary" href="/#!/groups/{{group._id}}/edit">
 			<i class="glyphicon glyphicon-edit"></i>
-		</a>
-		<a class="btn btn-primary" data-ng-click="remove();">
-			<i class="glyphicon glyphicon-trash"></i>
 		</a>
 	</div>
     <p class="lead">

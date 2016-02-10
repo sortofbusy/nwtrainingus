@@ -5,19 +5,8 @@ angular.module('core').controller('HomeController', ['$scope', '$window', 'Authe
 	function($scope, $window, Authentication, $http, $q, $sce, $location, $anchorScroll, Users, $uibModal, Applications) {
 		// This provides Authentication context.
 		$scope.user = Authentication.user;
-		$scope.windowWidth = $window.innerWidth;
-		$http.get('/trainings').success( function(response) {
-			$scope.trainings = response;
-		});
-		if ($scope.user) {
-			$http.get('/users/groups').success( function(response) {
-				$scope.myGroups = response;
-			});
-		}
-		$scope.t = 0;
-		$scope.regDisabled = false;
-		$scope.conDisabled = false;		
-
+		$scope.authentication = Authentication;
+		
 		$scope.localities = [
 			{ name: 'Bellevue', area: '' },
 			{ name: 'Bellingham',  area: '' },
@@ -43,6 +32,21 @@ angular.module('core').controller('HomeController', ['$scope', '$window', 'Authe
 			{ name: 'West Richland', area: 'Eastern Washington' },
 			{ name: 'Other (Eastern WA)', area: 'Eastern Washington' }
 		];
+
+		$scope.getReady = function() {
+			$scope.windowWidth = $window.innerWidth;
+			$http.get('/trainings').success( function(response) {
+				$scope.trainings = response;
+			});
+			if ($scope.user) {
+				$http.get('/users/groups').success( function(response) {
+					$scope.myGroups = response;
+				});
+			}
+			$scope.t = 0;
+			$scope.regDisabled = false;
+			$scope.conDisabled = false;	
+		};
 
 		$scope.checkRegistration = function() {
 			if(!$scope.user.hasOwnProperty('age') || !$scope.user.hasOwnProperty('phone') || $scope.user.phone === '' || 
