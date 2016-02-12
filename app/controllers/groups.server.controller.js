@@ -124,12 +124,21 @@ exports.unassigned = function(req, res) {
 					var isAssigned = false;
 						// loop through users, check if they are assigned
 					for (var u = 0; u < users.length; u++) {
+							// because MongoDB can't join, manually skip users that don't match either
+							// the locality (name) or area of the requesting user
+						if (req.user.locality.area !== '') {
+							if (users[u].applicant.locality.area !== req.user.locality.area) continue;
+						} else {
+							if (users[u].applicant.locality.name !== req.user.locality.name) continue;
+						}
+
 						isAssigned = false;
 						for (var a = 0; a < assignedUsers.length; a++) {
 							if (_.isEqual(users[u].applicant._id, assignedUsers[a]._id)) isAssigned = true;
 						}
 						if (!isAssigned) unassignedUsers.push(users[u].applicant);
 					}
+					
 					res.jsonp(unassignedUsers);
 				}
 			});
