@@ -134,7 +134,7 @@ exports.unassigned = function(req, res) {
 
 						isAssigned = false;
 						for (var a = 0; a < assignedUsers.length; a++) {
-							if (_.isEqual(users[u].applicant._id, assignedUsers[a]._id)) isAssigned = true;
+							if (String(users[u].applicant._id) === String(assignedUsers[a]._id)) isAssigned = true;
 						}
 						if (!isAssigned) unassignedUsers.push(users[u].applicant);
 					}
