@@ -138,7 +138,9 @@ exports.unassigned = function(req, res) {
 						}
 						if (!isAssigned) unassignedUsers.push(users[u].applicant);
 					}
-					
+					console.log(users);
+					console.log(assignedUsers);
+					console.log(unassignedUsers);
 					res.jsonp(unassignedUsers);
 				}
 			});
