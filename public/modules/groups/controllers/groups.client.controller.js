@@ -4,9 +4,9 @@
 angular.module('groups').controller('GroupsController', ['$scope', '$window', '$http', '$filter', '$q', '$stateParams', '$location', 'Authentication', 'Groups',
 	function($scope, $window, $http, $filter, $q, $stateParams, $location, Authentication, Groups) {
 		$scope.user = Authentication.user;
-
+		$scope.newLocality = $scope.user.locality;
+			
 		if ($scope.user.locality.area === 'Oregon Area') {
-			$scope.newLocality = $scope.user.locality;
 			$scope.localities = [
 				{ name: 'Eugene', area: 'Oregon Area' },
 				{ name: 'Corvallis',  area: 'Oregon Area' },
@@ -20,7 +20,6 @@ angular.module('groups').controller('GroupsController', ['$scope', '$window', '$
 		}
 
 		if ($scope.user.locality.area === 'Eastern Washington') {
-			$scope.newLocality = $scope.user.locality;
 			$scope.localities = [
 				{ name: 'Cheney', area: 'Eastern Washington' },
 				{ name: 'Ephrata', area: 'Eastern Washington' },

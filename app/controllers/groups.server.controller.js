@@ -111,7 +111,7 @@ exports.unassigned = function(req, res) {
 			});
 		} else {
 			for (var i = 0; i < groups.length; i++) {
-				assignedUsers = assignedUsers.concat(groups[i].users);
+				assignedUsers = _.union(assignedUsers, groups[i].users);
 			}
 				// find all users from that locality
 			Application.find({appStatus: 'Approved'}).populate('applicant', 'displayName locality').select('-signature').exec(function(err, users) {
@@ -134,13 +134,11 @@ exports.unassigned = function(req, res) {
 
 						isAssigned = false;
 						for (var a = 0; a < assignedUsers.length; a++) {
-							if (String(users[u].applicant._id) === String(assignedUsers[a]._id)) isAssigned = true;
+							if (_.isEqual(users[u].applicant._id, assignedUsers[a]._id)) isAssigned = true;
 						}
 						if (!isAssigned) unassignedUsers.push(users[u].applicant);
 					}
-					console.log(users);
-					console.log(assignedUsers);
-					console.log(unassignedUsers);
+					
 					res.jsonp(unassignedUsers);
 				}
 			});
