@@ -111,7 +111,7 @@ exports.unassigned = function(req, res) {
 			});
 		} else {
 			for (var i = 0; i < groups.length; i++) {
-				assignedUsers = _.union(assignedUsers, groups[i].users);
+				assignedUsers = assignedUsers.concat(groups[i].users);
 			}
 				// find all users from that locality
 			Application.find({appStatus: 'Approved'}).populate('applicant', 'displayName locality').select('-signature').exec(function(err, users) {
