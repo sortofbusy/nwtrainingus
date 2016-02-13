@@ -32,10 +32,50 @@
 		// Then we can start by loading the main application module
 		beforeEach(module(ApplicationConfiguration.applicationModuleName));
 
+		// mock out Authentication with a fake one
+		beforeEach(module(function ($provide) {
+
+		   //create mock 
+		     var mockAuthentication = {
+		         user: {
+								_id : '56b66b18dd3d5b6c16aaa1f5',
+								username : 'happy@example.com',
+								displayName : 'Happy Brother',
+								provider: 'local',
+								email: 'happy@example.com',
+								applications: [],
+								language: 'Chinese',
+								timezone: 'America/Los_Angeles',
+								registration: {
+								    status: []
+								},
+								//created: ISODate('2016-02-06T21:52:24.016Z'),
+								roles: [ 
+								    'user'
+								],
+								lastName: 'Brother',
+								firstName: 'Happy',
+								age: 54,
+								locality: {
+								    name: 'Seattle',
+								    area: ''
+								},
+								occupation: 'Anaja',
+								phone: 4566446494.0000000000000000,
+								//registered: ISODate('2016-02-06T21:52:43.037Z'),
+								serviceAreas: 'Sjsjsjs'
+							}
+		              };
+
+		$provide.value('Authentication', mockAuthentication); // use $provide to swap the real $location with our mock
+		}));
+		
+		var Authentication;
+
 		// The injector ignores leading and trailing underscores here (i.e. _$httpBackend_).
 		// This allows us to inject a service but then attach it to a variable
 		// with the same name as the service.
-		beforeEach(inject(function($controller, $rootScope, _$location_, _$stateParams_, _$httpBackend_) {
+		beforeEach(inject(function($controller, $rootScope, _$location_, _$stateParams_, _$httpBackend_, _Authentication_) {
 			// Set a new global scope
 			scope = $rootScope.$new();
 
@@ -43,17 +83,27 @@
 			$stateParams = _$stateParams_;
 			$httpBackend = _$httpBackend_;
 			$location = _$location_;
-
+			
 			// Initialize the Groups controller.
 			GroupsController = $controller('GroupsController', {
-				$scope: scope
+				$scope: scope,
+				Authentication: _Authentication_
 			});
 		}));
 
 		it('$scope.find() should create an array with at least one Group object fetched from XHR', inject(function(Groups) {
 			// Create sample Group using the Groups service
 			var sampleGroup = new Groups({
-				name: 'New Group'
+				locality: {
+					name: 'Seattle',
+					area: ''
+				},
+				language: 'English',
+				meeting: {
+					place: 'Hall',
+					day: 2,
+					time: '2016-10-02T01:00:00.000Z'
+				}
 			});
 
 			// Create a sample Groups array that includes the new Group
@@ -61,6 +111,7 @@
 
 			// Set GET response
 			$httpBackend.expectGET('groups').respond(sampleGroups);
+			$httpBackend.expectGET('/groups/unassigned').respond([]);
 
 			// Run controller functionality
 			scope.find();
@@ -73,7 +124,16 @@
 		it('$scope.findOne() should create an array with one Group object fetched from XHR using a groupId URL parameter', inject(function(Groups) {
 			// Define a sample Group object
 			var sampleGroup = new Groups({
-				name: 'New Group'
+				locality: {
+					name: 'Seattle',
+					area: ''
+				},
+				language: 'English',
+				meeting: {
+					place: 'Hall',
+					day: 2,
+					time: '2016-10-02T01:00:00.000Z'
+				}
 			});
 
 			// Set the URL parameter
@@ -93,17 +153,45 @@
 		it('$scope.create() with valid form data should send a POST request with the form input values and then locate to new object URL', inject(function(Groups) {
 			// Create a sample Group object
 			var sampleGroupPostData = new Groups({
-				name: 'New Group'
+				locality: {
+					name: 'Seattle',
+					area: ''
+				},
+				language: 'English',
+				meeting: {
+					place: 'Hall',
+					day: 2,
+					time: '2016-10-02T01:00:00.000Z'
+				}
 			});
 
 			// Create a sample Group response
 			var sampleGroupResponse = new Groups({
 				_id: '525cf20451979dea2c000001',
-				name: 'New Group'
+				locality: {
+					name: 'Seattle',
+					area: ''
+				},
+				language: 'English',
+				meeting: {
+					place: 'Hall',
+					day: 2,
+					time: '2016-10-02T01:00:00.000Z'
+				}
 			});
+			
 
 			// Fixture mock form input values
-			scope.name = 'New Group';
+			scope.locality = {
+					name: 'Seattle',
+					area: ''
+				};
+			scope.language = 'English';
+			scope.meeting = {
+					place: 'Hall',
+					day: 2,
+					time: '2016-10-02T01:00:00.000Z'
+				};
 
 			// Set POST response
 			$httpBackend.expectPOST('groups', sampleGroupPostData).respond(sampleGroupResponse);
@@ -113,7 +201,7 @@
 			$httpBackend.flush();
 
 			// Test form inputs are reset
-			expect(scope.name).toEqual('');
+			//expect(scope.name).toEqual('');
 
 			// Test URL redirection after the Group was created
 			expect($location.path()).toBe('/groups/' + sampleGroupResponse._id);

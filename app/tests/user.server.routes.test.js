@@ -154,7 +154,7 @@ describe('User route tests', function() {
 /**
  * Message routes tests
  */
-describe.only('Admin route tests', function() {
+describe('Admin route tests', function() {
 	beforeEach(function(done) {
 		// Create user credentials
 		credentials = {

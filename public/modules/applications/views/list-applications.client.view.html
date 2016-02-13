@@ -16,11 +16,11 @@
                 <li>If you <span class="strong text-warning">deny</span> an application, no email will be sent. Please contact that person directly.</li>
         </div> 
         <h3>Search by Name: <input type="text" data-ng-model="searchString" autofocus/></h3>
-        <!-- Show all users -->
+        <!-- Show PENDING applications -->
         <ul class="list-group">
             <li class="h3 list-group-item list-group-item-warning"><i class="fa fa-circle-o fa-fw"></i> Pending Applications <span class="badge">{{pendingApplications.length}}</span></li>
             <li class="list-group-item" data-ng-repeat="application in pendingApplications | filter: {applicant: {displayName: searchString}}">
-                <span class=" h3">{{application.applicant.displayName}}</span>
+                <span class=" h3">{{application.applicant.displayName}}<span class="small"> on {{application.created | date}}</span></span>
                 <br><br>
                 <button class="btn btn-default btn-sm pull-right" data-ng-click="showUserDetails[$index] = !showUserDetails[$index]">
                     <i class="fa fa-ellipsis-v fa-fw fa-2x"></i> <span class="hidden-xs h4">Show Details</span>
@@ -45,11 +45,12 @@
             </li>
         </ul>
         <br>
-        <!-- Show all users -->
+        <!-- Show APPROVED applications -->
         <ul class="list-group">
             <li class="h3 list-group-item list-group-item-success"><i class="fa fa-check-circle-o fa-fw"></i> Approved <span class="badge">{{approvedApplications.length}}</span></li>
             <li class="list-group-item" data-ng-repeat="application in approvedApplications">
-                <span class=" h3">{{application.applicant.displayName}}</span>
+                <span class=" h3">{{application.applicant.displayName}} <span class="small"> approved by {{application.modifiedBy.displayName}} on {{application.modified | date}}</span></span>
+
                 <br><br>
                 <button class="btn btn-default btn-sm pull-right" data-ng-click="showUserDetails[$index] = !showUserDetails[$index]">
                     <i class="fa fa-ellipsis-v fa-fw fa-2x"></i> <span class="hidden-xs h4">Show Details</span>
@@ -71,11 +72,11 @@
             </li>
         </ul>
         <br>
-        <!-- Show all users -->
+        <!-- Show DENIED applications -->
         <ul class="list-group">
             <li class="h3 list-group-item list-group-item-danger"><i class="fa fa-times-circle-o fa-fw"></i> Denied <span class="badge">{{deniedApplications.length}}</span></li>
             <li class="list-group-item" data-ng-repeat="application in deniedApplications">
-                <span class=" h3">{{application.applicant.displayName}}</span>
+                <span class=" h3">{{application.applicant.displayName}}<span class="small"> denied by {{application.modifiedBy.displayName}} on {{application.modified | date}}</span></span>
                 <br><br>
                 <button class="btn btn-default btn-sm pull-right" data-ng-click="showUserDetails[$index] = !showUserDetails[$index]">
                     <i class="fa fa-ellipsis-v fa-fw fa-2x"></i> <span class="hidden-xs h4">Show Details</span>

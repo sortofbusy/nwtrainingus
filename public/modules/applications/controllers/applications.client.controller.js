@@ -73,6 +73,8 @@ angular.module('applications').controller('ApplicationsController', ['$scope', '
 		$scope.approveApplication = function(application) {
 			application = new Applications(application);
 			application.appStatus = 'Approved';
+			application.modified = Date.now();
+			
 			application.$update(function(response) {
 				$scope.showApplications();
 			}, function(errorResponse) {
@@ -84,6 +86,8 @@ angular.module('applications').controller('ApplicationsController', ['$scope', '
 			if($window.confirm('Are you sure you want to deny this application?')) {
 					application = new Applications(application);
 				application.appStatus = 'Denied';
+				application.modified = Date.now();
+				
 				application.$update(function(response) {
 					$scope.showApplications();
 				}, function(errorResponse) {
@@ -96,6 +100,8 @@ angular.module('applications').controller('ApplicationsController', ['$scope', '
 			if($window.confirm('Are you sure you want to reset the status of this application to pending?')) {
 				application = new Applications(application);
 				application.appStatus = 'Pending';
+				application.modified = Date.now();
+			
 				application.$update(function(response) {
 					$scope.showApplications();
 				}, function(errorResponse) {

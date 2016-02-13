@@ -28,23 +28,23 @@ describe('Application Model Unit Tests:', function() {
 		});
 
 		user.save(function() { 
-			application = new Application({
+			/*application = new Application({
 				// Add model fields
 				// ...
-			});
+			});*/
 
 			done();
 		});
 	});
 
-	describe('Method Save', function() {
+	/*describe('Method Save', function() {
 		it('should be able to save without problems', function(done) {
 			return application.save(function(err) {
 				should.not.exist(err);
 				done();
 			});
 		});
-	});
+	});*/
 
 	afterEach(function(done) { 
 		Application.remove().exec();
