@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('users').controller('AdminController', ['$scope', '$http', '$window', '$location', 'Users', 'Authentication',
-	function($scope, $http, $window, $location, Users, Authentication) {
+angular.module('users').controller('AdminController', ['$scope', '$http', '$window', '$filter', '$location', 'Users', 'Authentication',
+	function($scope, $http, $window, $filter, $location, Users, Authentication) {
 		$scope.user = Authentication.user;
 		//$scope.showGroupDetails = [];
 
@@ -26,11 +26,12 @@ angular.module('users').controller('AdminController', ['$scope', '$http', '$wind
 					$scope.users = response[0].slice(0, listLength);
 					$scope.allusers = response[0];
 				} else $scope.users = response[0];
-
-				$scope.chapters = response[1];
-				$scope.groups = response[2];
+				
+				if ($scope.allusers) $scope.userList = $scope.allusers;
+				else $scope.userList = $scope.users;
 			});
 			$scope.listTrainings();
+			
 		};
 
 		$scope.editRoles = function(user) {
