@@ -206,7 +206,7 @@ exports.addReporterRole = function(req, res) {
 				view: 'reporter',
 				subject: 'Study Group Reports'
 			};
-			sendEmail(req.user, res, emailInfo);
+			sendEmail(req.profile, res, emailInfo);
 
 			res.jsonp(user);
 		}
