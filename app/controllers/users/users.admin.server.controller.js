@@ -8,6 +8,9 @@ var _ = require('lodash'),
 	errorHandler = require('../errors.server.controller.js'),
 	mongoose = require('mongoose'),
 	passport = require('passport'),
+	config = require('../../../config/config'),
+	nodemailer = require('nodemailer'),
+	smtpTransport = require('nodemailer-smtp-transport'),
 	User = mongoose.model('User'),
 	Group = mongoose.model('Group'),
 	Application = mongoose.model('Application'),
@@ -17,6 +20,26 @@ var _ = require('lodash'),
 var adminFindUsers = q.nbind(User.find, User);
 var adminUpdateUsers = q.nbind(User.findByIdAndUpdate, User);
 var adminFindMessages = q.nbind(Message.find, Message);
+
+/**
+ * Send an email to users at different steps of the registration process
+ */
+var sendEmail = function(user, res, emailInfo) {
+	res.render('templates/' + emailInfo.view, {
+		name: user.firstName,
+		appName: config.app.title
+	}, function(err, emailHTML) {
+		if (err) return;
+		var smtpTransport = nodemailer.createTransport(config.mailer.options);
+		var mailOptions = {
+			to: user.email,
+			from: config.mailer.from,
+			subject: emailInfo.subject,
+			html: emailHTML
+		};
+		smtpTransport.sendMail(mailOptions);
+	});
+};
 
 /**
  * Update user details
@@ -164,8 +187,58 @@ exports.createApplications = function(req, res) {
 	});
 };
 
+exports.addReporterRole = function(req, res) {
+		// if not already there, add 'reporter' role
+	if (req.profile.roles.indexOf('reporter') < 0) {
+		req.profile.roles.push('reporter');
+	}
+	User.findByIdAndUpdate(req.profile._id, {roles: req.profile.roles}, {new: true}, function(err, user) {
+		if (err) {
+			return res.status(400).send({
+				message: errorHandler.getErrorMessage(err)
+			});
+		} else {
+			delete user.salt;
+			delete user.password;
+
+				// send email
+			var emailInfo = {
+				view: 'reporter',
+				subject: 'Study Group Reports'
+			};
+			sendEmail(req.user, res, emailInfo);
+
+			res.jsonp(user);
+		}
+	});
+};
+
+exports.removeReporterRole = function(req, res) {
+		// if it exists, remove the 'reporter' role
+	if (req.profile.roles.indexOf('reporter') > -1) {
+		req.profile.roles.splice(req.profile.roles.indexOf('reporter'));
+	}
+	User.findByIdAndUpdate(req.profile._id, {roles: req.profile.roles}, {new: true}, function(err, user) {
+		if (err) {
+			return res.status(400).send({
+				message: errorHandler.getErrorMessage(err)
+			});
+		} else {
+			delete user.salt;
+			delete user.password;
+			res.jsonp(user);
+		}
+	});
+};
+
 exports.isAdmin = function(req, res, next) {
 	if(!req.user) return res.status(401).send({	message: 'User is not signed in'});
 	if(_.indexOf(req.user.roles, 'admin') < 0) return res.status(401).send({	message: 'User is not authorized'});
+	next();
+};
+
+exports.isReporter = function(req, res, next) {
+	if(!req.user) return res.status(401).send({	message: 'User is not signed in'});
+	if(_.indexOf(req.user.roles, 'admin') < 0 && _.indexOf(req.user.roles, 'approver') < 0 && _.indexOf(req.user.roles, 'reporter') < 0) return res.status(401).send({	message: 'User is not authorized'});
 	next();
 };

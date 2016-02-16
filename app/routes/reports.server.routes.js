@@ -6,13 +6,13 @@ module.exports = function(app) {
 
 	// Reports Routes
 	app.route('/reports')
-		.get(reports.list)
-		.post(users.requiresLogin, reports.create);
+		.get(users.isReporter, reports.list)
+		.post(users.isReporter, reports.create);
 
 	app.route('/reports/:reportId')
-		.get(reports.read)
-		.put(users.requiresLogin, reports.hasAuthorization, reports.update)
-		.delete(users.requiresLogin, reports.hasAuthorization, reports.delete);
+		.get(users.isReporter, reports.read)
+		.put(users.isReporter, reports.update)
+		.delete(users.isReporter, reports.delete);
 
 	// Finish by binding the Report middleware
 	app.param('reportId', reports.reportByID);

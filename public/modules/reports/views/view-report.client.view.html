@@ -1,14 +1,35 @@
 <section data-ng-controller="ReportsController" data-ng-init="findOne()">
 	<div class="page-header">
-		<h1 data-ng-bind="report.name"></h1>
+		<a data-ng-href="/#!/groups/{{report.group}}">Back to Study Group</a>
+		<h1>Session Report</h1>
 	</div>
-	<div class="pull-right" data-ng-show="((authentication.user) && (authentication.user._id == report.user._id))">
+	<div class="pull-right" data-ng-show="authentication.user.roles.indexOf('reporter') > -1 || authentication.user.roles.indexOf('approver') > -1 || authentication.user.roles.indexOf('admin') > -1">
 		<a class="btn btn-primary" href="/#!/reports/{{report._id}}/edit">
 			<i class="glyphicon glyphicon-edit"></i>
 		</a>
-		<a class="btn btn-primary" data-ng-click="remove();">
+		<a class="btn btn-danger" data-ng-click="remove();">
 			<i class="glyphicon glyphicon-trash"></i>
 		</a>
+	</div>
+	<div class="lead">
+		<b>Session Date:</b> {{report.sessionDate | date}}<br><br>
+		<b>Lesson:</b> {{report.lesson}}<br><br>
+		<b>Present:</b> 
+		<ul>
+			<li data-ng-repeat="present in report.present">
+			{{present.displayName}}
+			</li>
+		</ul>
+		
+		<b>Absent:</b> 
+		<ul>
+			<li data-ng-repeat="absent in report.absent">
+				{{absent.userId.displayName}}
+				<em class="small text-muted" data-ng-show="absent.excused">Excused</em>
+				<em class="small text-muted" data-ng-show="!absent.excused">Unexcused</em>
+			</li>
+		</ul>
+		<b>Comment:</b> {{report.comment}}</br>
 	</div>
 	<small>
 		<em class="text-muted">

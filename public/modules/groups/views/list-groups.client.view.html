@@ -4,7 +4,7 @@
     </div>
     <div class="list-group col-md-6">
         <div data-ng-repeat="group in groups"  class="list-group-item">
-			<h4 class="list-group-item-heading">{{group.locality.name}} {{group.language}} Study Group {{$index + 1}}</h4>
+			<a class="b lead list-group-item-heading" data-ng-href="/#!/groups/{{group._id}}">{{group.locality.name}} {{group.language}} Study Group {{$index + 1}}</a>
             <span class="pull-right" data-ng-show="user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1"><a data-ng-href="#!/groups/{{group._id}}/edit"><i class="fa fa-edit fa-2x"></i></a>
             </span>
             <p>

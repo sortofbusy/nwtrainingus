@@ -12,8 +12,6 @@ var mongoose = require('mongoose'),
 var ReportSchema = new Schema({
 	comment: {
 		type: String,
-		default: '',
-		required: 'Please fill Report name',
 		trim: true
 	},
 	created: {
@@ -23,7 +21,31 @@ var ReportSchema = new Schema({
 	user: {
 		type: Schema.ObjectId,
 		ref: 'User'
-	}
+	},
+	group: {
+		type: Schema.ObjectId,
+		ref: 'Group'
+	},
+	sessionDate: {
+		type: Date
+	},
+	lesson: {
+		type: Number,
+		required: 'Please enter lesson number'
+	},
+	present: [{
+		type: Schema.ObjectId,
+		ref: 'User'
+	}],
+	absent: [{
+		userId: {
+			type: Schema.ObjectId,
+			ref: 'User'
+		},
+		excused: {
+			type: Boolean
+		}
+	}]
 });
 
 mongoose.model('Report', ReportSchema);

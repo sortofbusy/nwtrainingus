@@ -65,6 +65,10 @@ module.exports = function(app) {
 	app.route('/admin/createapplications').post(users.isAdmin, users.createApplications);
 	app.route('/trainings').get(users.listTrainings);
 
+	app.route('/users/:userId/reporter')
+		.post(users.isApprover, users.addReporterRole)
+		.delete(users.isApprover, users.removeReporterRole);
+
 	// Finish by binding the user middleware
 	app.param('userId', users.userByID);
 };

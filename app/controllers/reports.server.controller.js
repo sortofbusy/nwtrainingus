@@ -13,10 +13,11 @@ var mongoose = require('mongoose'),
  */
 exports.create = function(req, res) {
 	var report = new Report(req.body);
-	report.user = req.user;
-
+	report.user = req.user._id;
+	
 	report.save(function(err) {
 		if (err) {
+			console.log(err);
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
@@ -73,22 +74,31 @@ exports.delete = function(req, res) {
  * List of Reports
  */
 exports.list = function(req, res) { 
-	Report.find().sort('-created').populate('user', 'displayName').exec(function(err, reports) {
-		if (err) {
-			return res.status(400).send({
-				message: errorHandler.getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(reports);
-		}
-	});
+	if (!req.group && (req.user.roles.indexOf('approver') < 0 && req.user.roles.indexOf('admin')) ){
+		res.jsonp([]);
+	} else {
+
+		var params = {};
+		if (req.group) 
+			params.group = req.group._id;
+
+		Report.find(params).sort('-sessionDate').populate('user present absent.userId', 'displayName').exec(function(err, reports) {
+			if (err) {
+				return res.status(400).send({
+					message: errorHandler.getErrorMessage(err)
+				});
+			} else {
+				res.jsonp(reports);
+			}
+		});
+	}
 };
 
 /**
  * Report middleware
  */
 exports.reportByID = function(req, res, next, id) { 
-	Report.findById(id).populate('user', 'displayName').exec(function(err, report) {
+	Report.findById(id).populate('user present absent.userId', 'displayName').exec(function(err, report) {
 		if (err) return next(err);
 		if (! report) return next(new Error('Failed to load Report ' + id));
 		req.report = report ;

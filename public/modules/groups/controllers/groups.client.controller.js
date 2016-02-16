@@ -1,8 +1,8 @@
 'use strict';
 
 // Groups controller
-angular.module('groups').controller('GroupsController', ['$scope', '$window', '$http', '$filter', '$q', '$stateParams', '$location', 'Authentication', 'Groups',
-	function($scope, $window, $http, $filter, $q, $stateParams, $location, Authentication, Groups) {
+angular.module('groups').controller('GroupsController', ['$scope', '$window', '$http', '$filter', '$q', '$stateParams', '$location', 'Authentication', 'Groups', 'Users', 'Reports',
+	function($scope, $window, $http, $filter, $q, $stateParams, $location, Authentication, Groups, Users, Reports) {
 		$scope.user = Authentication.user;
 		$scope.newLocality = $scope.user.locality;
 			
@@ -138,6 +138,21 @@ angular.module('groups').controller('GroupsController', ['$scope', '$window', '$
 		$scope.findOne = function() {
 			$scope.group = Groups.get({ 
 				groupId: $stateParams.groupId
+			});
+			$scope.roleButtons = [];
+		};
+
+		$scope.makeReporter = function(index) {
+			$scope.currentUser = index;
+			$http.post('/users/' + $scope.group.users[$scope.currentUser]._id + '/reporter').success( function(response) {
+				$scope.group.users[$scope.currentUser].roles = response.roles;
+			});
+		};
+
+		$scope.removeReporter = function(index) {
+			$scope.currentUser = index;
+			$http.delete('/users/' + $scope.group.users[$scope.currentUser]._id + '/reporter').success( function(response) {
+				$scope.group.users[$scope.currentUser].roles = response.roles;
 			});
 		};
 

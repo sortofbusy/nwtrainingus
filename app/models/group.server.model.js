@@ -39,6 +39,10 @@ var GroupSchema = new Schema({
 	users: [{
 		type: Schema.ObjectId,
 		ref: 'User'
+	}],
+	reports: [{
+		type: Schema.ObjectId,
+		ref: 'Report'
 	}]
 });
 

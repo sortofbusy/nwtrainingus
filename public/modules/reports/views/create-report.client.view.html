@@ -1,23 +1,64 @@
 <section data-ng-controller="ReportsController">
     <div class="page-header">
-        <h1>New Report</h1>
+        <h1>{{group.locality.name}} {{group.language}} Study Group Report</h1>
     </div>
-    <div class="col-md-12">
-        <form class="form-horizontal" data-ng-submit="create()" novalidate>
+    <div class="col-md-8 col-md-offset-2">
+        <div class="form-horizontal">
             <fieldset>
                 <div class="form-group">
-                    <label class="control-label" for="name">Name</label>
-                    <div class="controls">
-                        <input type="text" data-ng-model="name" id="name" class="form-control" placeholder="Name" required>
+                    <label for="sessionDate">Session Date</label>
+                    <div style="min-height:270px;">
+                        <uib-datepicker data-ng-model="sessionDate" show-weeks="false" class=""></uib-datepicker>
                     </div>
                 </div>
                 <div class="form-group">
-                    <input type="submit" class="btn btn-default">
+                    <label class="control-label" for="lesson">Lesson</label>
+                    <select id="lesson" name="lesson" data-ng-model="lesson" class="form-control" data-ng-options="'Lesson '+l for l in lessons">
+                    </select>
                 </div>
-				<div data-ng-show="error" class="text-danger">
-					<strong data-ng-bind="error"></strong>
-				</div>
+                <div class="form-group">
+                    <label class="control-label" for="comment">Comment</label>
+                    <div class="controls">
+                        <textarea style="height:auto;" rows="6" data-ng-model="comment" id="comment" class="form-control">
+                        </textarea>
+                    </div>
+                </div>
+                <h2>Attendance</h2>
+                <div class="col-md-6">
+                    <h3>Present</h3>
+                    <div class="dragContainer" ui-on-Drop="onDrop($event,$data,group.users)">
+                        <button class="btn btn-success" ui-draggable="true" drag="pUser" 
+                            on-drop-success="dropSuccessHandler($event,$index,group.users)"
+                            ng-repeat="pUser in group.users track by $index" data-ng-click="">
+                            {{pUser.displayName}}
+                        </button> 
+                    </div>
+                </div>
+                <div class="col-md-6 container">
+                    <h3>Absent</h3>
+                    <div class="dragContainer" ui-on-Drop="onDrop($event,$data,absent)">
+                        <button class="btn" ui-draggable="true" drag="aUser" 
+                            on-drop-success="dropSuccessHandler($event,$index,absent)"
+                            ng-repeat="aUser in absent track by $index" data-ng-click="">
+                            {{aUser.userId.displayName}}
+                            <br>
+                            <label class="btn btn-info" ng-model="aUser.excused" uib-btn-checkbox>
+                                <span data-ng-show="aUser.excused">Excused</span>
+                                <span data-ng-show="!aUser.excused">Unexcused</span>
+                            </label>
+                        </button> 
+                    </div>
+                </div>
+
+                <div data-ng-show="error" class="text-danger">
+                    <strong data-ng-bind="error"></strong>
+                </div>
+                <div class="pull-right">
+                    <br><br>
+                    <input type="submit" class="btn btn-primary" data-ng-click="create()"><br><br>
+                </div>
+                
             </fieldset>
-        </form>
+        </div>
     </div>
 </section>
