@@ -14,21 +14,31 @@
 	<div class="lead">
 		<b>Session Date:</b> {{report.sessionDate | date}}<br><br>
 		<b>Lesson:</b> {{report.lesson}}<br><br>
-		<b>Present:</b> 
-		<ul>
-			<li data-ng-repeat="present in report.present">
-			{{present.displayName}}
-			</li>
-		</ul>
-		
-		<b>Absent:</b> 
-		<ul>
-			<li data-ng-repeat="absent in report.absent">
-				{{absent.userId.displayName}}
-				<em class="small text-muted" data-ng-show="absent.excused">Excused</em>
-				<em class="small text-muted" data-ng-show="!absent.excused">Unexcused</em>
-			</li>
-		</ul>
+		<table class="table table-striped">
+            <thead><tr>
+                <th>Present</th>
+            </tr></thead>
+            <tbody>
+                <tr data-ng-repeat="present in report.present">
+                    <td>{{present.displayName}}</td>
+                </tr>
+            </tbody>
+        </table>
+		<table class="table table-striped">
+            <thead><tr>
+                <th>Absent</th>
+                <th>Status</th>
+            </tr></thead>
+            <tbody>
+                <tr data-ng-repeat="absent in report.absent">
+                    <td>{{absent.userId.displayName}}</td>
+                    <td>
+                        <span data-ng-show="absent.excused">Excused</span>
+                        <span data-ng-show="!absent.excused">Unexcused</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 		<b>Comment:</b> {{report.comment}}</br>
 	</div>
 	<small>

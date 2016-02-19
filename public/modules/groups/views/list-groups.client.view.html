@@ -3,7 +3,7 @@
         <h1>{{localityId}} Study Groups</h1>
     </div>
     <div class="list-group col-md-6">
-        <div data-ng-repeat="group in groups"  class="list-group-item">
+        <div data-ng-repeat="(groupIndex, group) in groups"  class="list-group-item">
 			<a class="b lead list-group-item-heading" data-ng-href="/#!/groups/{{group._id}}">{{group.locality.name}} {{group.language}} Study Group {{$index + 1}}</a>
             <span class="pull-right" data-ng-show="user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1"><a data-ng-href="#!/groups/{{group._id}}/edit"><i class="fa fa-edit fa-2x"></i></a>
             </span>
@@ -13,7 +13,7 @@
                 <b>When:</b> {{getWeekday(group.meeting.day)}}, {{group.meeting.time | date:'shortTime'}}
             </p>
             <b>Users:</b>
-            <div class="dragContainer" ui-on-Drop="onDrop($event,$data,group.users)">
+            <div class="dragContainer" ui-on-Drop="onDrop($event,$data,group.users)" data-ng-show="!fallback">
                 <button class="btn" ui-draggable="true" drag="asUser" 
                 on-drop-success="dropSuccessHandler($event,$index,group.users)"
                 ng-repeat="asUser in group.users track by $index">
@@ -21,14 +21,31 @@
                     <span data-ng-show="asUser.locality.area !== ''"> ({{asUser.locality.name}})</span>
                 </button>
             </div>
+            <div data-ng-show="fallback">
+                <table class="table table-striped">
+                    <tbody>
+                        <tr data-ng-repeat="(userIndex, u) in group.users">
+                            <td>{{u.displayName}} <span data-ng-show="u.locality.area !== ''"> ({{u.locality.name}})</span></td>
+                            <td>
+                                <a data-ng-click="unassignUserFallback(userIndex, groupIndex)"><i class="fa fa-times"></i> Remove</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <br><br>
         <a class="btn btn-info" data-ng-show="user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1" href="/#!/groups/create">Create Study Group</a>
     </div>
-    <div class="col-md-6 container">
+    <div class="col-md-6 container" data-ng-show="!fallback">
         <h2>Unassigned in {{localityId}}</h2>
-        <h4>(drag to group to assign)</h4>
-        <div class="dragContainer" ui-on-Drop="onDrop($event,$data,unassigned)">
+        <h4>Drag to group to assign; if drag and drop isn't working, 
+            <a data-ng-click="fallback = true">click here</a>
+        </h4>
+        <h4 data-ng-show="fallback">To drag and drop, 
+            <a data-ng-click="fallback = false">click here</a>
+        </h4>
+        <div class="dragContainer" data-ng-show="!fallback" ui-on-Drop="onDrop($event,$data,unassigned)">
             <button class="btn" ui-draggable="true" drag="unUser" 
                 on-drop-success="dropSuccessHandler($event,$index,unassigned)"
                 ng-repeat="unUser in unassigned track by $index">
@@ -36,6 +53,28 @@
                 <span data-ng-show="unUser.locality.area !== ''"> ({{unUser.locality.name}})</span>
             </button> 
         </div>
+        <button class="btn btn-primary" data-ng-click="updateAll()" ladda="laddaButton.loading">Save Changes <i class="fa" data-ng-class="laddaButton.resultIcon"></i></button>
+    </div>
+    <div class="col-md-6 container" data-ng-show="fallback">
+        <h2>Unassigned in {{localityId}}</h2>
+        <h4>To drag and drop, 
+            <a data-ng-click="fallback = false">click here</a>
+        </h4>
+        <table class="table table-striped">
+            <thead><tr>
+                <th>User</th>
+                <th>Study Group</th>
+            </tr></thead>
+            <tbody>
+                <tr data-ng-repeat="(userIndex, u) in unassigned">
+                    <td>{{u.displayName}} <span data-ng-show="u.locality.area !== ''"> ({{u.locality.name}})</span></td>
+                    <td>
+                        <select data-ng-model="newGroup" class="form-control" data-ng-options="''+group.locality.name+' '+group.language+' Study Group' for group in groups" data-ng-change="assignUserFallback(userIndex, $index)">
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
         <button class="btn btn-primary" data-ng-click="updateAll()" ladda="laddaButton.loading">Save Changes <i class="fa" data-ng-class="laddaButton.resultIcon"></i></button>
     </div>
 </section>

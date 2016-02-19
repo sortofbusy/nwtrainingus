@@ -13,17 +13,28 @@
         <br>
         <b>When:</b> {{getWeekday(group.meeting.day)}}, {{group.meeting.time | date:'shortTime'}}
         <h3>Members:</h3>
-	    <ul>
-	        <li class="lead" data-ng-repeat="groupUser in group.users">
-	        	{{groupUser.displayName}} 
-	        	<span class="small text-info" data-ng-show="groupUser.roles.indexOf('reporter') > -1"> (Group Reporter)
-	        	<i class="fa fa-times text-default" data-ng-show="user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1" data-ng-click="removeReporter($index)"></i>
-	        	</span>
-	        	<span data-ng-show="groupUser.roles.indexOf('reporter') < 0 && (user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1)">
-	        		<button class="btn" data-ng-click="makeReporter($index)" ladda="roleButtons[$index].loading">Make Reporter <i class="fa" data-ng-class="roleButtons[$index].resultIcon"></i></button>
-	        	</span> 
-	        </li>
-	    </ul>
+	    <table class="table table-striped">
+            <thead>
+            	<tr>
+            		<th>Member</th><th>Role</th><th>Action</th>
+            	</tr>
+            </thead>
+            <tbody>
+                <tr data-ng-repeat="groupUser in group.users">
+                    <td>{{groupUser.displayName}} <span data-ng-show="u.locality.area !== ''"> ({{groupUser.locality.name}})</span></td>
+                    <td>
+                        <span class="text-info" data-ng-show="groupUser.roles.indexOf('reporter') > -1">Group Reporter</span>
+			        </td>
+			        <td>
+			        	<button class="btn btn-danger" data-ng-show="groupUser.roles.indexOf('reporter') > -1 && (user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1)" data-ng-click="removeReporter($index)"><i class="fa fa-times"></i> Remove
+			        	</button>
+			        	<span data-ng-show="groupUser.roles.indexOf('reporter') < 0 && (user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1)">
+			        		<button class="btn btn-info" data-ng-click="makeReporter($index)" ladda="roleButtons[$index].loading">Make Reporter <i class="fa" data-ng-class="roleButtons[$index].resultIcon"></i></button>
+			        	</span> 
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 	    <div data-ng-show="user.roles.indexOf('reporter') > -1 || user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1" data-ng-controller="ReportsController" data-ng-init="groupReports()">
 	    	<h3>Session Reports</h3>
 	    	<table class="table">

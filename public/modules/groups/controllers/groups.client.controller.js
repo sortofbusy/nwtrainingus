@@ -36,7 +36,7 @@ angular.module('groups').controller('GroupsController', ['$scope', '$window', '$
 		// object to update ladda button
 		$scope.laddaButton = {};
 
-      	// Create new Group
+		// Create new Group
 		$scope.create = function() {
 			// Create new Group object
 			var group = new Groups (this);
@@ -107,6 +107,18 @@ angular.module('groups').controller('GroupsController', ['$scope', '$window', '$
 				});
 		};
 
+		//  (fallback if drag and drop doesn't work)
+		$scope.assignUserFallback = function(userIndex, groupIndex) {
+			$scope.groups[groupIndex].users.push($scope.unassigned[userIndex]);
+			$scope.unassigned.splice(userIndex, 1);
+		};
+
+		//  (fallback if drag and drop doesn't work)
+		$scope.unassignUserFallback = function(userIndex, groupIndex) {
+			$scope.unassigned.push($scope.groups[groupIndex].users[userIndex]);
+			$scope.groups[groupIndex].users.splice(userIndex, 1);
+		};
+
 		// Find a list of Groups
 		$scope.find = function() {
 			Groups.query().$promise.then( function(response) {
@@ -150,6 +162,7 @@ angular.module('groups').controller('GroupsController', ['$scope', '$window', '$
 		};
 
 		$scope.removeReporter = function(index) {
+			if(!$window.confirm('Are you sure?')) return;
 			$scope.currentUser = index;
 			$http.delete('/users/' + $scope.group.users[$scope.currentUser]._id + '/reporter').success( function(response) {
 				$scope.group.users[$scope.currentUser].roles = response.roles;

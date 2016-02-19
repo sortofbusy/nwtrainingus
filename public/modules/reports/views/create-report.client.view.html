@@ -24,32 +24,73 @@
                     </div>
                 </div>
                 <h2>Attendance</h2>
-                <div class="col-md-6">
-                    <h3>Present</h3>
-                    <div class="dragContainer" ui-on-Drop="onDrop($event,$data,group.users)">
-                        <button class="btn btn-success" ui-draggable="true" drag="pUser" 
-                            on-drop-success="dropSuccessHandler($event,$index,group.users)"
-                            ng-repeat="pUser in group.users track by $index" data-ng-click="">
-                            {{pUser.displayName}}
-                        </button> 
+                <h4 data-ng-show="!fallback">If you aren't able to use the drag and drop boxes below, <a data-ng-click="fallback = true">click here</a></h4>
+                <h4 data-ng-show="fallback">To use drag and drop boxes, <a data-ng-click="fallback = false">click here</a></h4>
+                <div data-ng-show="!fallback">
+                    <div class="col-md-6">
+                        <h3>Present</h3>
+                        <div class="dragContainer" ui-on-Drop="onDrop($event,$data,group.users)">
+                            <button class="btn btn-success" ui-draggable="true" drag="pUser" 
+                                on-drop-success="dropSuccessHandler($event,$index,group.users)"
+                                ng-repeat="pUser in group.users track by $index" data-ng-click="">
+                                {{pUser.displayName}}
+                            </button> 
+                        </div>
+                    </div>
+                    <div class="col-md-6 container">
+                        <h3>Absent</h3>
+                        <div class="dragContainer" ui-on-Drop="onDrop($event,$data,absent)">
+                            <button class="btn" ui-draggable="true" drag="aUser" 
+                                on-drop-success="dropSuccessHandler($event,$index,absent)"
+                                ng-repeat="aUser in absent track by $index" data-ng-click="">
+                                {{aUser.userId.displayName}}
+                                <br>
+                                <label class="btn btn-info" ng-model="aUser.excused" uib-btn-checkbox>
+                                    <span data-ng-show="aUser.excused">Excused</span>
+                                    <span data-ng-show="!aUser.excused">Unexcused</span>
+                                </label>
+                            </button> 
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-6 container">
-                    <h3>Absent</h3>
-                    <div class="dragContainer" ui-on-Drop="onDrop($event,$data,absent)">
-                        <button class="btn" ui-draggable="true" drag="aUser" 
-                            on-drop-success="dropSuccessHandler($event,$index,absent)"
-                            ng-repeat="aUser in absent track by $index" data-ng-click="">
-                            {{aUser.userId.displayName}}
-                            <br>
-                            <label class="btn btn-info" ng-model="aUser.excused" uib-btn-checkbox>
-                                <span data-ng-show="aUser.excused">Excused</span>
-                                <span data-ng-show="!aUser.excused">Unexcused</span>
-                            </label>
-                        </button> 
+                <!-- Fallback if drag and drop doesn't work-->
+                <div data-ng-show="fallback">
+                    <div class="col-md-6">
+                        <table class="table table-striped">
+                            <thead><tr>
+                                <th>Present</th>
+                            </tr></thead>
+                            <tbody>
+                                <tr data-ng-repeat="pUser in group.users">
+                                    <td>{{pUser.displayName}}</td>
+                                    <td>
+                                        <a class="btn btn-sm btn-success" data-ng-click="markAbsent($index)">Present</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-striped">
+                            <thead><tr>
+                                <th>Absent</th>
+                            </tr></thead>
+                            <tbody>
+                                <tr data-ng-repeat="aUser in absent">
+                                    <td>{{aUser.userId.displayName}}</td>
+                                    <td><a class="btn btn-sm btn-danger" data-ng-click="markPresent($index)">Absent</a></td>
+                                    <td>
+                                        <label class="btn btn-sm btn-info" ng-model="aUser.excused" uib-btn-checkbox>
+                                            <span data-ng-show="aUser.excused">Excused</span>
+                                            <span data-ng-show="!aUser.excused">Unexcused</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-
+                
                 <div data-ng-show="error" class="text-danger">
                     <strong data-ng-bind="error"></strong>
                 </div>

@@ -114,5 +114,29 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', '$
 
 		  	array.push($data);
 		};
+
+		//
+		// Fallback functions
+		//
+
+		$scope.markAbsent = function (index) {
+	        $scope.absent.push({userId: $scope.group.users[index], excused: false});
+	        $scope.group.users.splice(index, 1);
+	    };
+
+	    $scope.markPresent = function (index) {
+	        $scope.group.users.push($scope.absent[index].userId);
+	        $scope.absent.splice(index, 1);
+	    };
+
+	    $scope.editMarkAbsent = function (index) {
+	        $scope.report.absent.push({userId: $scope.report.present[index], excused: false});
+	        $scope.report.present.splice(index, 1);
+	    };
+
+	    $scope.editMarkPresent = function (index) {
+	        $scope.report.present.push($scope.report.absent[index].userId);
+	        $scope.report.absent.splice(index, 1);
+	    };
 	}
 ]);
