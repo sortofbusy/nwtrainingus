@@ -69,7 +69,7 @@
                 <tr data-ng-repeat="(userIndex, u) in unassigned">
                     <td>{{u.displayName}} <span data-ng-show="u.locality.area !== ''"> ({{u.locality.name}})</span></td>
                     <td>
-                        <select data-ng-model="newGroup" class="form-control" data-ng-options="''+group.locality.name+' '+group.language+' Study Group' for group in groups" data-ng-change="assignUserFallback(userIndex, $index)">
+                        <select data-ng-model="newGroup" class="form-control" data-ng-options="''+group.locality.name+group.$index+' '+group.language+' Study Group' for group in groups" data-ng-change="assignUserFallback(userIndex, newGroup._id)">
                         </select>
                     </td>
                 </tr>

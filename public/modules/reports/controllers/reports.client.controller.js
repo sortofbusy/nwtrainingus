@@ -83,9 +83,14 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', '$
 
 		// Find a list of Reports
 		$scope.groupReports = function() {
-			$http.get('groups/'+$stateParams.groupId+'/reports').success(function(response){
-				$scope.reports = response;
-			});
+			if ($scope.authentication.user.roles.indexOf('reporter') > -1 || 
+				$scope.authentication.user.roles.indexOf('approver') > -1 || 
+				$scope.authentication.user.roles.indexOf('admin') > -1) {
+					
+					$http.get('groups/'+$stateParams.groupId+'/reports').success(function(response){
+						$scope.reports = response;
+					});
+			}
 		};
 
 		// Find existing Report

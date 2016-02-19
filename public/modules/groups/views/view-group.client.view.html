@@ -16,7 +16,9 @@
 	    <table class="table table-striped">
             <thead>
             	<tr>
-            		<th>Member</th><th>Role</th><th>Action</th>
+            		<th>Member</th>
+            		<th data-ng-show="user.roles.indexOf('reporter') > -1 || user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1">Role</th>
+            		<th data-ng-show="user.roles.indexOf('reporter') > -1 || user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1">Action</th>
             	</tr>
             </thead>
             <tbody>

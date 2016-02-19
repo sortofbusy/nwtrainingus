@@ -108,9 +108,14 @@ angular.module('groups').controller('GroupsController', ['$scope', '$window', '$
 		};
 
 		//  (fallback if drag and drop doesn't work)
-		$scope.assignUserFallback = function(userIndex, groupIndex) {
-			$scope.groups[groupIndex].users.push($scope.unassigned[userIndex]);
-			$scope.unassigned.splice(userIndex, 1);
+		$scope.assignUserFallback = function(userIndex, groupId) {
+			for (var i = 0; i < $scope.groups.length; i++) {
+				if($scope.groups[i]._id === groupId) {
+					$scope.groups[i].users.push($scope.unassigned[userIndex]);
+					$scope.unassigned.splice(userIndex, 1);
+					break;
+				}
+			}
 		};
 
 		//  (fallback if drag and drop doesn't work)
