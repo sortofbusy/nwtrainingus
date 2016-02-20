@@ -12,6 +12,10 @@ angular.module('applications').config(['$stateProvider',
 		state('viewApplications', {
 			url: '/applications/:applicationId',
 			templateUrl: 'modules/applications/views/view-application.client.view.html'
+		})
+		.state('roster', {
+			url: '/roster',
+			templateUrl: 'modules/applications/views/roster.client.view.html'
 		});
 	}
 ]);

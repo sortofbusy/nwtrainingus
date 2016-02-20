@@ -63,8 +63,8 @@ angular.module('applications').controller('ApplicationsController', ['$scope', '
 				$scope.locality = locality;
 
 				$scope.pendingApplications = $filter('filter')(response, {appStatus: 'Pending', applicant: {locality: locality}});
-				$scope.approvedApplications = $filter('filter')(response, {appStatus: 'Approved'});
-				$scope.deniedApplications = $filter('filter')(response, {appStatus: 'Denied'});
+				$scope.approvedApplications = $filter('filter')(response, {appStatus: 'Approved', applicant: {locality: locality}});
+				$scope.deniedApplications = $filter('filter')(response, {appStatus: 'Denied', applicant: {locality: locality}});
 				$scope.loading = false;
 				$scope.progressbar.complete();
 			});
@@ -114,6 +114,27 @@ angular.module('applications').controller('ApplicationsController', ['$scope', '
 			$scope.toggleHidden = !$scope.toggleHidden;
 			if ($scope.toggleClass === 'on') $scope.toggleClass = 'off';
 			else $scope.toggleClass = 'on';
+		};
+
+		$scope.showRoster = function() {
+			if ($scope.user.roles.indexOf('admin') < 0 && $scope.user.roles.indexOf('approver') < 0) return;
+			$scope.loading = true;
+			$scope.progressbar.start();
+			$scope.textPromise = $http.get('/roster');
+			$scope.textPromise.success( function(response) {
+				var locality;
+				if($scope.user.roles.indexOf('admin') < 0) {
+					locality = {};
+						// if the approver is from Oregon or Eastern Washington
+					if ($scope.user.locality.area !== '') locality.area = $scope.user.locality.area;
+					else locality.name = $scope.user.locality.name;
+				}
+					// for display in the template
+				$scope.locality = locality;
+				$scope.users = $filter('filter')(response, {applicant: {locality: locality}});
+				$scope.loading = false;
+				$scope.progressbar.complete();
+			});
 		};
 	}
 ]);

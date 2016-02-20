@@ -38,6 +38,8 @@ background-size: cover;
 
 [ng-click],
 [data-ng-click],
+[ng-href],
+[data-ng-href],
 [x-ng-click] {
     cursor: pointer;
 }

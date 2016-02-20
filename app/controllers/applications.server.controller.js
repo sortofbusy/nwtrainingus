@@ -10,6 +10,7 @@ var mongoose = require('mongoose'),
 	smtpTransport = require('nodemailer-smtp-transport'),
 	Application = mongoose.model('Application'),
 	User = mongoose.model('User'),
+	Report = mongoose.model('Report'),
 	_ = require('lodash');
 
 /**
@@ -138,6 +139,45 @@ exports.list = function(req, res) {
 			});
 		} else { 
 			res.jsonp(applications);
+		}
+	});
+};
+
+/**
+ * Roster with attendance info
+ */
+exports.roster = function(req, res) { 
+	var applications;
+	// lean() returns a plain JS object instead of a full model instance 
+	Application.find({appStatus: 'Approved'}).lean().populate('applicant modifiedBy', '-password -salt').populate('training').sort('-created').exec(function(err, applicationResponse) {
+		if (err) {
+			return res.status(400).send({
+				message: errorHandler.getErrorMessage(err)
+			});
+		} else {
+			applications = applicationResponse; 
+			Report.find().select('absent').exec(function(err, reports) {
+				if (err) {
+					return res.status(400).send({
+						message: errorHandler.getErrorMessage(err)
+					});
+				} else { 
+					for (var k = 0; k < applications.length; k++) {
+						applications[k].applicant.absences = 0;
+						applications[k].applicant.unexcused = 0;
+						for (var i = 0; i < reports.length; i++) {
+							for (var j = 0; j < reports[i].absent.length; j++) {
+									if (String(applications[k].applicant._id) === String(reports[i].absent[j].userId)) {
+										applications[k].applicant.absences++;
+										if(!reports[i].absent[j].excused)
+											applications[k].applicant.unexcused++;
+									}
+							}
+						}
+					}
+					res.jsonp(applications);
+				}
+			});
 		}
 	});
 };

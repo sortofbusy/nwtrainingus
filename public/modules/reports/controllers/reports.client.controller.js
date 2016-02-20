@@ -1,8 +1,8 @@
 'use strict';
 
 // Reports controller
-angular.module('reports').controller('ReportsController', ['$scope', '$http', '$window', '$stateParams', '$location', 'Authentication', 'Reports',
-	function($scope, $http, $window, $stateParams, $location, Authentication, Reports) {
+angular.module('reports').controller('ReportsController', ['$scope', '$http', '$filter', '$window', '$stateParams', '$location', 'Authentication', 'Reports',
+	function($scope, $http, $filter, $window, $stateParams, $location, Authentication, Reports) {
 		$scope.authentication = Authentication;
 		if ($stateParams.groupId) $http.get('/groups/' + $stateParams.groupId).success(function(response) {
 			$scope.group = response;
@@ -79,6 +79,18 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', '$
 		// Find a list of Reports
 		$scope.find = function() {
 			$scope.reports = Reports.query();
+		};
+
+		// Find a list of Reports
+		$scope.findForUser = function() {
+			$http.get('users/'+$stateParams.userId+'/attendance').success(function(response){
+				for (var i = 0; i < response.reports.length; i++) {
+					response.reports[i].absent = $filter('filter')(response.reports[i].absent, {userId: {_id: $stateParams.userId} });
+					response.reports[i].present = $filter('filter')(response.reports[i].present, {_id: $stateParams.userId});
+				}
+				$scope.reports = response.reports;
+				$scope.reportUser = response.user;
+			});
 		};
 
 		// Find a list of Reports

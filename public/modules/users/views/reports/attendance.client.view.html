@@ -1,0 +1,31 @@
+<section data-ng-controller="ReportsController" data-ng-init="findForUser()">
+    <div class="page-header">
+        <a href="/#!/roster">Back to Roster</a>
+        <h1>Attendance Report for {{reportUser.displayName}}</h1>
+    </div>
+    <div class="overlay" data-ng-show="loading">
+        <div class="overlay overlay-content text-center"><i class="fa fa-circle-o-notch fa-spin"></i> Loading</div>
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Session Date <a data-ng-click="sortType='sessionDate';sortReverse=!sortReverse"><i class="fa fa-sort"></i></a></th>
+                <th>Study Group</th>
+                <th>Lesson</th>
+                <th>Status</th>    
+            </tr>
+        </thead>
+        <tbody>
+            <tr data-ng-repeat="r in reports | orderBy:sortType:sortReverse">
+                <td>{{r.sessionDate | date}}</td>
+                <td>{{r.group.locality.name}} {{r.group.language}} Study Group</td>
+                <td>{{r.lesson}}</td>
+                <td>
+                    <label data-ng-show="r.absent[0] && !r.absent[0].excused" class="label label-danger">Unexcused Absence</label>
+                    <label data-ng-show="r.absent[0] && r.absent[0].excused" class="label label-warning">Excused Absence</label>
+                    <label data-ng-show="r.present[0]" class="label label-success">Present</label>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>

@@ -9,6 +9,9 @@ module.exports = function(app) {
 		.get(users.requiresLogin, applications.list)
 		.post(users.requiresLogin, applications.create);
 
+	app.route('/roster')
+		.get(users.isApprover, applications.roster);
+
 	app.route('/applications/:applicationId')
 		.get(applications.hasAuthorization, applications.read)
 		.put(applications.hasAuthorization, applications.update)

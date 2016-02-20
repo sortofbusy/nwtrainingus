@@ -18,7 +18,6 @@ module.exports = function(app) {
 
 	// Setting up the users application api
 	app.route('/users/applications').get(users.getApplications);
-	
 
 	// Setting up the users password api
 	app.route('/users/password').post(users.changePassword);
@@ -68,6 +67,9 @@ module.exports = function(app) {
 	app.route('/users/:userId/reporter')
 		.post(users.isApprover, users.addReporterRole)
 		.delete(users.isApprover, users.removeReporterRole);
+
+	app.route('/users/:userId/attendance')
+		.get(users.isApprover, users.reportAttendance);
 
 	// Finish by binding the user middleware
 	app.param('userId', users.userByID);
