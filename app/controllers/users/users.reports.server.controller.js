@@ -38,7 +38,6 @@ exports.reportAttendance = function(req, res) {
 	if (req.user.roles.indexOf('approver') < 0 && req.user.roles.indexOf('admin') < 0){
 		res.jsonp([]);
 	} else {
-
 		var params = {};
 		if (req.profile) {
 			params = {
@@ -55,8 +54,12 @@ exports.reportAttendance = function(req, res) {
 					message: errorHandler.getErrorMessage(err)
 				});
 			} else {
+				var returnUser = req.profile;
+				returnUser.password = '';
+				returnUser.salt = '';
+				
 				reports = {
-					user: req.profile,
+					user: returnUser,
 					reports: reports
 				};
 				res.jsonp(reports);

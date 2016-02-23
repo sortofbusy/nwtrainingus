@@ -20,7 +20,9 @@
         </thead>
         <tbody>
             <tr data-ng-repeat="u in users | filter: {applicant: {displayName: searchName, locality: {name: searchLocality}}} | orderBy:sortType:!sortReverse ">
-                <td>{{u.applicant.displayName}}</td>
+                <td>
+                    <a data-ng-href="/#!/users/{{u.applicant._id}}/attendance">{{u.applicant.displayName}}</a>
+                </td>
                 <td>{{u.applicant.locality.name}}</td>
                 <td>
                     {{u.applicant.locality.area}}
@@ -29,10 +31,8 @@
                 <td>{{u.applicant.email}}</td>
                 <td>{{u.applicant.phone | tel}}</td>
                 <td>
-                    <a data-ng-href="/#!/users/{{u.applicant._id}}/attendance">
-                        {{u.applicant.absences}} 
-                        <span data-ng-show="u.applicant.unexcused > 0">({{u.applicant.unexcused}})</span>
-                    </a>
+                    {{u.applicant.absences}} 
+                    <span data-ng-show="u.applicant.unexcused > 0">({{u.applicant.unexcused}})</span>
                 </td>
             </tr>
         </tbody>
