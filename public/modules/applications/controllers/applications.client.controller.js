@@ -131,7 +131,7 @@ angular.module('applications').controller('ApplicationsController', ['$scope', '
 				}
 					// for display in the template
 				$scope.locality = locality;
-				$scope.users = $filter('filter')(response, {applicant: {locality: locality}});
+				$scope.users = $filter('filter')(response, {appStatus: 'Approved', applicant: {locality: locality}});
 				$scope.loading = false;
 				$scope.progressbar.complete();
 			});
