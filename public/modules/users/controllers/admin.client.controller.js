@@ -22,13 +22,9 @@ angular.module('users').controller('AdminController', ['$scope', '$http', '$wind
 			$http.get('/admin').success(function(response) {
 				if (!response.length) return;
 				
-				if(response[0].length > listLength) {
-					$scope.users = response[0].slice(0, listLength);
-					$scope.allusers = response[0];
-				} else $scope.users = response[0];
+				$scope.users = response[0];
 				
-				if ($scope.allusers) $scope.userList = $scope.allusers;
-				else $scope.userList = $scope.users;
+				$scope.userList = $scope.users;
 			});
 			$scope.listTrainings();
 			

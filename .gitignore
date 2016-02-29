@@ -11,7 +11,7 @@ public/dist/
 data/
 node_modules/
 test.*
-lettheword.sublime*
+*.sublime*
 *.env
 *.xcf
 DeploymentNotes.md
