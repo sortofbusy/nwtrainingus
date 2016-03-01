@@ -54,15 +54,24 @@ angular.module('users').controller('AdminController', ['$scope', '$http', '$wind
 				$scope.users = response[0];
 				
 				$scope.userList = $scope.users;
-				$scope.PugetSoundApplied = $filter('filter')($scope.users, {locality: {area: ''}}, true);
-				$scope.PugetSoundAccepted = $filter('filter')($scope.PugetSoundApplied, {consecrated: '!!'});
-				$scope.OregonApplied = $filter('filter')($scope.users, {locality: {area: 'Oregon Area'}});
-				$scope.OregonAccepted = $filter('filter')($scope.users, {locality: {area: 'Oregon Area'}, consecrated: '!!'});
-				$scope.EWApplied = $filter('filter')($scope.users, {locality: {area: 'Eastern Washington'}});
-				$scope.EWAccepted = $filter('filter')($scope.users, {locality: {area: 'Eastern Washington'}, consecrated: '!!'});
+				
+			});
+
+			$http.get('/applications').success(function(response) {
+				if (!response.length) return;
+				
+				$scope.applied = response;
+				
+				$scope.PugetSoundApplied = $filter('filter')(response, {applicant: {locality: {area: ''}}}, true);
+				$scope.PugetSoundAccepted = $filter('filter')($scope.PugetSoundApplied, {appStatus: 'Approved'});
+				$scope.OregonApplied = $filter('filter')(response, {applicant: {locality: {area: 'Oregon Area'}}});
+				$scope.OregonAccepted = $filter('filter')(response, {applicant: {locality: {area: 'Oregon Area'}}, appStatus: 'Approved'});
+				$scope.EWApplied = $filter('filter')(response, {applicant: {locality: {area: 'Eastern Washington'}}});
+				$scope.EWAccepted = $filter('filter')(response, {applicant: {locality: {area: 'Eastern Washington'}}, appStatus: 'Approved'});
 				$scope.loading = false;
 			
 			});
+
 			$scope.listTrainings();
 			
 		};
