@@ -3,11 +3,52 @@
         <div class="overlay overlay-content text-center"><i class="fa fa-circle-o-notch fa-spin"></i> Loading</div>
     </div>
 	<div class="col-xs-12 col-md-6">
-	    <h3>Search: <input type="text" data-ng-model="searchString" autofocus/></h3>
+	    <!-- Show Locality Statistics -->
+	    <ul class="list-group">
+	        <li class="h3 list-group-item list-group-item-info"><i class="fa fa-map fa-fw"></i> Locality/Area Statistics</li>
+	    </ul>
+        <table class="table table-striped">
+        	<tr><th>Locality</th><th>Applied</th><th>Approved</th></tr>
+        	<tr data-ng-repeat="eachLocality in localities"><td>{{eachLocality.name}}</td><td>{{(applied | filter : {applicant: {locality: {name: eachLocality.name} } }).length}}</td><td>{{(applied | filter : {applicant: {locality: {name: eachLocality.name} } } | filter : {appStatus: "Approved"}).length}}</td></tr>
+        	<tr><th>Puget Sound</th><th>{{PugetSoundApplied.length}}</th><th>{{PugetSoundAccepted.length}}</th></tr>
+        	<tr><th>Oregon Area</th><th>{{OregonApplied.length}}</th><th>{{OregonAccepted.length}}</th></tr>
+        	<tr><th>Eastern Washington</th><th>{{EWApplied.length}}</th><th>{{EWAccepted.length}}</th></tr>
+        	<tr class="lead"><th>Total</th><th>{{applied.length}}</th><th>{{(applied | filter : {appStatus: "Approved"}).length}}</th></tr>
+        </table>
+        <!-- Show users who haven't finished their application -->
+	    <ul class="list-group">
+	        <li class="h3 list-group-item list-group-item-warning"><i class="fa fa-user-times fa-fw"></i> Incomplete Applications <span class="badge">{{(users | filter: {consecrated: '!' }).length}}</span></li>
+	        <li class="list-group-item" data-ng-repeat="user in userList | filter: {consecrated: '!' }">
+	            <span class="h4">{{user.displayName}}</span> 
+	            <br>
+	            Email: {{user.email}}, <em>created: {{user.created | timeago}}</em>           
+	        </li>
+	    </ul>
+	    <br>
+	    <ul class="list-group">
+	        <li class="h3 list-group-item list-group-item-info"><i class="fa fa-calendar fa-fw"></i> Trainings</li>
+	        <li class="list-group-item" data-ng-repeat="training in trainings">
+	            <a class="h4" href="/#!/trainings/{{training._id}}">{{training.name}}</a>
+	            <span class="btn btn-default btn-sm pull-right" data-ng-click="showTrainingDetails[$index] = !showTrainingDetails[$index]"><i class="fa fa-ellipsis-h"></i></span>
+	            <br><br>
+	            <div data-ng-show="showTrainingDetails[$index]">
+	            	<pre>{{training | json}}</pre>
+	            	<!--<button class="btn btn-danger" data-ng-click="removeTraining(user._id)">Delete</button> TODO -->
+	            </div>
+	        </li>
+	    </ul>
+	    <a class="btn btn-default" href="/#!/trainings/create">Create Training</a>
+	    <br><br>
+	</div>
+	<div class="col-xs-12 col-md-6">
+	    <br>
+	    <h4>Search by Name: <input type="text" data-ng-model="searchString" autofocus/></h4>
+	    <h4>Search by Locality: <input type="text" data-ng-model="searchLocality" autofocus/></h4>
+    	<h4>Search by Area: <input type="text" data-ng-model="searchArea" autofocus/></h4>
 	    <!-- Show all users -->
 	    <ul class="list-group">
 	        <li class="h3 list-group-item list-group-item-info"><i class="fa fa-group fa-fw"></i> Users <span class="badge">{{users.length}}</span></li>
-	        <li class="list-group-item" data-ng-repeat="user in users | filter: {displayName: searchString}">
+	        <li class="list-group-item" data-ng-repeat="user in users | filter: {displayName: searchString, locality: {name: searchLocality, area: searchArea} }">
 	            <span class="h4">{{user.displayName}}</span> <em data-ng-repeat="role in user.roles" data-ng-if="role !== 'user'" class="text-danger">{{role}} </em>
 	            <span class="btn btn-default btn-sm pull-right" data-ng-click="showUserDetails[$index] = !showUserDetails[$index]"><i class="fa fa-ellipsis-h"></i></span>
 	            <br>
@@ -26,43 +67,5 @@
 	            </div>
 	        </li>
 	    </ul>
-	</div>
-	<div class="col-xs-12 col-md-6">
-		<ul class="list-group">
-	        <li class="h3 list-group-item list-group-item-info"><i class="fa fa-calendar fa-fw"></i> Trainings</li>
-	        <li class="list-group-item" data-ng-repeat="training in trainings">
-	            <a class="h4" href="/#!/trainings/{{training._id}}">{{training.name}}</a>
-	            <span class="btn btn-default btn-sm pull-right" data-ng-click="showTrainingDetails[$index] = !showTrainingDetails[$index]"><i class="fa fa-ellipsis-h"></i></span>
-	            <br><br>
-	            <div data-ng-show="showTrainingDetails[$index]">
-	            	<pre>{{training | json}}</pre>
-	            	<!--<button class="btn btn-danger" data-ng-click="removeTraining(user._id)">Delete</button> TODO -->
-	            </div>
-	        </li>
-	    </ul>
-	    <a class="btn btn-default" href="/#!/trainings/create">Create Training</a>
-	    <br><br>
-	    <!-- Show users who haven't finished their application -->
-	    <ul class="list-group">
-	        <li class="h3 list-group-item list-group-item-warning"><i class="fa fa-user-times fa-fw"></i> Incomplete Applications <span class="badge">{{(users | filter: {consecrated: '!' }).length}}</span></li>
-	        <li class="list-group-item" data-ng-repeat="user in userList | filter: {consecrated: '!' }">
-	            <span class="h4">{{user.displayName}}</span> 
-	            <br>
-	            Email: {{user.email}}, <em>created: {{user.created | timeago}}</em>           
-	        </li>
-	    </ul>
-
-	    <!-- Show Locality Statistics -->
-	    <ul class="list-group">
-	        <li class="h3 list-group-item list-group-item-info"><i class="fa fa-map fa-fw"></i> Locality/Area Statistics</li>
-	    </ul>
-        <table class="table table-striped">
-        	<tr><th>Locality</th><th>Applied</th><th>Accepted</th></tr>
-        	<tr data-ng-repeat="eachLocality in localities"><td>{{eachLocality.name}}</td><td>{{(applied | filter : {applicant: {locality: {name: eachLocality.name} } }).length}}</td><td>{{(applied | filter : {applicant: {locality: {name: eachLocality.name} } } | filter : {appStatus: "Approved"}).length}}</td></tr>
-        	<tr><th>Puget Sound</th><th>{{PugetSoundApplied.length}}</th><th>{{PugetSoundAccepted.length}}</th></tr>
-        	<tr><th>Oregon Area</th><th>{{OregonApplied.length}}</th><th>{{OregonAccepted.length}}</th></tr>
-        	<tr><th>Eastern Washington</th><th>{{EWApplied.length}}</th><th>{{EWAccepted.length}}</th></tr>
-        	<tr class="lead"><th>Total</th><th>{{applied.length}}</th><th>{{(applied | filter : {appStatus: "Approved"}).length}}</th></tr>
-        </table>
 	</div>
 </section>
