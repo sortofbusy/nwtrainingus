@@ -5,7 +5,7 @@
 	    <ul class="list-group">
 	        <li class="h3 list-group-item list-group-item-info"><i class="fa fa-group fa-fw"></i> Users <span class="badge">{{users.length}}</span></li>
 	        <li class="list-group-item" data-ng-repeat="user in users | filter: {displayName: searchString}">
-	            <span class="h4">{{user.displayName}}</span> <em data-ng-repeat="role in user.roles" data-ng-if="role !== 'user'" class="text-danger">{{role}} </em>
+	            <span class="h4">{{user.displayName}} {{user.locality.name}} {{user.consecrated}}</span> <em data-ng-repeat="role in user.roles" data-ng-if="role !== 'user'" class="text-danger">{{role}} </em>
 	            <span class="btn btn-default btn-sm pull-right" data-ng-click="showUserDetails[$index] = !showUserDetails[$index]"><i class="fa fa-ellipsis-h"></i></span>
 	            <br>
 	            Email: {{user.email}}, <em>created: {{user.created | timeago}}</em>
@@ -48,5 +48,19 @@
 	            Email: {{user.email}}, <em>created: {{user.created | timeago}}</em>           
 	        </li>
 	    </ul>
+
+	    <!-- Show Locality Statistics -->
+	    <ul class="list-group">
+	        <li class="h3 list-group-item list-group-item-info"><i class="fa fa-map fa-fw"></i> Locality/Area Statistics</li>
+	    </ul>
+	        <table class="table">
+	        	<tr><th>Locality</th><th>Applied</th><th>Accepted</th></tr>
+	        	<tr data-ng-repeat="eachLocality in localities"><td>{{eachLocality.name}}</td><td>{{(userList | filter : eachLocality.name).length}}</td><td>{{(userList | filter : eachLocality.name : true | filter : {consecrated: ""}).length}}</td></tr>
+	        	<tr><th>Puget Sound</th><th>{{PugetSoundApplied.length}}</th><th>{{PugetSoundAccepted.length}}</th></tr>
+	        	<tr><th>Oregon Area</th><th>{{OregonApplied.length}}</th><th>{{OregonAccepted.length}}</th></tr>
+	        	<tr><th>Eastern Washington</th><th>{{EWApplied.length}}</th><th>{{EWAccepted.length}}</th></tr>
+	        	<tr><th>Total</th><th>{{userList.length}}</th><th>{{(userList | filter : {consecrated: ""}).length}}</th></tr>
+	        </table>
+	        
 	</div>
 </section>

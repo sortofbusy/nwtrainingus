@@ -16,6 +16,32 @@ angular.module('users').controller('AdminController', ['$scope', '$http', '$wind
 			'admin'
 		];
 
+		$scope.localities = [
+			{ name: 'Bellevue', area: '' },
+			{ name: 'Bellingham',  area: '' },
+			{ name: 'Everett', area: '' },
+			{ name: 'Olympia', area: '' },
+			{ name: 'Renton', area: '' },
+			{ name: 'Seattle', area: '' },
+			{ name: 'Shoreline', area: '' },
+			{ name: 'Tacoma', area: '' },
+			{ name: 'Eugene', area: 'Oregon Area' },
+			{ name: 'Corvallis',  area: 'Oregon Area' },
+			{ name: 'Medford', area: 'Oregon Area' },
+			{ name: 'Portland', area: 'Oregon Area' },
+			{ name: 'Roseburg', area: 'Oregon Area' },
+			{ name: 'Salem', area: 'Oregon Area' },
+			{ name: 'Vancouver, WA', area: 'Oregon Area' },
+			{ name: 'Other (Oregon)', area: 'Oregon Area' },
+			{ name: 'Cheney', area: 'Eastern Washington' },
+			{ name: 'Ephrata', area: 'Eastern Washington' },
+			{ name: 'Prosser', area: 'Eastern Washington' },
+			{ name: 'Pullman', area: 'Eastern Washington' },
+			{ name: 'Spokane', area: 'Eastern Washington' },
+			{ name: 'West Richland', area: 'Eastern Washington' },
+			{ name: 'Other (Eastern WA)', area: 'Eastern Washington' }
+		];
+
 		// Find a list of User Messages
 		$scope.getActivity = function() {
 			var listLength = 20;
@@ -25,6 +51,13 @@ angular.module('users').controller('AdminController', ['$scope', '$http', '$wind
 				$scope.users = response[0];
 				
 				$scope.userList = $scope.users;
+				$scope.PugetSoundApplied = $filter('filter')($scope.users, {locality: {area: ''}}, true);
+				$scope.PugetSoundAccepted = $filter('filter')($scope.PugetSoundApplied, {consecrated: '!!'});
+				$scope.OregonApplied = $filter('filter')($scope.users, {locality: {area: 'Oregon Area'}});
+				$scope.OregonAccepted = $filter('filter')($scope.users, {locality: {area: 'Oregon Area'}, consecrated: '!!'});
+				$scope.EWApplied = $filter('filter')($scope.users, {locality: {area: 'Eastern Washington'}});
+				$scope.EWAccepted = $filter('filter')($scope.users, {locality: {area: 'Eastern Washington'}, consecrated: '!!'});
+			
 			});
 			$scope.listTrainings();
 			
