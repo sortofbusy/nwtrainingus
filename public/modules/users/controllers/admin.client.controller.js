@@ -8,6 +8,8 @@ angular.module('users').controller('AdminController', ['$scope', '$http', '$wind
 		// If user is not signed in then redirect back home
 		if (!$scope.user) $location.path('/');
 
+		$scope.loading = false;
+		
 		$scope.roles = [ 
 			'user',
 			'trainee',
@@ -44,7 +46,8 @@ angular.module('users').controller('AdminController', ['$scope', '$http', '$wind
 
 		// Find a list of User Messages
 		$scope.getActivity = function() {
-			var listLength = 20;
+			$scope.loading = true;
+			
 			$http.get('/admin').success(function(response) {
 				if (!response.length) return;
 				
@@ -57,6 +60,7 @@ angular.module('users').controller('AdminController', ['$scope', '$http', '$wind
 				$scope.OregonAccepted = $filter('filter')($scope.users, {locality: {area: 'Oregon Area'}, consecrated: '!!'});
 				$scope.EWApplied = $filter('filter')($scope.users, {locality: {area: 'Eastern Washington'}});
 				$scope.EWAccepted = $filter('filter')($scope.users, {locality: {area: 'Eastern Washington'}, consecrated: '!!'});
+				$scope.loading = false;
 			
 			});
 			$scope.listTrainings();
