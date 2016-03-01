@@ -16,6 +16,10 @@ angular.module('applications').config(['$stateProvider',
 		.state('roster', {
 			url: '/roster',
 			templateUrl: 'modules/applications/views/roster.client.view.html'
+		})
+		.state('rostertest', {
+			url: '/rostertest',
+			templateUrl: 'modules/applications/views/rostertest.client.view.html'
 		});
 	}
 ]);

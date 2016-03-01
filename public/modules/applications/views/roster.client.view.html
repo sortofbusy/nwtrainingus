@@ -23,7 +23,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr data-ng-repeat="u in users">
+            <tr data-ng-repeat="u in users | filter : { applicant: {displayName: searchName, locality: {name: searchLocality, area: searchArea}}} | orderBy : sortType : !sortReverse ">
                 <td>
                     <a data-ng-href="/#!/users/{{u.applicant._id}}/attendance">{{u.applicant.displayName}}</a>
                 </td>
