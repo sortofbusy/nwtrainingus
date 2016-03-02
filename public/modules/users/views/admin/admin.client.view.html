@@ -25,7 +25,7 @@
         	<tr><th>Locality</th><th>Applied</th><th>Approved</th></tr>
         	<tr data-ng-repeat="eachLocality in localities">
         		<td>
-        			<a data-ng-href="/#!/applications?locality={{eachLocality.name}}">{{eachLocality.name}}</a>
+        			<a href="/#!/applications?locality={{eachLocality.name}}">{{eachLocality.name}}</a>
         		</td>
         		<td>{{(applied | filter : {applicant: {locality: {name: eachLocality.name} } }).length}}</td>
         		<td>{{(applied | filter : {applicant: {locality: {name: eachLocality.name} } } | filter : {appStatus: "Approved"}).length}}</td>
