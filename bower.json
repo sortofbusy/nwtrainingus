@@ -25,7 +25,8 @@
     "angular-signature": "~0.1.5",
     "checklist-model": "~0.9.0",
     "ngprogress": "~1.1.2",
-    "angular-native-dragdrop": "~1.1.2"
+    "angular-native-dragdrop": "~1.1.2",
+    "angular-chart.js": "~0.8.8"
   },
   "resolutions": {
     "angular": "1.4.8"

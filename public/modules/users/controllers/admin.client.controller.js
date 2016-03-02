@@ -44,6 +44,9 @@ angular.module('users').controller('AdminController', ['$scope', '$http', '$wind
 			{ name: 'Other (Eastern WA)', area: 'Eastern Washington' }
 		];
 
+		$scope.labels = ['Download Sales', 'In-Store Sales', 'Mail-Order Sales'];
+		$scope.data = [300, 500, 100];
+
 		// Find a list of User Messages
 		$scope.getActivity = function() {
 			$scope.loading = true;
@@ -69,7 +72,28 @@ angular.module('users').controller('AdminController', ['$scope', '$http', '$wind
 				$scope.EWApplied = $filter('filter')(response, {applicant: {locality: {area: 'Eastern Washington'}}});
 				$scope.EWAccepted = $filter('filter')(response, {applicant: {locality: {area: 'Eastern Washington'}}, appStatus: 'Approved'});
 				$scope.loading = false;
-			
+
+				$scope.languagesData = [
+					$filter('filter')(response, {applicant: {language: 'English'}}).length, 
+					$filter('filter')(response, {applicant: {language: 'Chinese'}}).length,
+					$filter('filter')(response, {applicant: {language: 'Spanish'}}).length
+				];
+
+				$scope.languagesLabels = ['English', 'Chinese', 'Spanish'];
+				
+				var minAge;
+				var maxAge;
+				$scope.ageLabels = [];
+				$scope.ageData = [];
+
+				for (var i = 2; i < 9; i++) {
+					minAge = i*10;
+					maxAge = minAge + 9;
+					$scope.ageLabels.push(minAge + '-' + maxAge);
+					$scope.ageData.push($filter('agerange')(response, minAge, maxAge).length);
+				}
+				$scope.ageData = [$scope.ageData];
+
 			});
 
 			$scope.listTrainings();

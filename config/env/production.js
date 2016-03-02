@@ -13,6 +13,7 @@ module.exports = {
 				'public/lib/angular-loading-bar/build/loading-bar.min.css',
 				'public/lib/ladda/dist/ladda-themeless.min.css',
 				'public/lib/ngprogress/ngprogress.css',
+				'public/lib/angular-chart.js/dist/angular-chart.min.css',
 			],
 			js: [
 				'public/lib/angular/angular.min.js',
@@ -34,6 +35,8 @@ module.exports = {
 				'public/lib/checklist-model/checklist-model.js',
 				'public/lib/ngprogress/build/ngprogress.min.js',
 				'public/lib/angular-native-dragdrop/draganddrop.js',
+				'public/lib/Chart.js/Chart.min.js',
+				'public/lib/angular-chart.js/dist/angular-chart.min.js',
 			]
 		},
 		css: 'public/dist/application.min.css',
