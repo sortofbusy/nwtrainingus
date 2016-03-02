@@ -1,8 +1,10 @@
 <section id="top" data-ng-controller="ApplicationsController" data-ng-init="showApplications()" data-ng-show="(user.roles.indexOf('approver') > -1 || user.roles.indexOf('admin') > -1)">
     <div class="page-header">
         <div class="h1">
-            <i class="fa fa-check-circle fa-1x"></i>
-             <span data-ng-show="user.locality">{{user.locality.area}}<span data-ng-show="user.locality.area === ''">{{user.locality.name}}</span></span> Applications
+            <i class="fa fa-check-circle fa-1x"></i> 
+            <span data-ng-show="!locality.name">{{locality.area}}</span>
+            <span data-ng-show="!locality.area">{{locality.name}}</span>
+            Applications
         </div>
     </div>
     <div class="overlay" data-ng-show="loading">
@@ -16,10 +18,11 @@
                 <li>If you <span class="strong text-warning">deny</span> an application, no email will be sent. Please contact that person directly.</li>
         </div> 
         <h3>Search by Name: <input type="text" data-ng-model="searchString" autofocus/></h3>
+        <h3 data-ng-show="user.roles.indexOf('admin') > -1">Search by Locality: <input type="text" data-ng-model="searchLocality"/></h3>
         <!-- Show PENDING applications -->
         <ul class="list-group">
             <li class="h3 list-group-item list-group-item-warning"><i class="fa fa-circle-o fa-fw"></i> Pending Applications <span class="badge">{{pendingApplications.length}}</span></li>
-            <li class="list-group-item" data-ng-repeat="application in pendingApplications | filter: {applicant: {displayName: searchString}}">
+            <li class="list-group-item" data-ng-repeat="application in pendingApplications | filter: {applicant: {displayName: searchString, locality: {name: searchLocality} } }">
                 <span class=" h3">{{application.applicant.displayName}}<span class="small"> on {{application.created | date}}</span></span>
                 <br><br>
                 <button class="btn btn-default btn-sm pull-right" data-ng-click="showUserDetails[$index] = !showUserDetails[$index]">
@@ -48,7 +51,7 @@
         <!-- Show APPROVED applications -->
         <ul class="list-group">
             <li class="h3 list-group-item list-group-item-success"><i class="fa fa-check-circle-o fa-fw"></i> Approved <span class="badge">{{approvedApplications.length}}</span></li>
-            <li class="list-group-item" data-ng-repeat="application in approvedApplications">
+            <li class="list-group-item" data-ng-repeat="application in approvedApplications | filter: {applicant: {displayName: searchString, locality: {name: searchLocality} } }">
                 <span class=" h3">{{application.applicant.displayName}} <span class="small"> approved by {{application.modifiedBy.displayName}} on {{application.modified | date}}</span></span>
 
                 <br><br>
@@ -75,7 +78,7 @@
         <!-- Show DENIED applications -->
         <ul class="list-group">
             <li class="h3 list-group-item list-group-item-danger"><i class="fa fa-times-circle-o fa-fw"></i> Denied <span class="badge">{{deniedApplications.length}}</span></li>
-            <li class="list-group-item" data-ng-repeat="application in deniedApplications">
+            <li class="list-group-item" data-ng-repeat="application in deniedApplications | filter: {applicant: {displayName: searchString, locality: {name: searchLocality} } }">
                 <span class=" h3">{{application.applicant.displayName}}<span class="small"> denied by {{application.modifiedBy.displayName}} on {{application.modified | date}}</span></span>
                 <br><br>
                 <button class="btn btn-default btn-sm pull-right" data-ng-click="showUserDetails[$index] = !showUserDetails[$index]">

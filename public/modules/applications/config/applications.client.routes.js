@@ -6,7 +6,7 @@ angular.module('applications').config(['$stateProvider',
 		// Groups state routing
 		$stateProvider.
 		state('listApplications', {
-			url: '/applications',
+			url: '/applications?locality',
 			templateUrl: 'modules/applications/views/list-applications.client.view.html'
 		}).
 		state('viewApplications', {

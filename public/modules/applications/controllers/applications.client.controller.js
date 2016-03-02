@@ -52,12 +52,17 @@ angular.module('applications').controller('ApplicationsController', ['$scope', '
 			$scope.progressbar.start();
 			$scope.textPromise = $http.get('/applications');
 			$scope.textPromise.success( function(response) {
-				var locality;
+				var locality = {};
+
+					// if the user is not admin, show their locality or area
 				if($scope.user.roles.indexOf('admin') < 0) {
-					locality = {};
 						// if the approver is from Oregon or Eastern Washington
 					if ($scope.user.locality.area !== '') locality.area = $scope.user.locality.area;
 					else locality.name = $scope.user.locality.name;
+					// if they are admin
+				} else {
+					// if a specific locality is queried, show it
+					locality.name = $stateParams.locality;
 				}
 					// for display in the template
 				$scope.locality = locality;
@@ -65,6 +70,8 @@ angular.module('applications').controller('ApplicationsController', ['$scope', '
 				$scope.pendingApplications = $filter('filter')(response, {appStatus: 'Pending', applicant: {locality: locality}});
 				$scope.approvedApplications = $filter('filter')(response, {appStatus: 'Approved', applicant: {locality: locality}});
 				$scope.deniedApplications = $filter('filter')(response, {appStatus: 'Denied', applicant: {locality: locality}});
+				$scope.showLocality = $stateParams.locality;
+
 				$scope.loading = false;
 				$scope.progressbar.complete();
 			});

@@ -23,7 +23,13 @@
 	    </ul>
         <table class="table table-striped">
         	<tr><th>Locality</th><th>Applied</th><th>Approved</th></tr>
-        	<tr data-ng-repeat="eachLocality in localities"><td>{{eachLocality.name}}</td><td>{{(applied | filter : {applicant: {locality: {name: eachLocality.name} } }).length}}</td><td>{{(applied | filter : {applicant: {locality: {name: eachLocality.name} } } | filter : {appStatus: "Approved"}).length}}</td></tr>
+        	<tr data-ng-repeat="eachLocality in localities">
+        		<td>
+        			<a data-ng-href="/#!/applications?locality={{eachLocality.name}}">{{eachLocality.name}}</a>
+        		</td>
+        		<td>{{(applied | filter : {applicant: {locality: {name: eachLocality.name} } }).length}}</td>
+        		<td>{{(applied | filter : {applicant: {locality: {name: eachLocality.name} } } | filter : {appStatus: "Approved"}).length}}</td>
+        	</tr>
         	<tr><th>Puget Sound</th><th>{{PugetSoundApplied.length}}</th><th>{{PugetSoundAccepted.length}}</th></tr>
         	<tr><th>Oregon Area</th><th>{{OregonApplied.length}}</th><th>{{OregonAccepted.length}}</th></tr>
         	<tr><th>Eastern Washington</th><th>{{EWApplied.length}}</th><th>{{EWAccepted.length}}</th></tr>
