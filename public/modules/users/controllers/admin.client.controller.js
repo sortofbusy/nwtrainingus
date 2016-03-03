@@ -19,14 +19,14 @@ angular.module('users').controller('AdminController', ['$scope', '$http', '$wind
 		];
 
 		$scope.localities = [
-			{ name: 'Bellevue', area: '' },
-			{ name: 'Bellingham',  area: '' },
-			{ name: 'Everett', area: '' },
-			{ name: 'Olympia', area: '' },
-			{ name: 'Renton', area: '' },
-			{ name: 'Seattle', area: '' },
-			{ name: 'Shoreline', area: '' },
-			{ name: 'Tacoma', area: '' },
+			{ name: 'Bellevue', area: 'Puget Sound' },
+			{ name: 'Bellingham',  area: 'Puget Sound' },
+			{ name: 'Everett', area: 'Puget Sound' },
+			{ name: 'Olympia', area: 'Puget Sound' },
+			{ name: 'Renton', area: 'Puget Sound' },
+			{ name: 'Seattle', area: 'Puget Sound' },
+			{ name: 'Shoreline', area: 'Puget Sound' },
+			{ name: 'Tacoma', area: 'Puget Sound' },
 			{ name: 'Eugene', area: 'Oregon Area' },
 			{ name: 'Corvallis',  area: 'Oregon Area' },
 			{ name: 'Medford', area: 'Oregon Area' },
@@ -41,7 +41,9 @@ angular.module('users').controller('AdminController', ['$scope', '$http', '$wind
 			{ name: 'Pullman', area: 'Eastern Washington' },
 			{ name: 'Spokane', area: 'Eastern Washington' },
 			{ name: 'West Richland', area: 'Eastern Washington' },
-			{ name: 'Other (Eastern WA)', area: 'Eastern Washington' }
+			{ name: 'Other (Eastern WA)', area: 'Eastern Washington' },
+			{ name: 'Boise', area: 'Idaho' },
+			{ name: 'Other (Idaho)', area: 'Idaho' }
 		];
 
 		$scope.labels = ['Download Sales', 'In-Store Sales', 'Mail-Order Sales'];
@@ -65,7 +67,7 @@ angular.module('users').controller('AdminController', ['$scope', '$http', '$wind
 				
 				$scope.applied = response;
 				
-				$scope.PugetSoundApplied = $filter('filter')(response, {applicant: {locality: {area: ''}}}, true);
+				$scope.PugetSoundApplied = $filter('filter')(response, {applicant: {locality: {area: 'Puget Sound'}}}, true);
 				$scope.PugetSoundAccepted = $filter('filter')($scope.PugetSoundApplied, {appStatus: 'Approved'});
 				$scope.OregonApplied = $filter('filter')(response, {applicant: {locality: {area: 'Oregon Area'}}});
 				$scope.OregonAccepted = $filter('filter')(response, {applicant: {locality: {area: 'Oregon Area'}}, appStatus: 'Approved'});

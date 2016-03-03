@@ -57,7 +57,7 @@ angular.module('applications').controller('ApplicationsController', ['$scope', '
 					// if the user is not admin, show their locality or area
 				if($scope.user.roles.indexOf('admin') < 0) {
 						// if the approver is from Oregon or Eastern Washington
-					if ($scope.user.locality.area !== '') locality.area = $scope.user.locality.area;
+					if ($scope.user.locality.area !== 'Puget Sound') locality.area = $scope.user.locality.area;
 					else locality.name = $scope.user.locality.name;
 					// if they are admin
 				} else {
@@ -133,7 +133,7 @@ angular.module('applications').controller('ApplicationsController', ['$scope', '
 				if($scope.user.roles.indexOf('admin') < 0) {
 					locality = {};
 						// if the approver is from Oregon or Eastern Washington
-					if ($scope.user.locality.area !== '') locality.area = $scope.user.locality.area;
+					if ($scope.user.locality.area !== 'Puget Sound') locality.area = $scope.user.locality.area;
 					else locality.name = $scope.user.locality.name;
 				}
 					// for display in the template

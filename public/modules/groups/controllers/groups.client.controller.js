@@ -5,30 +5,39 @@ angular.module('groups').controller('GroupsController', ['$scope', '$window', '$
 	function($scope, $window, $http, $filter, $q, $stateParams, $location, Authentication, Groups, Users, Reports) {
 		$scope.user = Authentication.user;
 		$scope.newLocality = $scope.user.locality;
-			
-		if ($scope.user.locality.area === 'Oregon Area') {
-			$scope.localities = [
-				{ name: 'Eugene', area: 'Oregon Area' },
-				{ name: 'Corvallis',  area: 'Oregon Area' },
-				{ name: 'Medford', area: 'Oregon Area' },
-				{ name: 'Portland', area: 'Oregon Area' },
-				{ name: 'Roseburg', area: 'Oregon Area' },
-				{ name: 'Salem', area: 'Oregon Area' },
-				{ name: 'Vancouver, WA', area: 'Oregon Area' },
-				{ name: 'Other (Oregon)', area: 'Oregon Area' }
-			];
-		}
+		
+		$scope.allLocalities = [
+			{ name: 'Bellevue', area: 'Puget Sound' },
+			{ name: 'Bellingham',  area: 'Puget Sound' },
+			{ name: 'Everett', area: 'Puget Sound' },
+			{ name: 'Olympia', area: 'Puget Sound' },
+			{ name: 'Renton', area: 'Puget Sound' },
+			{ name: 'Seattle', area: 'Puget Sound' },
+			{ name: 'Shoreline', area: 'Puget Sound' },
+			{ name: 'Tacoma', area: 'Puget Sound' },
+			{ name: 'Eugene', area: 'Oregon Area' },
+			{ name: 'Corvallis',  area: 'Oregon Area' },
+			{ name: 'Medford', area: 'Oregon Area' },
+			{ name: 'Portland', area: 'Oregon Area' },
+			{ name: 'Roseburg', area: 'Oregon Area' },
+			{ name: 'Salem', area: 'Oregon Area' },
+			{ name: 'Vancouver, WA', area: 'Oregon Area' },
+			{ name: 'Other (Oregon)', area: 'Oregon Area' },
+			{ name: 'Cheney', area: 'Eastern Washington' },
+			{ name: 'Ephrata', area: 'Eastern Washington' },
+			{ name: 'Prosser', area: 'Eastern Washington' },
+			{ name: 'Pullman', area: 'Eastern Washington' },
+			{ name: 'Spokane', area: 'Eastern Washington' },
+			{ name: 'West Richland', area: 'Eastern Washington' },
+			{ name: 'Other (Eastern WA)', area: 'Eastern Washington' },
+			{ name: 'Boise', area: 'Idaho' },
+			{ name: 'Other (Idaho)', area: 'Idaho' }
+		];
 
-		if ($scope.user.locality.area === 'Eastern Washington') {
-			$scope.localities = [
-				{ name: 'Cheney', area: 'Eastern Washington' },
-				{ name: 'Ephrata', area: 'Eastern Washington' },
-				{ name: 'Prosser', area: 'Eastern Washington' },
-				{ name: 'Pullman', area: 'Eastern Washington' },
-				{ name: 'Spokane', area: 'Eastern Washington' },
-				{ name: 'West Richland', area: 'Eastern Washington' },
-				{ name: 'Other (Eastern WA)', area: 'Eastern Washington' }
-			];
+			// if the user is not from Puget Sound, show them all localities
+			// in their area
+		if ($scope.user.locality.area !== 'Puget Sound') {
+			$scope.localities = $filter('filter')($scope.allLocalities, {area: $scope.user.locality.area});
 		}
 
 		$scope.newTime = new Date('October 1, 2016 18:00:00');
@@ -131,7 +140,7 @@ angular.module('groups').controller('GroupsController', ['$scope', '$window', '$
 				if($scope.user.roles.indexOf('admin') < 0) {
 					locality = {};
 						// if the approver is from Oregon or Eastern Washington
-					if ($scope.user.locality.area !== '') {
+					if ($scope.user.locality.area !== 'Puget Sound') {
 						locality.area = $scope.user.locality.area;
 						$scope.localityId = locality.area;
 					}

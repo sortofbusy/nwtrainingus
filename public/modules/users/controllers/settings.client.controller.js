@@ -11,14 +11,14 @@ angular.module('users').controller('SettingsController', ['$scope', '$http', '$l
 		$scope.laddaButton = {};
 
 		$scope.localities = [
-			{ name: 'Bellevue', area: '' },
-			{ name: 'Bellingham',  area: '' },
-			{ name: 'Everett', area: '' },
-			{ name: 'Olympia', area: '' },
-			{ name: 'Renton', area: '' },
-			{ name: 'Seattle', area: '' },
-			{ name: 'Shoreline', area: '' },
-			{ name: 'Tacoma', area: '' },
+			{ name: 'Bellevue', area: 'Puget Sound' },
+			{ name: 'Bellingham',  area: 'Puget Sound' },
+			{ name: 'Everett', area: 'Puget Sound' },
+			{ name: 'Olympia', area: 'Puget Sound' },
+			{ name: 'Renton', area: 'Puget Sound' },
+			{ name: 'Seattle', area: 'Puget Sound' },
+			{ name: 'Shoreline', area: 'Puget Sound' },
+			{ name: 'Tacoma', area: 'Puget Sound' },
 			{ name: 'Eugene', area: 'Oregon Area' },
 			{ name: 'Corvallis',  area: 'Oregon Area' },
 			{ name: 'Medford', area: 'Oregon Area' },
@@ -33,7 +33,9 @@ angular.module('users').controller('SettingsController', ['$scope', '$http', '$l
 			{ name: 'Pullman', area: 'Eastern Washington' },
 			{ name: 'Spokane', area: 'Eastern Washington' },
 			{ name: 'West Richland', area: 'Eastern Washington' },
-			{ name: 'Other (Eastern WA)', area: 'Eastern Washington' }
+			{ name: 'Other (Eastern WA)', area: 'Eastern Washington' },
+			{ name: 'Boise', area: 'Idaho' },
+			{ name: 'Other (Idaho)', area: 'Idaho' }
 		];
 		
 		// Check if there are additional accounts 

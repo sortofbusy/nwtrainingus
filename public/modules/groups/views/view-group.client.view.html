@@ -23,7 +23,7 @@
             </thead>
             <tbody>
                 <tr data-ng-repeat="groupUser in group.users">
-                    <td>{{groupUser.displayName}} <span data-ng-show="u.locality.area !== ''"> ({{groupUser.locality.name}})</span></td>
+                    <td>{{groupUser.displayName}} <span data-ng-show="u.locality.area !== 'Puget Sound'"> ({{groupUser.locality.name}})</span></td>
                     <td>
                         <span class="text-info" data-ng-show="groupUser.roles.indexOf('reporter') > -1">Group Reporter</span>
 			        </td>

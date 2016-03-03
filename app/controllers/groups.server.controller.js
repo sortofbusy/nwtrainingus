@@ -99,7 +99,7 @@ exports.unassigned = function(req, res) {
 	var assignedUsers = [];
 	var params = {};
 	// if the approver is from Oregon or Eastern Washington, search the area
-	if (req.user.locality.area !== '') params = {'locality.area': req.user.locality.area};
+	if (req.user.locality.area !== 'Puget Sound') params = {'locality.area': req.user.locality.area};
 	else params = {'locality.name': req.user.locality.name};
 
 	// get all Users from req.user's locality that are in a study group
@@ -125,7 +125,7 @@ exports.unassigned = function(req, res) {
 					for (var u = 0; u < users.length; u++) {
 							// because MongoDB can't join, manually skip users that don't match either
 							// the locality (name) or area of the requesting user
-						if (req.user.locality.area !== '') {
+						if (req.user.locality.area !== 'Puget Sound') {
 							if (users[u].applicant.locality.area !== req.user.locality.area) continue;
 						} else {
 							if (users[u].applicant.locality.name !== req.user.locality.name) continue;
