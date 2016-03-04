@@ -73,6 +73,8 @@ angular.module('users').controller('AdminController', ['$scope', '$http', '$wind
 				$scope.OregonAccepted = $filter('filter')(response, {applicant: {locality: {area: 'Oregon Area'}}, appStatus: 'Approved'});
 				$scope.EWApplied = $filter('filter')(response, {applicant: {locality: {area: 'Eastern Washington'}}});
 				$scope.EWAccepted = $filter('filter')(response, {applicant: {locality: {area: 'Eastern Washington'}}, appStatus: 'Approved'});
+				$scope.IDApplied = $filter('filter')(response, {applicant: {locality: {area: 'Idaho'}}});
+				$scope.IDAccepted = $filter('filter')(response, {applicant: {locality: {area: 'Idaho'}}, appStatus: 'Approved'});
 				$scope.loading = false;
 
 				$scope.languagesData = [
