@@ -13,6 +13,9 @@ var ResourceSchema = new Schema({
 	fileType: {
 		type: String
 	},
+	name: {
+		type: String
+	},
 	url: {
 		type: String,
 		required: 'Please provide a link'

@@ -1,7 +1,7 @@
 <section data-ng-controller="ResourcesController" data-ng-init="findOne()">
 	<div class="page-header">
 		<a href="/#!/resources">Back to Resources</a>
-		<h1>{{resource.training.name}}, Session {{resource.session}} ({{resource.language}})</h1>
+		<h1>{{resource.training.name}} {{resource.name}} Session {{resource.session}} ({{resource.language}})</h1>
 	</div>
 	<div class="pull-right" data-ng-show="(authentication.user.roles.indexOf('admin') > -1)">
 		<a class="btn btn-primary" href="/#!/resources/{{resource._id}}/edit">

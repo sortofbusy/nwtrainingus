@@ -6,6 +6,12 @@
         <form class="form-horizontal" data-ng-submit="create()" novalidate>
             <fieldset>
                 <div class="form-group">
+                    <label class="control-label" for="Name">Name (optional)</label>
+                    <div class="controls">
+                        <input type="text" data-ng-model="name" id="name" class="form-control" placeholder="Name">
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="control-label" for="Link">Link</label>
                     <div class="controls">
                         <input type="text" data-ng-model="url" id="url" class="form-control" placeholder="http://..." required>
@@ -37,14 +43,14 @@
                     <select id="session" name = "session" class="form-control" data-ng-options="session as session for session in sessions" data-ng-model="session">
                     </select>
                 </div>
-                <div class="form-group">
+                <!--<div class="form-group">
                     <label for="subsession">Subsession</label>
                     <select id="subsession" name = "subsession" class="form-control" data-ng-model="subsession">
                         <option>A</option>
                         <option>B</option>
                         <option>C</option>
                     </select>
-                </div>
+                </div>-->
                 <div class="form-group">
                     <input type="submit" class="btn btn-default">
                 </div>
