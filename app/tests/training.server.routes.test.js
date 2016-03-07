@@ -6,17 +6,18 @@ var should = require('should'),
 	mongoose = require('mongoose'),
 	User = mongoose.model('User'),
 	Training = mongoose.model('Training'),
+	Application = mongoose.model('Application'),
 	agent = request.agent(app);
 
 /**
  * Globals
  */
-var credentials, user, training;
+var credentials, user, training, application;
 
 /**
  * Training routes tests
  */
-describe('Training CRUD tests', function() {
+describe.only('Training CRUD tests', function() {
 	beforeEach(function(done) {
 		// Create user credentials
 		credentials = {
@@ -32,6 +33,7 @@ describe('Training CRUD tests', function() {
 			email: 'test@test.com',
 			username: credentials.username,
 			password: credentials.password,
+			roles: ['user', 'admin', 'approver'],
 			provider: 'local'
 		});
 
@@ -51,8 +53,10 @@ describe('Training CRUD tests', function() {
 			.expect(200)
 			.end(function(signinErr, signinRes) {
 				// Handle signin error
-				if (signinErr) done(signinErr);
-
+				if (signinErr) {
+					done(signinErr);
+					return;
+				}
 				// Get the userId
 				var userId = user.id;
 
@@ -68,13 +72,15 @@ describe('Training CRUD tests', function() {
 						agent.get('/trainings')
 							.end(function(trainingsGetErr, trainingsGetRes) {
 								// Handle Training save error
-								if (trainingsGetErr) done(trainingsGetErr);
+								if (trainingsGetErr) {
+									done(trainingsGetErr);
+									return;
+								}
 
 								// Get Trainings list
 								var trainings = trainingsGetRes.body;
 
 								// Set assertions
-								(trainings[0].user._id).should.equal(userId);
 								(trainings[0].name).should.match('Training Name');
 
 								// Call the assertion callback
@@ -251,13 +257,62 @@ describe('Training CRUD tests', function() {
 			.expect(401)
 			.end(function(trainingDeleteErr, trainingDeleteRes) {
 				// Set message assertion
-				(trainingDeleteRes.body.message).should.match('User is not logged in');
+				(trainingDeleteRes.body.message).should.match('User is not signed in');
 
 				// Handle Training error error
 				done(trainingDeleteErr);
 			});
 
 		});
+	});
+
+	it('should be able to send bulk emails', function(done) {
+		agent.post('/auth/signin')
+			.send(credentials)
+			.expect(200)
+			.end(function(signinErr, signinRes) {
+				// Handle signin error
+				if (signinErr) {
+					done(signinErr);
+					return;
+				}
+				// Get the userId
+				var userId = user.id;
+
+				// Save a new Training
+				agent.post('/trainings')
+					.send(training)
+					.expect(200)
+					.end(function(trainingSaveErr, trainingSaveRes) {
+						// Handle Training save error
+						if (trainingSaveErr) done(trainingSaveErr);
+						
+						application = new Application({
+							training: trainingSaveRes.body._id,
+							applicant: userId
+						});
+						application.save(function(err, response) {
+							// send emails
+							agent.post('/trainings/'+trainingSaveRes.body._id+'/emails')
+								.send({mailBy: 'selected', mailByData: ['test@test.com', 'test@example.com']})
+								.expect(200)
+								.end(function(trainingEmailErr, trainingEmailRes) {
+									// Handle Training save error
+									if (trainingEmailErr) {
+										console.log(trainingEmailErr);
+										done(trainingEmailErr);
+										return;
+									}
+
+									console.log(trainingEmailRes.body.accepted.length + ' email(s) sent successfully.');
+									// Call the assertion callback
+									done();
+								});
+						});
+
+						
+					});
+			});
 	});
 
 	afterEach(function(done) {

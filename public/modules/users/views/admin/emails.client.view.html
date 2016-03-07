@@ -1,0 +1,47 @@
+<section class="row" data-ng-controller="AdminController as aCtrl" data-ng-init="listTrainings()">
+	<div class="overlay" data-ng-show="loading">
+        <div class="overlay overlay-content text-center"><i class="fa fa-circle-o-notch fa-spin"></i> Sending Email</div>
+    </div>
+    <div class="page-header">
+        <h1><i class="fa fa fw fa-envelope-o"></i> Bulk Email</h1>
+    </div>
+    <div>
+    	<h3>Send to:</h3>
+    	<uib-tabset active="active">
+    		<uib-tab index="0" heading="Roles">
+    			<br>
+    			<b>Training:</b><br> <select data-ng-model="selectedTraining" data-ng-options="training.name for training in trainings"></select>
+    			<br><br>
+    			<div data-ng-repeat="role in roles">
+					{{role}} <input type="checkbox" data-checklist-model="selectedRoles" checklist-value="role"><br>
+				</div>
+    		</uib-tab>
+    		<uib-tab index="1" heading="Application Status">
+    			<br>
+    			<b>Training:</b><br> <select data-ng-model="selectedTraining" data-ng-options="training.name for training in trainings"></select>
+    			<br><br>
+    			<div data-ng-repeat="status in statuses">
+					{{status}} <input type="checkbox" data-checklist-model="selectedAppStatus" checklist-value="status"><br>
+				</div>
+    		</uib-tab>
+    		<uib-tab index="2" heading="Selected Emails">
+    			<br>
+    			<textarea style="height:auto;" rows="6" data-ng-model="selectedEmails.data" class="form-control" placeholder="Separate emails by commas or on different lines">
+                </textarea>
+        </textarea>
+    		</uib-tab>
+    	</uib-tabset>
+    	<hr>
+    	<h3>Message:</h3>
+    	Subject: 
+    	<input type="text" class="form-control" data-ng-model="email.subject">
+    	Body: 
+    	<textarea style="height:auto;" rows="3" data-ng-model="email.body" class="form-control" placeholder="Please enter a greeting and message; a signature will be added automatically">
+        </textarea>
+    	<br>
+		<div data-ng-show="error" class="text-danger">
+		    <strong data-ng-bind="error"></strong>
+        </div>
+		<button class="btn btn-lg btn-primary" data-ng-click="sendEmails()">Send Email</button>
+	</div>
+</section>

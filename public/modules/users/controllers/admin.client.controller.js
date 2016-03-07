@@ -18,6 +18,22 @@ angular.module('users').controller('AdminController', ['$scope', '$http', '$wind
 			'admin'
 		];
 
+		$scope.mailBy = [
+			{},
+			{},
+			{}	
+		];
+
+		$scope.statuses = [
+			'Pending',
+			'Approved',
+			'Denied'
+		];
+
+		$scope.selectedRoles = [];
+		$scope.selectedAppStatus = [];
+		$scope.selectedEmails = {};
+
 		$scope.localities = [
 			{ name: 'Bellevue', area: 'Puget Sound' },
 			{ name: 'Bellingham',  area: 'Puget Sound' },
@@ -45,9 +61,6 @@ angular.module('users').controller('AdminController', ['$scope', '$http', '$wind
 			{ name: 'Boise', area: 'Idaho' },
 			{ name: 'Other (Idaho)', area: 'Idaho' }
 		];
-
-		$scope.labels = ['Download Sales', 'In-Store Sales', 'Mail-Order Sales'];
-		$scope.data = [300, 500, 100];
 
 		// Find a list of User Messages
 		$scope.getActivity = function() {
@@ -130,6 +143,7 @@ angular.module('users').controller('AdminController', ['$scope', '$http', '$wind
 		$scope.listTrainings = function() {
 			$http.get('/trainings').success(function(response) {
 				$scope.trainings = response;
+				$scope.selectedTraining = $scope.trainings[0];
 			});
 		};
 
@@ -144,6 +158,39 @@ angular.module('users').controller('AdminController', ['$scope', '$http', '$wind
 			var all = 'all' + list;
 			$scope[list] = $scope[all];
 			$scope[all] = [];
+		};
+
+		$scope.sendEmails = function() {
+			var data = {email: $scope.email};
+			if($scope.selectedRoles.length > 0) {
+				data.mailBy = 'role';
+				data.mailByData = $scope.selectedRoles;
+			}
+			if($scope.selectedAppStatus.length > 0) {
+				data.mailBy = 'appStatus';
+				data.mailByData = $scope.selectedAppStatus;
+			}
+			if($scope.selectedEmails.data && $scope.selectedEmails.data.length > 0) {
+				data.mailBy = 'selected';
+				if ($scope.selectedEmails.data.indexOf('\n') > -1)
+					data.mailByData = $scope.selectedEmails.data.split('\n');
+				else
+					data.mailByData = $scope.selectedEmails.data.split(',');
+			}
+			
+			$scope.loading = true;
+			$http.post('/trainings/'+$scope.selectedTraining._id+'/emails', data).then(function(response) {
+				$scope.loading = false;
+				console.log(response.data);
+				$window.alert(response.data.accepted.length + ' emails sent');
+				if (response.data.rejected.length > 0) {
+					$scope.error = 'The following emails did not send correctly: ' + 
+						response.data.rejected.join(', ');
+				}
+			}, function(error){
+				$scope.loading = false;
+				$scope.error = error.data.message;
+			});
 		};
 	}
 ]);

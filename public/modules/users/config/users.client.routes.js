@@ -12,6 +12,10 @@ angular.module('users').config(['$stateProvider',
 		state('admin', {
 			url: '/admin',
 			templateUrl: 'modules/users/views/admin/admin.client.view.html'
+		})
+		.state('adminEmail', {
+			url: '/admin/emails',
+			templateUrl: 'modules/users/views/admin/emails.client.view.html'
 		}).
 		state('password', {
 			url: '/settings/password',

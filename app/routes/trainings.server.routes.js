@@ -14,6 +14,9 @@ module.exports = function(app) {
 		.put(users.isAdmin, trainings.update)
 		.delete(users.isAdmin, trainings.delete);
 
+	app.route('/trainings/:trainingId/emails')
+		.post(users.isAdmin, trainings.emails);
+
 	// Finish by binding the Training middleware
 	app.param('trainingId', trainings.trainingByID);
 };

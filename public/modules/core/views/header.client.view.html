@@ -47,10 +47,18 @@
 			<li data-ng-show="(authentication.user.roles.indexOf('approver') >= 0) || (authentication.user.roles.indexOf('admin') >= 0)">
 				<a href="/#!/groups"><i class="fa fa-fw fa-group"></i> Study Groups</a>
 			</li>
-			<li data-ng-show="(authentication.user.roles.indexOf('admin') >= 0)">
-				<a href="/#!/admin">
-					<i class="fa fa-fw fa-key"></i> Admin
+			<li uib-dropdown data-ng-show="(authentication.user.roles.indexOf('admin') >= 0)">
+				<a href="" uib-dropdown-toggle>
+					<i class="fa fa-fw fa-key"></i> Admin <b class="caret"></b>
 				</a>
+				<ul class="uib-dropdown-menu">
+					<li>
+						<a href="/#!/admin">Admin Panel</a>
+					</li>
+					<li>
+						<a href="/#!/admin/emails">Bulk Email</a>
+					</li>
+				</ul>
 			</li>
 			<li>
 				<a href="/#!/settings/profile" ng-show="authentication.user.consecrated">

@@ -48,79 +48,6 @@ describe('User route tests', function() {
 		});
 	});
 
-	it('should be able to get messages for a user if logged in', function(done) {
-		agent.post('/auth/signin')
-			.send(credentials)
-			.expect(200)
-			.end(function(signinErr, signinRes) {
-				// Handle signin error
-				if (signinErr) done(signinErr);
-
-				// Get the userId
-				var userId = user.id;
-				message.user = userId;
-				// Save a new Message
-				agent.post('/messages')
-					.send(message)
-					.expect(200)
-					.end(function(messageSaveErr, messageSaveRes) {
-						// Handle Message save error
-						if (messageSaveErr) done(messageSaveErr);
-
-						// Get a list of Messages
-						agent.get('/users/messages')
-							.expect(200)
-							.end(function(messagesGetErr, messagesGetRes) {
-								// Handle Message save error
-								if (messagesGetErr) done(messagesGetErr);
-								// Get Messages list
-								var messages = messagesGetRes.body;
-								// Set assertions
-								(messages[0].user).should.equal(userId);
-								(messages[0].text).should.match('Message Name');
-
-								// Call the assertion callback
-								done();
-							});
-					});
-			});
-	});
-
-	it('should not be able to get messages for a user if not logged in', function(done) {
-		agent.post('/auth/signin')
-			.send(credentials)
-			.expect(200)
-			.end(function(signinErr, signinRes) {
-				// Handle signin error
-				if (signinErr) done(signinErr);
-
-				// Get the userId
-				var userId = user.id;
-				message.user = userId;
-				// Save a new Message
-				agent.post('/messages')
-					.send(message)
-					.expect(200)
-					.end(function(messageSaveErr, messageSaveRes) {
-						// Handle Message save error
-						if (messageSaveErr) done(messageSaveErr);
-
-
-						agent.get('/auth/signout')
-							.expect(200)
-							.end(function() {
-								// Get a list of Messages
-								agent.get('/users/messages')
-									.expect(400)
-									.end(function(messagesGetErr, messagesGetRes) {
-										// Handle Message save error
-										done(messagesGetErr);
-									});
-							});
-					});
-			});
-	});
-
 	it('should be able to send a welcome email after signup', function(done) {
 		agent.post('/auth/signup')
 			.send({firstName: 'Josiah', lastName: 'Vinson', email: 'test@test.com', password: 'password'})
@@ -209,7 +136,10 @@ describe('Admin route tests', function() {
 					.expect(200)
 					.end(function(messagesGetErr, messagesGetRes) {
 						// Handle Message save error
-						if (messagesGetErr) done(messagesGetErr);
+						if (messagesGetErr) {
+							done(messagesGetErr);
+							return;
+						}
 						// Get Messages list
 						var messages = messagesGetRes.body;
 						// Set assertions
