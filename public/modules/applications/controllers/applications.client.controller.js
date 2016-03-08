@@ -1,8 +1,8 @@
 'use strict';
 
 // Groups controller
-angular.module('applications').controller('ApplicationsController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Groups', '$window', 'Messages', '$filter', 'Applications', 'ngProgressFactory',
-	function($scope, $http, $stateParams, $location, Authentication, Groups, $window, Messages, $filter, Applications, ngProgressFactory) {
+angular.module('applications').controller('ApplicationsController', ['$scope', '$http', '$stateParams', '$location', 'Authentication', 'Groups', '$window', 'Messages', '$filter', '$document', 'Applications', 'ngProgressFactory',
+	function($scope, $http, $stateParams, $location, Authentication, Groups, $window, Messages, $filter, $document, Applications, ngProgressFactory) {
 		$scope.user = Authentication.user;
 
 		// If user is not signed in then redirect back home
@@ -141,6 +141,23 @@ angular.module('applications').controller('ApplicationsController', ['$scope', '
 				$scope.loading = false;
 				$scope.progressbar.complete();
 			});
+		};
+
+		$scope.downloadRoster = function() {
+			var data = [];
+			data.push('"First Name","Last Name","Locality","Area","Language","Email","Phone"');
+			for (var i = 0; i < $scope.users.length; i++) {
+				data.push('"'+$scope.users[i].applicant.firstName+'","'+$scope.users[i].applicant.lastName+
+					'","'+$scope.users[i].applicant.locality.name+'","'+$scope.users[i].applicant.locality.area+
+					'","'+$scope.users[i].applicant.language+'","'+$scope.users[i].applicant.email+'","'+$scope.users[i].applicant.phone+'"');
+			}
+			data = data.join('\n');
+
+			var saving = document.createElement('a');
+	        saving.href = 'data:attachment/csv,' + encodeURIComponent(data);
+	        saving.download = 'roster.csv';
+	        document.body.appendChild(saving);
+			saving.click();
 		};
 	}
 ]);

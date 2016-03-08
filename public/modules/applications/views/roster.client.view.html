@@ -10,6 +10,7 @@
     <span data-ng-show="user.roles.indexOf('admin') > -1">
     <h4>Search by Locality: <input type="text" data-ng-model="searchLocality" autofocus/></h4>
     <h4>Search by Area: <input type="text" data-ng-model="searchArea" autofocus/></h4>
+    <button class="btn btn-info" data-ng-click="downloadRoster()"><i class="fa fa-download"></i> Download Roster (.csv)</button>
     </span>
     <table class="table table-striped">
         <thead>

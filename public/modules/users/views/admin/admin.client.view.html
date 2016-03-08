@@ -66,13 +66,16 @@
 	</div>
 	<div class="col-xs-12 col-md-6">
 	    <br>
-	    <h4>Search by Name: <input type="text" data-ng-model="searchString"/></h4>
-	    <h4>Search by Locality: <input type="text" data-ng-model="searchLocality"/></h4>
-    	<h4>Search by Area: <input type="text" data-ng-model="searchArea"/></h4>
+	    <table class="h4">
+	    	<tr><td>Search by Name </td><td><input type="text" data-ng-model="searchString"/></td></tr>
+	    	<tr><td>Search by Locality </td><td><input type="text" data-ng-model="searchLocality"/></td></tr>
+    		<tr><td>Search by Area </td><td><input type="text" data-ng-model="searchArea"/></td></tr>
+    		<tr><td>Search by Language </td><td><input type="text" data-ng-model="searchLanguage"/></td></tr>
+    	</table>
 	    <!-- Show all users -->
 	    <ul class="list-group">
 	        <li class="h3 list-group-item list-group-item-info"><i class="fa fa-group fa-fw"></i> Users <span class="badge">{{users.length}}</span></li>
-	        <li class="list-group-item" data-ng-repeat="user in users | filter: {displayName: searchString, locality: {name: searchLocality, area: searchArea} }">
+	        <li class="list-group-item" data-ng-repeat="user in users | filter: {displayName: searchString, locality: {name: searchLocality, area: searchArea}, language: searchLanguage }">
 	            <span class="h4">{{user.displayName}}</span> <em data-ng-repeat="role in user.roles" data-ng-if="role !== 'user'" class="text-danger">{{role}} </em>
 	            <span class="btn btn-default btn-sm pull-right" data-ng-click="showUserDetails[$index] = !showUserDetails[$index]"><i class="fa fa-ellipsis-h"></i></span>
 	            <br>
