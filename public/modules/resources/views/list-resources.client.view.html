@@ -14,7 +14,7 @@
         <option>Audio</option>
         <option>Video</option>
     </select>
-    <label for="language">File Type: </label>
+    <label for="language">Language: </label>
     <select data-ng-model="authentication.user.language" class="">
         <option value = "">All</option>
         <option>English</option>
@@ -28,7 +28,8 @@
 			<p class="lead">
                 <i class="fa fa-fw fa-video-camera" data-ng-show="resource.fileType==='Video'"></i>
                 <i class="fa fa-fw fa-volume-up" data-ng-show="resource.fileType==='Audio'"></i>
-                {{resource.training.name}} {{resource.name}} Session {{resource.session}}{{resource.subsession}} <small>({{resource.language}})<small>
+                {{resource.training.name}} {{resource.name}} 
+                <span data-ng-show="resource.session"> Session {{resource.session}}{{resource.subsession}}</span> <small>({{resource.language}})<small>
             </p>
         </a>
     </div>
