@@ -149,8 +149,13 @@
 	</div>
 	<div class="row text-center" data-ng-show="user.applications[0].appStatus === 'Approved'">
 		<h2 class="col-md-12 text-center">Training Resources for {{trainings[t].name}}</h2>
-		<a href="/#!/resources" class="btn btn-info btn-lg">View Resources</a>
-		<a data-ng-show="myGroups[0]" data-ng-href="/#!/groups/{{myGroups[0]._id}}" class="btn btn-info btn-lg">Study Group</a>
+		<br><br>
+		<a href="/#!/resources" class="btn btn-info btn-lg"><i class="fa fa-fw fa-volume-up"></i> View Resources</a>
+		<a data-ng-show="myGroups[0]" data-ng-href="/#!/groups/{{myGroups[0]._id}}" class="btn btn-info btn-lg"><i class="fa fa-fw fa-group"></i> Study Group</a>
+		<a data-ng-show="myGroups[0]" data-ng-click="showDetails = !showDetails" class="btn btn-warning btn-lg">Show Consecration</a>
+	</div>
+	<br>
+	<div data-ng-show="showDetails"data-ng-bind-html="trustHtml(trainings[t].consecration)">
 	</div>
 
 	<!-- /////// VIEW APPLICATIONS /////// -->
