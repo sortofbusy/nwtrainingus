@@ -18,14 +18,14 @@
                 on-drop-success="dropSuccessHandler($event,$index,group.users)"
                 ng-repeat="asUser in group.users track by $index">
                     {{asUser.displayName}}
-                    <span data-ng-show="asUser.locality.area !== 'Puget Sound'"> ({{asUser.locality.name}})</span>
+                    ({{asUser.locality.name}})
                 </button>
             </div>
             <div data-ng-show="fallback">
                 <table class="table table-striped">
                     <tbody>
                         <tr data-ng-repeat="(userIndex, u) in group.users">
-                            <td>{{u.displayName}} <span data-ng-show="u.locality.area !== 'Puget Sound'"> ({{u.locality.name}})</span></td>
+                            <td>{{u.displayName}} ({{u.locality.name}})</td>
                             <td>
                                 <a data-ng-click="unassignUserFallback(userIndex, groupIndex)"><i class="fa fa-times"></i> Remove</a>
                             </td>
@@ -50,7 +50,7 @@
                 on-drop-success="dropSuccessHandler($event,$index,unassigned)"
                 ng-repeat="unUser in unassigned track by $index">
                 {{unUser.displayName}}
-                <span data-ng-show="unUser.locality.area !== 'Puget Sound'"> ({{unUser.locality.name}})</span>
+                 ({{unUser.locality.name}})
             </button> 
         </div>
         <button class="btn btn-primary" data-ng-click="updateAll()" ladda="laddaButton.loading">Save Changes <i class="fa" data-ng-class="laddaButton.resultIcon"></i></button>
@@ -67,7 +67,7 @@
             </tr></thead>
             <tbody>
                 <tr data-ng-repeat="(userIndex, u) in unassigned">
-                    <td>{{u.displayName}} <span data-ng-show="u.locality.area !== 'Puget Sound'"> ({{u.locality.name}})</span></td>
+                    <td>{{u.displayName}} ({{u.locality.name}})</td>
                     <td>
                         <select data-ng-model="newGroup" class="form-control" data-ng-options="''+group.locality.name+group.$index+' '+group.language+' Study Group' for group in groups" data-ng-change="assignUserFallback(userIndex, newGroup._id)">
                         </select>

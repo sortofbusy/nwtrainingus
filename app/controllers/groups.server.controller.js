@@ -98,10 +98,8 @@ exports.compareUsers = function(arrVal, othVal) {
 exports.unassigned = function(req, res) { 
 	var assignedUsers = [];
 	var params = {};
-	// if the approver is from Oregon or Eastern Washington, search the area
-	if (req.user.locality.area !== 'Puget Sound') params = {'locality.area': req.user.locality.area};
-	else params = {'locality.name': req.user.locality.name};
-
+	params = {'locality.area': req.user.locality.area};
+	
 	// get all Users from req.user's locality that are in a study group
 	Group.find(params).populate('users', 'displayName').exec(function(err, groups) {
 		if (err) {
@@ -123,14 +121,10 @@ exports.unassigned = function(req, res) {
 					var isAssigned = false;
 						// loop through users, check if they are assigned
 					for (var u = 0; u < users.length; u++) {
-							// because MongoDB can't join, manually skip users that don't match either
-							// the locality (name) or area of the requesting user
-						if (req.user.locality.area !== 'Puget Sound') {
-							if (users[u].applicant.locality.area !== req.user.locality.area) continue;
-						} else {
-							if (users[u].applicant.locality.name !== req.user.locality.name) continue;
-						}
-
+							// because MongoDB can't join, manually skip users that don't match
+							// the locality area of the requesting user
+						if (users[u].applicant.locality.area !== req.user.locality.area) continue;
+						
 						isAssigned = false;
 						for (var a = 0; a < assignedUsers.length; a++) {
 							if (_.isEqual(users[u].applicant._id, assignedUsers[a]._id)) isAssigned = true;

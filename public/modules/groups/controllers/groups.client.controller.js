@@ -34,11 +34,7 @@ angular.module('groups').controller('GroupsController', ['$scope', '$window', '$
 			{ name: 'Other (Idaho)', area: 'Idaho' }
 		];
 
-			// if the user is not from Puget Sound, show them all localities
-			// in their area
-		if ($scope.user.locality.area !== 'Puget Sound') {
-			$scope.localities = $filter('filter')($scope.allLocalities, {area: $scope.user.locality.area});
-		}
+		$scope.localities = $filter('filter')($scope.allLocalities, {area: $scope.user.locality.area});
 
 		$scope.newTime = new Date('October 1, 2016 18:00:00');
 
@@ -139,15 +135,8 @@ angular.module('groups').controller('GroupsController', ['$scope', '$window', '$
 				var locality;
 				if($scope.user.roles.indexOf('admin') < 0) {
 					locality = {};
-						// if the approver is from Oregon or Eastern Washington
-					if ($scope.user.locality.area !== 'Puget Sound') {
-						locality.area = $scope.user.locality.area;
-						$scope.localityId = locality.area;
-					}
-					else {
-						locality.name = $scope.user.locality.name;
-						$scope.localityId = locality.name;
-					}
+					locality.area = $scope.user.locality.area;
+					$scope.localityId = locality.area;
 				} else $scope.localityId = 'All';
 					// for display in the template
 				$scope.locality = locality;
