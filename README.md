@@ -1,4 +1,6 @@
-#Northwest Training
+# Northwest Training
+
+This repository, formerly live at ~~nwtraining.us~~, was used to provide event registration and support services for a 1-year program used by over 220 participants. Includes a registration flow with signature capture, multiple levels of user roles, attendance tracking, and resource management (text and audio files).
 
 ## License
 (The MIT License)
